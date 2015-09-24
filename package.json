@@ -1,0 +1,27 @@
+{
+  "name": "MKS21-thesis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peg2/MKS21-thesis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/peg2/MKS21-thesis/issues"
+  },
+  "homepage": "https://github.com/peg2/MKS21-thesis#readme",
+  "dependencies": {
+    "express": "^4.13.3",
+    "node": "0.0.0",
+    "nodemon": "^1.7.0",
+    "react": "^0.13.3",
+    "socket.io": "^1.3.7"
+  }
+}

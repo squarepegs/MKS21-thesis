@@ -71,9 +71,11 @@ box-shadow: 0px 0px 29px 9px rgba(255,248,105,1);
 .question H3, .answer H3{
   font-size:20px;
   color: blue;
+  padding-left:4px;
+  padding-right:4px;
 }
 .question H4 {
-  font-size:18px
+  font-size:18px;
   padding-left:20px;
 }
 
@@ -82,9 +84,14 @@ box-shadow: 0px 0px 29px 9px rgba(255,248,105,1);
   padding-left: 20px;
 }
 
+.studentlist {
+ margin:0 4px;
+}
 
-
-
+.buzzlist li:first-child{
+  color:red;
+  font-size:18px;
+}
 
 
 

@@ -1,0 +1,19 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Brian Boyko -- Project Owner -- @boyko4tx
+    Kyle -- 
+    Juan -- Scrum Master/Git Coordinator
+    Peter Do
+
+# THANKS
+
+    Alex Trebek
+    Merv Griffon
+
+# TECHNOLOGY COLOPHON
+
+    HTML5, CSS3
+    jQuery, Modernizr

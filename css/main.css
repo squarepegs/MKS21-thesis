@@ -1,0 +1,37 @@
+@import url(https://fonts.googleapis.com/css?family=Slabo+27px);
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+
+.jumbotron {
+  background-color: #060CE9;
+
+-webkit-box-shadow: inset 0px 0px 200px 70px rgba(0,0,0,0.93);
+-moz-box-shadow: inset 0px 0px 200px 70px rgba(0,0,0,0.93);
+box-shadow: inset 0px 0px 200px 70px rgba(0,0,0,0.93);
+}
+
+.jumbo-container{
+  font-family: "Slabo", "Times New Roman", "Serif" ;
+  color: #FFFFC2;
+
+}
+
+.navbar-info{
+  color:#FFFFFF;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

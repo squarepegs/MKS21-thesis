@@ -17,28 +17,30 @@ Once the project moves into development, the press release can be used as a touc
  -->
  
 ## Heading ##
-  > Name the product in a way the reader (i.e. your target customers) will understand.
+  > TREBEC - Teachers' Responsive Evaluator for Basic Educational Criteria (Preliminary Name)
 
 ## Sub-Heading ##
-  > Describe who the market for the product is and what benefit they get. One sentence only underneath the title.
+  > A framework for educational gamification, collaborative teaching, and educational data visualization. 
 
 ## Summary ##
-  > Give a summary of the product and the benefit. Assume the reader will not read anything else so make this paragraph good.
+  > There are a number of problems teachers have these days. How do you keep kids engaged and learning? How can you easily tell which students need additional instruction, or where the class as a whole could use review, without subjecting your students to a battery of tests?  How can you track your teaching performance over time?  And how can you tell if your students are ready for the multitude of standardized exams, whether that's the SAT, New York State's Regents exam, or the State of Texas Assessments of Academic Readiness (STAAR)?  
+
+  TREBEC is an engine and framework for education gamification. Starting with the simple question-and-answer format of a trivia game show (much like Jeopardy), TREBEC creates games which can be controlled from a central dashboard by the teacher, and allow any student to play on their laptops, tablets, phones, or other Internet enabled device.  
 
 ## Problem ##
-  > Describe the problem your product solves.
+  > Using the "game show" format to make learning fun is a teaching staple, but at best, only one student can be engaged at one time.  While these formats are effective, it would be better to engage all students. Additionally, some students may dislike the competitive nature of these games and actively turn off. 
 
 ## Solution ##
-  > Describe how your product elegantly solves the problem.
+  > TREBEC allows any teacher to create a game. At that time, a unique code (part of the URL) is generated and can be written on the blackboard or displayed onscreen. Students then enter that code and get directed to the correct game.  Students will have access to questions and a way to input answers, and the teacher controls the game from the front of the room.  Furthermore, the responsive design allows teachers to use mobile devices, which means they do not have to be chained to the desk.  
 
 ## Quote from You ##
-  > A quote from a spokesperson in your company.
+  > "From our own high-school days playing Jeopardy-like games with our teachers before major tests, we know that student engatement is paramount in the learning process. We are working to make student learning more effective and productive"
 
 ## How to Get Started ##
-  > Describe how easy it is to get started.
+  > To get started, simply browse to [URL] and create an account or login. You'll be directed to a dashboard where you can create a new game and see data on your students' performances. To play, students just got to [URL] as well and enter in a 4-character code - questions will appear on their devices where they can buzz in (or enter, in text, their answers).  
 
 ## Customer Quote ##
-  > Provide a quote from a hypothetical customer that describes how they experienced the benefit.
+  > "Even the shyest student in the class's eyes light up when we use TREBEC to review for the PSATs - it allows her to participate in every lesson we have.  My students have shown a 30% improvement in scores since we started using it, and I'm actually looking forward to when they take the PSAT!"
 
 ## Closing and Call to Action ##
-  > Wrap it up and give pointers where the reader should go next.
+  > To find out more about TREBEC, head to www.TREBEC.io

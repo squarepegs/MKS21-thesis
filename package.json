@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/peg2/MKS21-thesis#readme",
   "dependencies": {
     "babel": "^5.8.23",
+    "body-parser": "^1.14.0",
     "express": "^4.13.3",
     "node": "0.0.0",
     "nodemon": "^1.7.0",
@@ -28,15 +29,14 @@
   "devDependencies": {
     "babel-jest": "^5.3.0",
     "jest": "^0.1.40",
-    "jest-cli": "^0.5.8"
+    "jest-cli": "^0.5.8",
+    "mocha": "^2.3.3",
+    "supertest": "^1.1.0"
   },
-
-  "scripts": {
-  "test": "jest"
-  },
-  
   "jest": {
     "scriptPreprocessor": "MKS21-thesis/node_modules/babel-jest",
-    "unmockedModulePathPatterns": ["MKS21-thesis/node_modules/react"]
+    "unmockedModulePathPatterns": [
+      "MKS21-thesis/node_modules/react"
+    ]
   }
 }

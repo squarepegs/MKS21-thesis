@@ -1,4 +1,13 @@
-
+//socket Emit functionality
+var socketEmit = function(text){
+var socket = io();
+  socket.emit('buzz', $('#buzz').text());
+    return false;
+  });
+  socket.on('buzz', function (student){
+    $('.questionbox').append($('<li>').text(student+' .You answered the question!'));
+  })
+}
 
 var makeroom = function()
 {

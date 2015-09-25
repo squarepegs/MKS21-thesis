@@ -1,3 +1,39 @@
+
+
+var makeroom = function()
+{
+    var text = "";
+    var possible = "BCDFGHJKLMNPQRSTVWXZ";
+
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+var Studentquestion = React.createClass({
+  render: function(){
+      var question = 'At which point does a question need an answer? (in React)';
+    return (
+      <div className="questionbox">
+        <h4>Question:</h4>
+        <h3>{question}</h3>
+      </div>
+      );
+  }
+});
+
+
+var Roomcode = React.createClass({
+  render: function(){
+    var room = makeroom();
+    return (
+    <div className="roomcode-info">Your code is: <span className="roomcode">{room}</span></div>
+    )
+  }
+})
+
+
 var Buzzer = React.createClass({
   getInitialState: function() {
   	return {buzzed: false};
@@ -6,16 +42,25 @@ var Buzzer = React.createClass({
     this.setState({buzzed: !this.state.buzzed});
   },
   render: function() {
-  	var text = this.state.buzzed ? 'Buzz In' : 'Answer Question';
+  	var text = this.state.buzzed ? 'BUZZ IN' : 'YOU BUZZED';
   	return (
-  	  <p onClick={this.handleClick}>
-        you {text} this. Click to Buzz In.
+  	  <div className="buzz">
+        <p onClick={this.handleClick}>
+         <a className="btn btn-success btn-lg buzzer" href="#" role="button">{text}</a>
       </p>  
+      </div>
   	);
   }
 });
 
 React.render(
-  <Buzzer />,
+  <div>
+    <Roomcode />
+    <Studentquestion />
+    <Buzzer />
+  </div>,
   document.getElementById('student')
 );
+
+
+

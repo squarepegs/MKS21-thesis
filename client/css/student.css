@@ -1,9 +1,13 @@
 .roomcode{
   color:green;
+}
+
+.roomcode-info{
   text-align: right;
   padding-top: 5px;
   padding-right: 5px;
 }
+
 .questionbox {
   text-align: center;
   font-size: 22px;
@@ -16,6 +20,7 @@
   box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.7);
   font-size:50px;
   padding:45px 60px;
+
 }
 
 .buzzer:active, .buzzer.active {
@@ -27,4 +32,5 @@
 
 .buzz{
   margin-top: 50px;
+  text-align:center;
 }

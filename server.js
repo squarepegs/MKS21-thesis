@@ -7,9 +7,9 @@ var app = express();
 var PORT = 8000;
 
 app.use(bodyParser.json());
-app.use('/static',express.static(__dirname + '/static'));
-app.use('/css',express.static(__dirname + '/css'));
-app.use('/js',express.static(__dirname + '/js'));
+app.use('/client',express.static(__dirname + '/client'));
+app.use('/css',express.static(__dirname + '/client/css'));
+app.use('/js',express.static(__dirname + '/client/js'));
 // app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use(morgan('dev'));
 

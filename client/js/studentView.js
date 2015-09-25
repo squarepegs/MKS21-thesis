@@ -1,13 +1,18 @@
 //socket Emit functionality
-var socketEmit = function(text){
-var socket = io();
-  socket.emit('buzz', $('#buzz').text());
-    return false;
-  });
-  socket.on('buzz', function (student){
-    $('.questionbox').append($('<li>').text(student+' .You answered the question!'));
-  })
+var io = require('socket.io');
+
+
+var buzzClientEmit = function(student){
+  var socket = io();
+  console.log('Student: '+student)
+  return socket.emit('buzz', student);  
 }
+
+var buzzClientAppend = function(question){
+  var socket = io();
+  socket.on('buzz', function (question){
+    console.log('Student data received: '+question)
+  })
 
 var makeroom = function()
 {
@@ -47,6 +52,7 @@ var Buzzer = React.createClass({
   getInitialState: function() {
   	return {buzzed: false};
   },
+
   handleClick: function(event){
     this.setState({buzzed: !this.state.buzzed});
   },

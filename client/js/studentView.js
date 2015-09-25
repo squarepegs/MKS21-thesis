@@ -1,12 +1,12 @@
 //socket Emit functionality
-var io = require('socket.io');
 var socket = io();
-//listeners
+
 
 var buzzClientAppend = function(packet){
-    console.log('Student data received: '+packet)
+    console.log('Student data received: ', JSON.stringify(packet));
   }
 
+//listeners
 socket.on('buzzResponse', function (data){
   buzzClientAppend(data);
 })
@@ -15,7 +15,7 @@ socket.on('buzzResponse', function (data){
 var student = {name: 'Billy'}
 
 var buzzClientEmit = function(student){
-  console.log('Student: ', JSON.stringify(student))
+  console.log('clientside -- Student: ', JSON.stringify(student))
   socket.emit('buzz', student);  
 }
 
@@ -69,7 +69,7 @@ var Buzzer = React.createClass({
     this.setState({buzzed: !this.state.buzzed});
   },
   render: function() {
-  	var text = this.state.buzzed ? 'BUZZ IN' : 'YOU BUZZED';
+  	var text = this.state.buzzed ? 'YOU BUZZED' : 'BUZZ IN';
   	return (
   	  <div className="buzz">
         <p onClick={this.handleClick}>

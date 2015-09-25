@@ -89,6 +89,13 @@
             r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
             ga('create','UA-XXXXX-X','auto');ga('send','pageview');
         </script>
+<<<<<<< HEAD:client/static/studentView.html
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+        <script type="text/jsx;harmony=true" src="/js/studentView.js"></script>
+=======
 <!--         socket io snippet
  -->
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
@@ -104,6 +111,7 @@
             $('.questionbox').append($('<li>').text(student+' .You answered the question!'));
             })
         </script>
+>>>>>>> [socket] dummy done:static/studentView.html
     </body>
 </html>
 

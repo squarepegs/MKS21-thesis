@@ -1,18 +1,24 @@
 //socket Emit functionality
 var io = require('socket.io');
+var socket = io();
+//listeners
 
+var buzzClientAppend = function(packet){
+    console.log('Student data received: '+packet)
+  }
+
+socket.on('buzzResponse', function (data){
+  buzzClientAppend(data);
+})
+
+//dummy student object
+var student = {name: 'Billy'}
 
 var buzzClientEmit = function(student){
-  var socket = io();
-  console.log('Student: '+student)
-  return socket.emit('buzz', student);  
+  console.log('Student: ', JSON.stringify(student))
+  socket.emit('buzz', student);  
 }
 
-var buzzClientAppend = function(question){
-  var socket = io();
-  socket.on('buzz', function (question){
-    console.log('Student data received: '+question)
-  })
 
 var makeroom = function()
 {
@@ -41,6 +47,7 @@ var Studentquestion = React.createClass({
 var Roomcode = React.createClass({
   render: function(){
     var room = makeroom();
+    student.room = room;
     return (
     <div className="roomcode-info">Your code is: <span className="roomcode">{room}</span></div>
     )
@@ -54,6 +61,11 @@ var Buzzer = React.createClass({
   },
 
   handleClick: function(event){
+    var timestamp = new Date();
+    //timestamp property on student object
+    student.timestamp = timestamp;
+    //socket emit event
+    buzzClientEmit(student);
     this.setState({buzzed: !this.state.buzzed});
   },
   render: function() {

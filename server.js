@@ -19,3 +19,5 @@ app.get('/test',
 
 console.log('App is listening on port ' + PORT);
 app.listen(PORT);
+
+module.exports = app;

@@ -23,23 +23,21 @@ app.use(bodyParser.json());
 app.use('/client',express.static(__dirname + '/client'));
 app.use(morgan('dev'));
 
-app.get('/test', function(req, res) {
-		handler.doSomething(req, res);
-	}
-);
-
 app.get('/signup',
 	function(req, res){
 		// req.headers.username
 		// req.headers.password
 		console.log("signup!");
+		res.send(200);
 	}
 );
 
 app.get('/game-dash/:code',
 	function(req, res){
 		var code = req.params.code;
+		console.log("owner is " + handler.gameCodes[code]);
 		console.log("game dash for code " + code);
+		res.send(200);
 	}
 );
 
@@ -47,10 +45,12 @@ app.get('/student/:code',
 	function(req, res){
 		var code = req.params.code;
 		console.log("student view for code " + code);
+		res.send(200);
 	}
 );
 
-app.post('/newGame',
+app.get('/newGame',
+	//this breaks.
 	function(req,res){
 		handler.gameMaker(req, res);
 	}
@@ -91,3 +91,14 @@ io.sockets.on('connection', function(socket) {
 // "/game-dash:code"
 // "/student:code"
 // "/main-dash" reads username, shows that user's dash
+
+//student facing sockets
+//
+// io.on('connection', function(){
+// 	socket.on('buzzClientEmit', function(student){
+// 		console.log(student.name + " connected");
+// 	});
+// 	socket.on('disconnect', function(){
+//
+// 	});
+// });

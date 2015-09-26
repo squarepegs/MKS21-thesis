@@ -1,5 +1,5 @@
-// var db = require('../models/userData.js'),
-		// Auth  = require ('./auth.js');
+var models = require('./models.js');
+// var auth  = require ('./auth.js');
 
 module.exports = {
 	//a dummy function for testing purposes:
@@ -28,10 +28,22 @@ module.exports = {
 		this.gameCodes[code] = username;
 		console.log("created gamecodes: " + code);
 		console.log("current gameCodes: " + this.gameCodes);
+		res.send();
 	},
 	endGame: function(req, res){
 		// need to think about all the things to happen here.
 		// client side saving, or server side saving of stats?
 		delete gameCodes[req.headers.code];
+	},
+	signup: function(req, res){
+		var username = req.headers.username;
+		var password = req.headers.password;
+		models.createUser(username,password)
+		.then(function(result){
+			// "your username might be " + username + " and your password could be: " + password
+
+			// not sure if this will break if tried, just some dummy code in models simulating promise usage, I hope.
+			res.send( result() );
+		});
 	}
 };

@@ -1,12 +1,13 @@
 var bodyParser  = require('body-parser');
 var express     = require('express');
-var app = express();
-var http = require('http');
 // var server = require('http').createServer(app);
 var morgan      = require('morgan');
 var handler     = require('./server/requestHandler.js');
+var http 				= require('http');
 
-// process.env.PORT is provided by the deployment server -- if we're running localhost, use 8000; 
+var app = express();
+
+// process.env.PORT is provided by the deployment server -- if we're running localhost, use 8000;
 var PORT = process.env.PORT || 8000;
 
 
@@ -22,15 +23,43 @@ app.use('/client',express.static(__dirname + '/client'));
 app.use(morgan('dev'));
 
 app.get('/test', function(req, res) {
-    handler.doSomething(req, res);
-  }
+		handler.doSomething(req, res);
+	}
+);
+
+app.get('/signup',
+	function(req, res){
+		// req.headers.username
+		// req.headers.password
+		console.log("signup!");
+	}
+);
+
+app.get('/game-dash/:code',
+	function(req, res){
+		var code = req.params.code;
+		console.log("game dash for code " + code);
+	}
+);
+
+app.get('/student/:code',
+	function(req, res){
+		var code = req.params.code;
+		console.log("student view for code " + code);
+	}
+);
+
+app.post('/newGame',
+	function(req,res){
+		handler.gameMaker(req, res);
+	}
 );
 
 console.log('App is listening on port ' + PORT);
-// We require socket.io to have the entire server passed in as an argument, 
-// so we create a server variable to pass into socket.io's .listen method. 
+// We require socket.io to have the entire server passed in as an argument,
+// so we create a server variable to pass into socket.io's .listen method.
 var server = app.listen(PORT);
-var io = require('socket.io').listen(server)
+var io = require('socket.io').listen(server);
 
 module.exports = app;
 
@@ -41,10 +70,10 @@ module.exports = app;
 //Everything that requires Websockets lives INSIDE this callback.
 io.sockets.on('connection', function(socket) {
 
-  socket.on('buzz', function(studentBuzzer) {
-    console.log("ServerSide Student: ", studentBuzzer.name, "Room: ", studentBuzzer.room, "Timestamp:", studentBuzzer.timestamp)
-    io.emit('buzzResponse', ('buzzResponse recieved from server after ' + studentBuzzer.name + ' hit the buzzer at ' + studentBuzzer.timestamp + ' in ' + studentBuzzer.room))
-  }); // end chat message
+	socket.on('buzz', function(studentBuzzer) {
+		console.log("ServerSide Student: ", studentBuzzer.name, "Room: ", studentBuzzer.room, "Timestamp:", studentBuzzer.timestamp);
+		io.emit('buzzResponse', ('buzzResponse recieved from server after ' + studentBuzzer.name + ' hit the buzzer at ' + studentBuzzer.timestamp + ' in ' + studentBuzzer.room));
+	}); // end chat message
 
 
 
@@ -53,3 +82,11 @@ io.sockets.on('connection', function(socket) {
 //--------------------------------
 // END WEBSOCKETS
 //--------------------------------
+
+// roadmap below here
+
+// signup
+// sockets stuff
+// "/game-dash:code"
+// "/student:code"
+// "/main-dash" reads username, shows that user's dash

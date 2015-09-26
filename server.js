@@ -7,14 +7,8 @@ var http 				= require('http');
 var io          = require('socket.io');
 
 var app = express();
-
 // process.env.PORT is provided by the deployment server -- if we're running localhost, use 8000;
 var PORT = process.env.PORT || 8000;
-
-
-
-
-
 app.use(bodyParser.json());
 
 

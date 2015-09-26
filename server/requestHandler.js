@@ -2,7 +2,7 @@ var models = require('./models.js');
 // var auth  = require ('./auth.js');
 
 module.exports = {
-	gameCodes: {"empty":"empty"}, //lets lines 14/15 be written very cleanly
+	gameCodes: {"empty":"empty"}, //lets lines 20/21 be written very cleanly
 
 	gameMaker: function(req, res){
 		// this works! type this in the terminal:
@@ -17,9 +17,9 @@ module.exports = {
 		var code = "empty";
 		// here we set that game's unique id and we verify that, by some
 		// small chance, that number is actually unique.
-		while (this.gameCodes[code])
+		while (this.gameCodes[code]) {
 			code = Math.floor(Math.random()*1000000);
-
+		}
 		// set that code to that username in our dictionary of active games.
 		this.gameCodes[code] = username;
 		console.log("created gamecodes: " + code + ", " + username);

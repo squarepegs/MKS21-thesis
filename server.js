@@ -26,12 +26,23 @@ app.get('/signup',
 	}
 );
 
+app.get('/data',
+	function(req, res){
+		// db.getStudentData(req.headers.token)
+	}
+);
+
 app.get('/game-dash/:code',
 	function(req, res){
+		var user = req.headers.username;
 		var code = req.params.code;
 		console.log("owner is " + handler.gameCodes[code]);
 		console.log("game dash for code " + code);
-		res.send(200);
+
+		if (user === handler.gameCodes[code])
+			res.send("access granted to user: " + user);
+		else
+			res.send("access denied to user: " + user + ", you are not owner: " + handler.cameCodes[code]);
 	}
 );
 
@@ -43,8 +54,7 @@ app.get('/student/:code',
 	}
 );
 
-app.get('/newGame',
-	//this breaks.
+app.post('/new-game',
 	function(req,res){
 		handler.gameMaker(req, res);
 	}
@@ -69,8 +79,6 @@ io.sockets.on('connection', function(socket) {
 		console.log("ServerSide Student: ", studentBuzzer.name, "Room: ", studentBuzzer.room, "Timestamp:", studentBuzzer.timestamp);
 		io.emit('buzzResponse', ('buzzResponse recieved from server after ' + studentBuzzer.name + ' hit the buzzer at ' + studentBuzzer.timestamp + ' in ' + studentBuzzer.room));
 	}); // end chat message
-
-
 
 });
 

@@ -6,7 +6,7 @@ module.exports = {
 
 	gameMaker: function(req, res){
 		// this works! type this in the terminal:
-		//// curl --header "username: billy" localhost:8000/newGame
+		//// curl -X POST --header "username: billy" localhost:8000/newGame
 		//// you will get get back a game code.
 		//// curl localhost:8000/game-dash/*insert game code here*
 		//// on the server, you will see an announcement of who the owner is.

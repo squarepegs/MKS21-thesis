@@ -4,6 +4,7 @@ var express     = require('express');
 var morgan      = require('morgan');
 var handler     = require('./server/requestHandler.js');
 var http 				= require('http');
+var io          = require('socket.io');
 
 var app = express();
 

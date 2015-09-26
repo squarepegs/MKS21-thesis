@@ -24,6 +24,7 @@ module.exports = {
 				i = 0;
 			}
 		}
+
 		// set that code to that username in our dictionary of active games.
 		this.gameCodes[code] = username;
 		console.log("created gamecodes: " + code);

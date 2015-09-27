@@ -11,12 +11,18 @@ socket.on('buzzResponse', function (data){
   buzzClientAppend(data);
 })
 
+socket.on('sent question', function (data){
+  console.log("Your question is", data, JSON.stringify(data)) // DEBUG CODE, REMOVE BEFORE PRODUCTION
+
+})
+
 //dummy student object
 var student = {name: 'Billy'}
 
 var buzzClientEmit = function(student){
   console.log('clientside -- Student: ', JSON.stringify(student))
-  socket.emit('buzz', student);  
+  socket.emit('buzz', student);  // right now we're using the buzzer for multiple testing features. Will change -- bb
+  socket.emit('new question', student.room) 
 }
 
 

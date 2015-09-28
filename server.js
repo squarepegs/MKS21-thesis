@@ -94,7 +94,13 @@ io.sockets.on('connection', function(socket) {
 	}); 
 
   socket.on('studentLogin', function(login){
+  	// this just shows that we're getting information from studentLogin.html
   	console.log('StudentLogin', JSON.stringify(login))
+  });
+
+  socket.on('teacherLogin', function(login){
+  	// this just shows that we're getting information from studentLogin.html
+  	console.log('teacherLogin', JSON.stringify(login))
   });
 
 

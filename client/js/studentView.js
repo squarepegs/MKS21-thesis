@@ -16,7 +16,7 @@ socket.on('sent question', function (data){
 
   React.render(
     <div className="question">
-    <h4>{data.category.toUpperCase()} - ${data.value}</h4>
+    <h4>{data.category.toUpperCase()} - ${data.value}</h4> 
     <h3>{data.question}</h3>
     </div>,
     document.getElementById('question')

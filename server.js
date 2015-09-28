@@ -5,9 +5,9 @@ var morgan      = require('morgan');
 var handler     = require('./server/requestHandler.js');
 var http 				= require('http');
 var io          = require('socket.io');
+var jeopardy    = require('./server/jService.js')
 // simplified http client supporting HTTPs https://github.com/request/request
 // for accessing Jeopardy API. 
-var request     = require('request') 
 
 var app = express();
 // process.env.PORT is provided by the deployment server -- if we're running localhost, use 8000;
@@ -74,42 +74,6 @@ module.exports = app;
 
 
 
-//--------------------------------
-// JSERVICE (Jeopardy API)
-//--------------------------------
-// Request for help: Is this the most logical place to put this function?  - BB 
-// or should we use another file? 
-
-var getJeopardyQ = function(room, socketCallback){
-
-	request('http://jservice.io/api/random', function (error, response, body) {
-		console.log("getJeopardyQ being called")
-	  if (!error && response.statusCode == 200) {
-	  	ques = JSON.parse(body)[0] // get just ONE question. We might be able to queue up multiples, reducing the number of API calls
-
-	  	// DEBUG CODE, REMOVE BEFORE PRODUCTION
-	  	console.log("Send This To Room", room);
-	    console.log("Category:", ques.category.title, "$", ques.value);
-	    console.log("Question:", ques.question);
-	    // END DEBUG CODE
-
-	    var formattedQues      = {}; // yeah, yeah, I know, but I think this makes cleaner code than using a literal -- bb
-	    formattedQues.room     = room;
-	    formattedQues.category = ques.category.title;
-	    formattedQues.value    = ques.value;
-	    formattedQues.question = ques.question;
-	    formattedQues.answer   = ques.answer;
-	    console.log("formattedQues", JSON.stringify(formattedQues)); 	// DEBUG CODE, REMOVE BEFORE PRODUCTION
-	    
-	    socketCallback(formattedQues); // should we include bluebird? 
-	  }
-	})
-
-}
-//--------------------------------
-// END JSERVICE
-//--------------------------------
-
 
 
 
@@ -130,7 +94,7 @@ io.sockets.on('connection', function(socket) {
 	socket.on('new question', function(room) {
 		console.log('Next Question for:', room)
 	  // must use promises (or callbacks) for async API here. Should we include Q/bluebird? --bb
-		getJeopardyQ(room, function(ques){
+		jeopardy.getQ(room, function(ques){ // calls to jService.js (see requires)
 			io.emit('sent question', (ques))
 		});
 	}); 

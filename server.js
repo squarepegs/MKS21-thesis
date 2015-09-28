@@ -71,12 +71,6 @@ var io = require('socket.io').listen(server);
 
 module.exports = app;
 
-
-
-
-
-
-
 //--------------------------------
 // WEBSOCKETS
 //--------------------------------
@@ -98,6 +92,10 @@ io.sockets.on('connection', function(socket) {
 			io.emit('sent question', (ques))
 		});
 	}); 
+
+  socket.on('studentLogin', function(login){
+  	console.log('StudentLogin', JSON.stringify(login))
+  });
 
 
 

@@ -16,7 +16,7 @@ socket.on('sent question', function (data){
 
   React.render(
     <div className="question">
-    <h4>{data.category.toUpperCase()} - ${data.value}</h4> 
+    <h4>{data.category.toUpperCase()} - ${data.value}</h4>z
     <h3>{data.question}</h3>
     </div>,
     document.getElementById('question')
@@ -71,7 +71,7 @@ var Roomcode = React.createClass({
 
 var Buzzer = React.createClass({
   getInitialState: function() {
-  	return {buzzed: false};
+    return {buzzed: false};
   },
 
   handleClick: function(event){
@@ -83,14 +83,14 @@ var Buzzer = React.createClass({
     this.setState({buzzed: !this.state.buzzed});
   },
   render: function() {
-  	var text = this.state.buzzed ? 'YOU BUZZED' : 'BUZZ IN';
-  	return (
-  	  <div className="buzz">
+    var text = this.state.buzzed ? 'YOU BUZZED' : 'BUZZ IN';
+    return (
+      <div className="buzz">
         <p onClick={this.handleClick}>
          <a className="btn btn-success btn-lg buzzer" href="#" role="button">{text}</a>
       </p>  
       </div>
-  	);
+    );
   }
 });
 

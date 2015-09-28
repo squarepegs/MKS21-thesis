@@ -21,13 +21,13 @@ var SubmitButton = React.createClass({
   },
 
   handleClick: function(event){
-    var submitObj = {}
-    submitObj.username = $('#username').val();
-    submitObj.password = $('#password').val();
-    socket.emit('teacherLogin', submitObj);
+    window.jeopardy = {};
+    window.jeopardy.username = $('#username').val();
+    window.jeopardy.password = $('#password').val();
     $('#username').val('');
     $('#password').val('');
     React.render(<p>'Logging In'</p>, document.getElementById('status'))
+    window.location.href = '/dashboard/' + window.jeopardy.username;
   },
   render: function() {
     return (

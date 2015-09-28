@@ -11,15 +11,20 @@ module.exports = {
 		//// curl localhost:8000/game-dash/*insert game code here*
 		//// on the server, you will see an announcement of who the owner is.
 
+		// here we set that game's unique id and we verify that, by some
+		// small chance, that number is actually unique.
+		var possible = "BCDFGHJKLMNPQRSTVWXZ";
+		do {
+	    var code = "";
+      for( var i=0; i < 4; i++ ){
+      code += possible.charAt(Math.floor(Math.random() * possible.length));
+    	}
+		} while (this.gameCodes[code] || [])
+
+
 		// should take in username, something like req.headers.username
 		// and make that user the only one able to access the game-dash
 		var username = req.headers.username;
-		var code = "empty";
-		// here we set that game's unique id and we verify that, by some
-		// small chance, that number is actually unique.
-		while (this.gameCodes[code]) {
-			code = Math.floor(Math.random()*1000000);
-		}
 		// set that code to that username in our dictionary of active games.
 		this.gameCodes[code] = username;
 		console.log("created gamecodes: " + code + ", " + username);

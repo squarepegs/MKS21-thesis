@@ -40,7 +40,7 @@ var makeroom = function()
     var text = "";
     var possible = "BCDFGHJKLMNPQRSTVWXZ";
 
-    for( var i=0; i < 5; i++ )
+    for( var i=0; i < 4; i++ )
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;

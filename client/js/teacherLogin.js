@@ -33,7 +33,7 @@ var SubmitButton = React.createClass({
     return (
       <div className="login">
         <p onClick={this.handleClick}>
-         <a className="btn btn-success btn-lg buzzer" href="#" role="button">Create New Game</a>
+         <a className="btn btn-success btn-lg buzzer" href="#" role="button">Go To My Dashboard</a>
       </p>  
       </div>
     );

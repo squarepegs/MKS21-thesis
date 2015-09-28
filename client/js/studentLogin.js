@@ -26,10 +26,6 @@ var Roomcode = React.createClass({
 
 
 var SubmitButton = React.createClass({
-  getInitialState: function() {
-    return {buzzed: false};
-  },
-
   handleClick: function(event){
     var submitObj = {}
     submitObj.username = $('#username').val();

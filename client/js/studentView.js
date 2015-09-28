@@ -11,12 +11,27 @@ socket.on('buzzResponse', function (data){
   buzzClientAppend(data);
 })
 
+socket.on('sent question', function (data){
+  console.log("Your question is", data, JSON.stringify(data)) // DEBUG CODE, REMOVE BEFORE PRODUCTION
+
+  React.render(
+    <div className="question">
+    <h4>{data.category.toUpperCase()} - ${data.value}</h4> 
+    <h3>{data.question}</h3>
+    </div>,
+    document.getElementById('question')
+  ); // this will replace the <h4> found in "Studentquestion"
+
+
+})
+
 //dummy student object
 var student = {name: 'Billy'}
 
 var buzzClientEmit = function(student){
   console.log('clientside -- Student: ', JSON.stringify(student))
-  socket.emit('buzz', student);  
+  socket.emit('buzz', student);  // right now we're using the buzzer for multiple testing features. Will change -- bb
+  socket.emit('new question', student.room) 
 }
 
 
@@ -32,12 +47,11 @@ var makeroom = function()
 }
 
 var Studentquestion = React.createClass({
-  render: function(){
-      var question = 'At which point does a question need an answer? (in React)';
+    render: function(){
     return (
       <div className="questionbox">
-        <h4>Question:</h4>
-        <h3>{question}</h3>
+        <h4 id="question">Question:</h4>
+
       </div>
       );
   }
@@ -80,10 +94,11 @@ var Buzzer = React.createClass({
   }
 });
 
+// initial page render
 React.render(
   <div>
     <Roomcode />
-    <Studentquestion />
+    <Studentquestion /> 
     <Buzzer />
   </div>,
   document.getElementById('student')

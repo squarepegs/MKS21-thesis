@@ -5,6 +5,9 @@ var morgan      = require('morgan');
 var handler     = require('./server/requestHandler.js');
 var http 				= require('http');
 var io          = require('socket.io');
+var jeopardy    = require('./server/jService.js')
+// simplified http client supporting HTTPs https://github.com/request/request
+// for accessing Jeopardy API. 
 
 var app = express();
 // process.env.PORT is provided by the deployment server -- if we're running localhost, use 8000;
@@ -68,6 +71,12 @@ var io = require('socket.io').listen(server);
 
 module.exports = app;
 
+
+
+
+
+
+
 //--------------------------------
 // WEBSOCKETS
 //--------------------------------
@@ -75,16 +84,32 @@ module.exports = app;
 //Everything that requires Websockets lives INSIDE this callback.
 io.sockets.on('connection', function(socket) {
 
+// Buzz In
 	socket.on('buzz', function(studentBuzzer) {
 		console.log("ServerSide Student: ", studentBuzzer.name, "Room: ", studentBuzzer.room, "Timestamp:", studentBuzzer.timestamp);
 		io.emit('buzzResponse', ('buzzResponse recieved from server after ' + studentBuzzer.name + ' hit the buzzer at ' + studentBuzzer.timestamp + ' in ' + studentBuzzer.room));
-	}); // end chat message
+	}); 
 
+// get a Jeopardy question from the API. 
+	socket.on('new question', function(room) {
+		console.log('Next Question for:', room)
+	  // must use promises (or callbacks) for async API here. Should we include Q/bluebird? --bb
+		jeopardy.getQ(room, function(ques){ // calls to jService.js (see requires)
+			io.emit('sent question', (ques))
+		});
+	}); 
+
+
+
+// sockets callback end
 });
 
 //--------------------------------
 // END WEBSOCKETS
 //--------------------------------
+
+
+
 
 // roadmap below here
 

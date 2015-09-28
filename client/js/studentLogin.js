@@ -27,13 +27,13 @@ var Roomcode = React.createClass({
 
 var SubmitButton = React.createClass({
   handleClick: function(event){
-    var submitObj = {}
-    submitObj.username = $('#username').val();
-    submitObj.roomcode = $('#roomcode').val();
-    socket.emit('studentLogin', submitObj);
+    window.jeopardy = {};
+    window.jeopardy.username = $('#username').val();
+    window.jeopardy.roomcode = $('#roomcode').val();
     $('#username').val('');
     $('#roomcode').val('');
     React.render(<p>'Logging In'</p>, document.getElementById('status'))
+    window.location.href = '/student/' + window.jeopardy.roomcode;
   },
   render: function() {
     return (

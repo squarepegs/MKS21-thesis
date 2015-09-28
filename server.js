@@ -29,6 +29,16 @@ app.get('/signup',
 	}
 );
 
+app.get('/dashboard/:username',
+  function(req, res){
+    // req.headers.username
+    // req.headers.password
+    console.log('Dashboard for ' + req.headers.username);
+    res.send(200);
+  }
+);
+
+
 app.get('/data',
 	function(req, res){
 		// db.getStudentData(req.headers.token)
@@ -71,12 +81,6 @@ var io = require('socket.io').listen(server);
 
 module.exports = app;
 
-
-
-
-
-
-
 //--------------------------------
 // WEBSOCKETS
 //--------------------------------
@@ -98,7 +102,6 @@ io.sockets.on('connection', function(socket) {
 			io.emit('sent question', (ques))
 		});
 	}); 
-
 
 
 // sockets callback end

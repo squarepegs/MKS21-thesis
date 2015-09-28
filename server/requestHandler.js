@@ -14,12 +14,16 @@ module.exports = {
 		// here we set that game's unique id and we verify that, by some
 		// small chance, that number is actually unique.
 		var possible = "BCDFGHJKLMNPQRSTVWXZ";
+		// For obvious reasons, these words should not be condoned. 
+		// If the random generator runs into one of thses, it'll just reroll.
+		var badWords = ['NGGR', 'NGRR', 'NNGR', 'CVNT', 'FVCK', 'SHJT'];
+
 		do {
 	    var code = "";
       for( var i=0; i < 4; i++ ){
       code += possible.charAt(Math.floor(Math.random() * possible.length));
     	}
-		} while (this.gameCodes[code] || [])
+		} while (this.gameCodes[code] || (badWords.indexOf(code) != -1)) // while game code is taken or it has created a bad word
 
 
 		// should take in username, something like req.headers.username

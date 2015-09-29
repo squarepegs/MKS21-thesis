@@ -20,6 +20,19 @@ app.use(bodyParser.json());
 app.use('/client',express.static(__dirname + '/client'));
 app.use(morgan('dev'));
 
+//--------------------------
+// REFACTOR
+//--------------------------
+app.use('/teacher', express.static(__dirname+ '/client/teacher'));
+app.use('/student', express.static(__dirname+ '/client/student'));
+
+//--------------------------
+// END REFACTOR
+//--------------------------
+
+
+app.use('/', express.static(__dirname + '/client'))
+
 app.get('/signup',
 	function(req, res){
 		// req.headers.username
@@ -88,20 +101,52 @@ module.exports = app;
 //Everything that requires Websockets lives INSIDE this callback.
 io.sockets.on('connection', function(socket) {
 
-// Buzz In
-	socket.on('buzz', function(studentBuzzer) {
-		console.log("ServerSide Student: ", studentBuzzer.name, "Room: ", studentBuzzer.room, "Timestamp:", studentBuzzer.timestamp);
-		io.emit('buzzResponse', ('buzzResponse recieved from server after ' + studentBuzzer.name + ' hit the buzzer at ' + studentBuzzer.timestamp + ' in ' + studentBuzzer.room));
-	}); 
+	// new game
+	socket.on('new-game', function(data){
+		var code = handler.gameMaker(data);
+		handler.games[code].owner = socket;
+		socket.emit('made-game', code);
+	});
 
-// get a Jeopardy question from the API. 
-	socket.on('new question', function(room) {
-		console.log('Next Question for:', room)
-	  // must use promises (or callbacks) for async API here. Should we include Q/bluebird? --bb
-		jeopardy.getQ(room, function(ques){ // calls to jService.js (see requires)
-			io.emit('sent question', (ques))
+	// when student joins
+	socket.on('student-join', function(data){
+		handler.games[data.code].students[data.username] = socket;
+		socket.emit('student-joined'); 
+		handler.games[data.code].owner.emit('update-list', Object.keys(
+			handler.games[data.code].students
+			))
+	});
+
+	socket.on('buzz', function(data){
+		handler.games[data.code].owner.emit('buzzed-in', {username:data.username, time: data.time});
+	});
+
+	socket.on('newQ', function(data){
+		jeopardy.getQ(function(ques){
+			handler.games[data.code].owner.emit('asked-question', ques);
+			for(var student in handler.games[data.code].students){
+				handler.games[data.code].students[student].emit('ask-question', ques);
+			}
 		});
-	}); 
+	});
+
+
+
+
+// // Buzz In
+// 	socket.on('buzz', function(studentBuzzer) {
+// 		console.log("ServerSide Student: ", studentBuzzer.name, "Room: ", studentBuzzer.room, "Timestamp:", studentBuzzer.timestamp);
+// 		io.emit('buzzResponse', ('buzzResponse recieved from server after ' + studentBuzzer.name + ' hit the buzzer at ' + studentBuzzer.timestamp + ' in ' + studentBuzzer.room));
+// 	}); 
+
+// // get a Jeopardy question from the API. 
+// 	socket.on('new question', function(room) {
+// 		console.log('Next Question for:', room)
+// 	  // must use promises (or callbacks) for async API here. Should we include Q/bluebird? --bb
+// 		jeopardy.getQ(room, function(ques){ // calls to jService.js (see requires)
+// 			io.emit('sent question', (ques))
+// 		});
+// 	}); 
 
 
 // sockets callback end

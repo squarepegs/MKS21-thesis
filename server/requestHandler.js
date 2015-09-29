@@ -2,9 +2,9 @@ var models = require('./models.js');
 // var auth  = require ('./auth.js');
 
 module.exports = {
-	gameCodes: {"empty":"empty"}, //lets lines 20/21 be written very cleanly
+	games: {"empty":"empty"}, //lets lines 20/21 be written very cleanly
 
-	gameMaker: function(req, res){
+	gameMaker: function(data){
 		// this works! type this in the terminal:
 		//// curl -X POST --header "username: billy" localhost:8000/newGame
 		//// you will get get back a game code.
@@ -23,24 +23,24 @@ module.exports = {
       for( var i=0; i < 4; i++ ){
       code += possible.charAt(Math.floor(Math.random() * possible.length));
     	}
-		} while (this.gameCodes[code] || (badWords.indexOf(code) != -1)) // while game code is taken or it has created a bad word
+		} while (this.games[code] || (badWords.indexOf(code) != -1)) // while game code is taken or it has created a bad word
 
 
 		// should take in username, something like req.headers.username
 		// and make that user the only one able to access the game-dash
-		var username = req.headers.username;
+		var username = data.username;
 		// set that code to that username in our dictionary of active games.
-		this.gameCodes[code] = username;
+		this.games[code] = {owner:'', students:{}};
 		console.log("created gamecodes: " + code + ", " + username);
 		console.log("current gameCodes: ");
-		console.log(this.gameCodes);
-		res.send("your gamecode is " + code + ", and username of owner is: " + username);
+		console.log(this.games);
+		return code
 	},
 
 	endGame: function(req, res){
 		// need to think about all the things to happen here.
 		// client side saving, or server side saving of stats?
-		delete gameCodes[req.headers.code];
+		delete games[req.headers.code];
 	},
 
 	signup: function(req, res){

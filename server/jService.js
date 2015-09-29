@@ -7,7 +7,7 @@ module.exports = {
 // JSERVICE (Jeopardy API)
 //--------------------------------
 
-getQ: function(room, socketCallback){
+getQ: function(socketCallback){
 
 	request('http://jservice.io/api/random', function (error, response, body) {
 		console.log("getJeopardyQ being called")
@@ -21,7 +21,6 @@ getQ: function(room, socketCallback){
 	    // END DEBUG CODE
 
 	    var formattedQues      = {}; // yeah, yeah, I know, but I think this makes cleaner code than using a literal -- bb
-	    formattedQues.room     = room;
 	    formattedQues.category = ques.category.title;
 	    formattedQues.value    = ques.value;
 	    formattedQues.question = ques.question;

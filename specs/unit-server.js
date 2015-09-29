@@ -1,97 +1,53 @@
 var request = require('supertest')
+	,	should = require('should')
   , express = require('express')
-  , bodyParser = require('body-parser');
+  , bodyParser = require('body-parser')
+  , io = require('socket.io-client')
+  ,	should = require('should')
+
+var socketURL = 'http://0.0.0.0:5000';
+
+var options ={
+  transports: ['websocket'],
+  'force new connection': true
+};
+
+var student1 = {'name':'Ariel'};
+var student2 = {'name':'Bertie'};
+var student3 = {'name':'Charlie'};
 
 describe('Basic server', function(){
 
-var app = require('../server.js');
+	it('Should broadcast new user to all users', function(done){
+		
+		var numUsers = 0;
 
+	  var client1 = io.connect(socketURL, options);
 
-it('landing should accept GET requests', function (done){
-		console.log('inside test suite')
-		request(app)
-	  .get('/')
-	  .expect(200)
-	  .end(function (err, res){
-	    if (err) throw err;
-	    done();
+	  client1.on('connect', function(data){
+	    client1.emit('connection name', student1);
+
+	    client1.on('new user', function(usersName){
+	    numUsers += 1;
+			if(numUsers === 2){
+	      usersName.should.equal(student2.name + " has joined");
+	      client1.disconnect();
+	      done();
+	    }
 	  });
-	});
 
-//main dash route test
+	    /* Since first client is connected, we connect
+	    the second client. */
+	    var client2 = io.connect(socketURL, options);
 
-	it('/main-dash should accept GET requests', function (done){
-		request(app)
-		.get('/main-dash')
-		.expect(200)
-		.end(function(err, res){
-		  if (err) return done(err);
-		  done();
-		});
-	});
+	    client2.on('connect', function(data){
+	      client2.emit('connection name', student2);
+	    });
 
-	it('/main-dash should accept POST requests', function (done){
-		request(app)
-		.get('/main-dash')
-		.expect(200)
-		.end(function(err, res){
-		    if (err) return done(err);
-		    done();
-		});
-	});
-
-//TO DO: student:code socket test
-
-
-//game-dash:code route test
-
-	it('/game-dash:code should accept POST requests', function (done){
-		request(app)
-		.post('/game-dash:code')
-		.expect(201)
-		.end(function(err, res){
-			if (err) return done(err);
-			done();
-		});
-	});
-
-	it('/game-dash:code should accept GET requests', function (done){
-		request(app)
-		.get('/game-dash:code')
-		.expect(200)
-		.end(function(err, res){
-			if (err) return done(err);
-			done();
-		});
-	});
-
-//TO FINISH POST MVP: 404 for non routes; auth check
-
-	xit('should return 404 for non-routes', function (done){
-		request(app)
-		.get('/garblegarble')
-		.expect(404)
-		.end(function (err, res){
-			if(err) return done(err);
-			done();
-		});
-	});
-
-	xit('should return only allow authorized users', function (done){
-		request(app)
-		.get('/')
-	})
-
-	xit('should return a parseable JSON obj with question and answer', function (done){
-		 request(app)
-		 .get('/')
-		 .expect(function (res){
-		 	res.body.question = 'Who done it?',
-		 	res.body.answer = res.body.answer.toUpperCase();
-		 })
-		 .expect(200, {
-		 	question: 'Who done it?',
-		 	answer: 'TOBI'
-		 }, done)
+	    client2.on('new user', function(usersName){
+	      usersName.should.equal(student1.name + " has joined");
+	      client2.disconnect();
+	    });
+	  });	  
 	});
 });

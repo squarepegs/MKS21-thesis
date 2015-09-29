@@ -33,6 +33,8 @@
     "jest": "^0.1.40",
     "jest-cli": "^0.5.8",
     "mocha": "^2.3.3",
+    "should": "^7.1.0",
+    "socket.io-client": "^1.3.7",
     "supertest": "^1.1.0"
   },
   "jest": {

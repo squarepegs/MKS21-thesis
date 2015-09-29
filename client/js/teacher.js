@@ -1,10 +1,24 @@
 //socket Emit functionality
 var socket = io();
+window.jeopardy = {};
+
+var sortByTime = function(a,b){
+  if (a.time < b.time) return 1;
+  else if (a.time > b.time) return -1;
+  else return 0;
+};
+
+
+
+//
+// REACT COMPONENTS:
+//
+
 
 var Dashboard = React.createClass({
   render:function(){
     return (
-    <div> 
+    <div>
       <QA />
       <NewQ />
       <BuzzedInList />
@@ -16,7 +30,7 @@ var Dashboard = React.createClass({
 
 var QA = React.createClass({
   render:function(){
-    io.on('newQ', function(data){
+    socket.on('asked-question', function(data){
       React.render(
         <div>
           <h4>Category: {data.category} - ${data.value}</h4>
@@ -28,37 +42,91 @@ var QA = React.createClass({
         )
     })
     return (
-    <div> 
+    <div>
       <h2 id="question"></h2>
     </div>
     )
   },
 })
 
+var BuzzedInList = React.createClass({
+  buzzedIn: [],
+  render:function(){
+    socket.on('asked-question', function(data){
+      this.buzzedIn = [];
+    })
+    socket.on('buzzed-in', function(data){
+      this.buzzedIn.push(data.username);
+      this.buzzedIn.sort(sortByTime);
+
+      React.render(
+        <div>
+          <ol>{
+            this.buzzedIn.map(function(student){
+              return (<li>{student.name}</li>)
+            })
+          }</ol>
+        </div>,document.getElementById('buzzedIn')
+        )
+    })
+    return (
+    <div>
+      <h2>Buzzed in:</h2>
+      <p id="buzzedIn"></p>
+    </div>
+    )
+  },
+})
+
+var ActiveList = React.createClass({
+  activeList: [],
+  render:function(){
+    socket.on('update-list', function(data){
+      this.activeList = data;
+      React.render(
+        <div>
+          <ul>{
+            this.activeList.map(function(student){
+              return (<li>{student.name}</li>)
+            })
+          }</ul>
+        </div>,document.getElementById('activeList')
+      )
+    })
+    return (
+    <div>
+      <h2>Active Players:</h2>
+      <p id="activeList"></p>
+    </div>
+    )
+  },
+})
+
+
 var NewQ = React.createClass({
   render:function(){
     return (
-    <div> 
-      <button onClick={this.clickHandler}/>
+    <div>
+      <button onClick={this.clickHandler}> new question </button>
     </div>
     )
   },
   clickHandler: function(){
-    io.emit('new-Q',code)
+    socket.emit('newQ',{code: window.jeopardy.code});
   }
 })
 
 var Main = React.createClass({
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
-    io.emit('new-game',{username:window.jeopardy.username});
+    socket.emit('new-game',{username:window.jeopardy.username});
     React.render(
       <Dashboard />
       ,document.getElementById('main'))
   },
   render: function(){
-    io.on('made-game', function(data){
-      code = data;
+    socket.on('made-game', function(data){
+      window.jeopardy.code = data.code;
       React.render(<Dashboard />, document.getElementById('main'));
     })
     return (
@@ -71,31 +139,6 @@ var Main = React.createClass({
     )
   }
 })
-
-var SubmitButton = React.createClass({
-  getInitialState: function() {
-    return {buzzed: false};
-  },
-
-  handleClick: function(event){
-    window.jeopardy = {};
-    window.jeopardy.username = $('#username').val();
-    window.jeopardy.password = $('#password').val();
-    $('#username').val('');
-    $('#password').val('');
-    React.render(<p>'Logging In'</p>, document.getElementById('status'))
-    window.location.href = '/dashboard/' + window.jeopardy.username;
-  },
-  render: function() {
-    return (
-      <div className="login">
-        <p onClick={this.handleClick}>
-         <a className="btn btn-success btn-lg buzzer" href="#" role="button">Go To My Dashboard</a>
-      </p>  
-      </div>
-    );
-  }
-});
 
 // initial page render
 React.render(

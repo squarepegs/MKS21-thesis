@@ -65,7 +65,7 @@ var Main = React.createClass({
       <div>
         <label>Username: </label>
         <input type="text" className="input" id="username" />
-        <p onClick={this.handleClick}>new game</p>
+        <button onClick={this.handleClick}>START NEW GAME</button>
         <div id="status"></div>
       </div>
     )

@@ -39,7 +39,7 @@ var Buzzer = React.createClass({
 var Main = React.createClass({
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
-    window.jeopardy.code     = $('#code').val();
+    window.jeopardy.code     = $('#code').val().toUpperCase();
     socket.emit('student-join',{username:window.jeopardy.username, code:window.jeopardy.code});
     React.render(
       <div>

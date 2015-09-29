@@ -55,6 +55,11 @@ var BuzzedInList = React.createClass({
   render:function(){
     socket.on('asked-question', function(data){
       this.buzzedIn = [];
+      React.render(
+        <div>
+          Waiting for buzz...
+        </div>,document.getElementById('buzzedIn')
+        )
     })
     socket.on('buzzed-in', function(data){
       if (this.buzzedIn.indexOf(data.username) === -1){

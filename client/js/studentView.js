@@ -4,15 +4,15 @@ var socket = io();
 
 var buzzClientAppend = function(packet){
     console.log('Student data received: ', JSON.stringify(packet));
-  }
+  };
 
 //listeners
 socket.on('buzzResponse', function (data){
   buzzClientAppend(data);
-})
+});
 
 socket.on('sent question', function (data){
-  console.log("Your question is", data, JSON.stringify(data)) // DEBUG CODE, REMOVE BEFORE PRODUCTION
+  console.log("Your question is", data, JSON.stringify(data)); // DEBUG CODE, REMOVE BEFORE PRODUCTION
 
   React.render(
     <div className="question">
@@ -31,7 +31,7 @@ var student = {name: 'Billy'}
 var buzzClientEmit = function(student){
   console.log('clientside -- Student: ', JSON.stringify(student))
   socket.emit('buzz', student);  // right now we're using the buzzer for multiple testing features. Will change -- bb
-  socket.emit('new question', student.room) 
+  socket.emit('new question', student.room)
 }
 
 
@@ -88,7 +88,7 @@ var Buzzer = React.createClass({
       <div className="buzz">
         <p onClick={this.handleClick}>
          <a className="btn btn-success btn-lg buzzer" href="#" role="button">{text}</a>
-      </p>  
+      </p>
       </div>
     );
   }
@@ -98,11 +98,8 @@ var Buzzer = React.createClass({
 React.render(
   <div>
     <Roomcode />
-    <Studentquestion /> 
+    <Studentquestion />
     <Buzzer />
   </div>,
   document.getElementById('student')
 );
-
-
-

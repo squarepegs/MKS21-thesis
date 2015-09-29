@@ -115,6 +115,7 @@ io.sockets.on('connection', function(socket) {
     handler.games[data.code].owner.emit('update-list', Object.keys(
       handler.games[data.code].students
     ));
+    console.log(handler.games[data.code].students);
   });
 
   socket.on('buzz', function(data){

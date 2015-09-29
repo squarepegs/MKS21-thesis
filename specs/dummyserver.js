@@ -17,16 +17,14 @@ io.sockets.on('connection', function (socket){
 		clients[user.name] = socket;
 		io.sockets.emit('new user', userName + " has joined")
 	});
-	// socket.on('code', function (code){
-	// 	io.sockets.emit('code', code)
-	// })
-	socket.on('code', function (code){
-		io.sockets.emit('code', code);
+
+	socket.on('message', function (msg){
+		io.sockets.emit('message', msg);
 	});
 
-	socket.on('private code', function (code){
-		fromCode = {from:userName, txt:code.text}
-		clients[code.to].emit('private code', fromCode);
+	socket.on('private message', function (msg){
+		fromMessage = {from:userName, txt:msg.text}
+		clients[msg.to].emit('private message', fromMessage);
 	})
 
 	socket.on('disconnect', function (){

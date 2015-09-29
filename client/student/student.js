@@ -1,6 +1,26 @@
 var socket = io();
 window.jeopardy = {};
 
+var QA = React.createClass({
+  render:function(){
+    socket.on('ask-question', function(data){
+      React.render(
+        <div>
+          <h4>Category: {data.category} - ${data.value}</h4>
+          <h3>Question:</h3>
+          <h2>{data.question}</h2>
+        </div>,document.getElementById('question')
+        )
+    })
+    return (
+    <div>
+      <h2 id="question"></h2>
+    </div>
+    )
+  },
+})
+
+
 var Buzzer = React.createClass({
   render:function(){
     return (
@@ -22,7 +42,10 @@ var Main = React.createClass({
     window.jeopardy.code     = $('#code').val();
     socket.emit('student-join',{username:window.jeopardy.username, code:window.jeopardy.code});
     React.render(
-      <Buzzer />
+      <div>
+        <QA />
+        <Buzzer />
+      </div>
       ,document.getElementById('main'))
   },
   render: function(){

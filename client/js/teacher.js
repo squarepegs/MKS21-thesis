@@ -19,6 +19,7 @@ var Dashboard = React.createClass({
   render:function(){
     return (
     <div>
+      <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
       <QA />
       <NewQ />
       <BuzzedInList />
@@ -56,16 +57,20 @@ var BuzzedInList = React.createClass({
       this.buzzedIn = [];
     })
     socket.on('buzzed-in', function(data){
-      this.buzzedIn.push(data.username);
-      this.buzzedIn.sort(sortByTime);
+      if (this.buzzedIn.indexOf(data.username) === -1){
+        this.buzzedIn.push(data.username);
+        this.buzzedIn.sort(sortByTime);
+      }
+      console.log('after this.buzzedIn', this.buzzedIn, "data", data)
+
+      var elements = [];
+      for(var i = 0; i < this.buzzedIn.length; i++){
+        elements.push(<li>{this.buzzedIn[i]}</li>);
+      }
 
       React.render(
         <div>
-          <ol>{
-            this.buzzedIn.map(function(student){
-              return (<li>{student.name}</li>)
-            })
-          }</ol>
+          <ol>{elements}</ol>
         </div>,document.getElementById('buzzedIn')
         )
     })
@@ -83,13 +88,15 @@ var ActiveList = React.createClass({
   render:function(){
     socket.on('update-list', function(data){
       this.activeList = data;
+      console.log("this.activeList, data: ", this.activeList, data)
+      var elements = [];
+      for(var i = 0; i < this.activeList.length; i++){
+        elements.push(<li>{this.activeList[i]}</li>);
+      }
+      
       React.render(
         <div>
-          <ul>{
-            this.activeList.map(function(student){
-              return (<li>{student.name}</li>)
-            })
-          }</ul>
+          <ul>{elements}</ul>
         </div>,document.getElementById('activeList')
       )
     })

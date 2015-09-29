@@ -125,6 +125,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('newQ', function(data){
     jeopardy.getQ(function(ques){
       handler.games[data.code].owner.emit('asked-question', ques);
+      delete ques.answer;
       for(var student in handler.games[data.code].students){
         handler.games[data.code].students[student].emit('ask-question', ques);
       }

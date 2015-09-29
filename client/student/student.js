@@ -38,6 +38,7 @@ var Main = React.createClass({
   },
   render: function(){
     socket.on('you-joined', function(){
+      console.log("you joined!");
       React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
     })
     socket.on('no-game', function(){alert("No such game. Please try another game code.")})

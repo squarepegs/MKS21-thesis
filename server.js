@@ -110,14 +110,17 @@ io.sockets.on('connection', function(socket) {
 
   // when student joins
   socket.on('student-join', function(data){
-    if (!handler.games[data.code]) socket.emit('no-game');
+    if (!handler.games[data.code]) {
+      console.log("tried to enter a non existant game: " + data.code);
+      socket.emit('no-game');
+    }
     else {
       handler.games[data.code].students[data.username] = socket;
-      socket.emit('student-joined');
+      socket.emit('you-joined');
       handler.games[data.code].owner.emit('update-list', Object.keys(
         handler.games[data.code].students
       ));
-      console.log(handler.games[data.code].students);
+      console.log(Object.keys(handler.games[data.code].students));
     }
   });
 

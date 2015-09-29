@@ -12,14 +12,9 @@ var QA = React.createClass({
         </div>,document.getElementById('question')
         )
     })
-    return (
-    <div>
-      <h2 id="question"></h2>
-    </div>
-    )
+    return ( <div id="question"></div> )
   },
 })
-
 
 var Buzzer = React.createClass({
   render:function(){
@@ -35,23 +30,17 @@ var Buzzer = React.createClass({
   }
 })
 
-
 var Main = React.createClass({
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
     window.jeopardy.code     = $('#code').val().toUpperCase();
     socket.emit('student-join',{username:window.jeopardy.username, code:window.jeopardy.code});
-    React.render(
-      <div>
-        <QA />
-        <Buzzer />
-      </div>
-      ,document.getElementById('main'))
   },
   render: function(){
-    socket.on('you-joined', function(data){
-      React.render(<Dashboard />, document.getElementById('main'));
+    socket.on('you-joined', function(){
+      React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
     })
+    socket.on('no-game', function(){alert("No such game. Please try another game code.")})
     return (
       <div>
         <label>Username: </label>

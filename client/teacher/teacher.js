@@ -2,6 +2,10 @@
 var socket = io();
 window.jeopardy = {};
 
+socket.on('error', function(){
+  alert("there was a server error. Please try starting a new session.");
+});
+
 var sortByTime = function(a,b){
   if (a.time < b.time) return 1;
   else if (a.time > b.time) return -1;

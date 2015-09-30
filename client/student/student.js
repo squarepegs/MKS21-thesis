@@ -1,18 +1,28 @@
 var socket = io();
-window.jeopardy = {};
+window.jeopardy = {buzzed:false, question:{}};
 
 var QA = React.createClass({
   render:function(){
+    React.render(
+      <div>
+        <h4>Category: {window.jeopardy.question.category} - ${window.jeopardy.question.value}</h4>
+        <h3>Question:</h3>
+        <h2>{window.jeopardy.question.question}</h2>
+        <p>{window.jeopardy.buzzed}</p>
+      </div>, document.getElementById('question')
+    )
+  }
+});
+
+var Waiting = React.createClass({
+  render:function(){
     socket.on('ask-question', function(data){
-      React.render(
-        <div>
-          <h4>Category: {data.category} - ${data.value}</h4>
-          <h3>Question:</h3>
-          <h2>{data.question}</h2>
-        </div>,document.getElementById('question')
-        )
+      window.s = 4;
+      window.jeopardy.buzzed = false;
+      window.jeopardy.question = data;
+      React.render( <QA />, document.getElementById('question') )
     })
-    return ( <div id="question"></div> )
+    return ( <div id="question">Waiting for new question...</div> )
   },
 })
 
@@ -25,8 +35,8 @@ var Buzzer = React.createClass({
     )
   },
   clickHandler: function(){
-    //need to make it so they can only buzz in once per question
     socket.emit('buzz',{code:window.jeopardy.code, time:new Date(), username:window.jeopardy.username});
+    window.jeopardy.buzzed = true;
   }
 })
 
@@ -34,12 +44,13 @@ var Main = React.createClass({
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
     window.jeopardy.code     = $('#code').val().toUpperCase();
-    socket.emit('student-join',{username:window.jeopardy.username, code:window.jeopardy.code});
+    if (window.jeopardy.username.length < 1) alert("Please enter a username.");
+    else socket.emit('student-join',{username:window.jeopardy.username, code:window.jeopardy.code});
   },
   render: function(){
     socket.on('you-joined', function(){
       console.log("you joined!");
-      React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
+      React.render( <div> <Waiting /> <Buzzer /> </div>, document.getElementById('main') )
     })
     socket.on('no-game', function(){alert("No such game. Please try another game code.")})
     return (

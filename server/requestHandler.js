@@ -18,12 +18,9 @@ module.exports = {
     // If the random generator runs into one of thses, it'll just reroll.
     var badWords = ['NGGR', 'NGRR', 'NNGR', 'CVNT', 'FVCK', 'SHJT'];
 
-    // moved this variable outside of the do loop...
-    // might introduce bug, but produces lint errors when placed inside;
-    // genuinely unsure of whether a do/while loop is ideal here, may
-    // need total refactor (or may now be fine).
-    var code = "";
+    var code;
     do {
+      code = "";
       for( var i=0; i < 4; i++ ){
       code += possible.charAt(Math.floor(Math.random() * possible.length));
       }

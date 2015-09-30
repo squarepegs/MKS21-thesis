@@ -1,11 +1,14 @@
-var request = require('supertest')
-	,	should = require('should')
-  , express = require('express')
+var request    = require('supertest')
+	,	should     = require('should')
+  , express    = require('express')
   , bodyParser = require('body-parser')
-  , io = require('socket.io-client')
-  ,	should = require('should')
+  , io         = require('socket.io-client')
+  ,	should     = require('should')
+  , request    = require('supertest')
+  , server     = require('../server.js')
 
-var socketURL = 'http://0.0.0.0:5000';
+var socketURL = 'http://0.0.0.0:8000';
+
 
 var options ={
   transports: ['websocket'],
@@ -18,9 +21,24 @@ var student3 = {'name':'Charlie'};
 
 describe('Basic server', function(){
 
-//test for broadcast of one user: one logs in, server emits a new user connection.
+//test for server POST on /signup
+  it('/signup should accept POST requests', function (done){
+    request(server)
+      .post('/data')
+      .expect(201, done)
+  });
 
-  it('Should broadcast new user once they connect',function(done){
+//test for server GET call from /data
+
+  it('/data should accept GET requests', function (done){
+    request(server)
+      .get('/data')
+      .expect(200, done)
+  });
+
+//test for broadcast of one game: 
+
+  xit('Should broadcast new user once they connect',function(done){
     var client = io.connect(socketURL, options);
 
     client.on('connect',function(data){
@@ -37,7 +55,7 @@ describe('Basic server', function(){
 
 	//test for two users: one user logs in, second user emits login and first user waits for second user to emit new log in. 
 
-	it('Should broadcast new user to all users', function(done){
+	xit('Should broadcast new user to all users', function(done){
 		
 		var numUsers = 0;
 
@@ -70,7 +88,9 @@ describe('Basic server', function(){
 	  });	  
 	});
 
-	  it('Should be able to broadcast messages', function (done){
+  //one client broadcasts one message to all clients
+
+	  xit('Should be able to broadcast messages', function (done){
     var client1, client2, client3;
     var message = 'Hello World';
     var messages = 0;

@@ -37,6 +37,8 @@ app.post('/signup',
 app.get('/data',
   function(req, res){
     // db.getStudentData(req.headers.token)
+  console.log('calling GET on /data')
+  res.send(200)
   }
 );
 

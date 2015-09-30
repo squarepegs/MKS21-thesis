@@ -113,7 +113,7 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('makeTeacher', function(data){
     console.log(data);
-    db.createTeacher(data.login, data.email, data.hashedPassword, data.firstName, data.lastName)
+    db.teachers.createTeacher(data.login, data.email, data.hashedPassword, data.firstName, data.lastName)
       .then(function(stuff){
         console.log(stuff);
       })

@@ -8,12 +8,9 @@ var sortByTime = function(a,b){
   else return 0;
 };
 
-
-
 //
 // REACT COMPONENTS:
 //
-
 
 var Dashboard = React.createClass({
   render:function(){
@@ -98,7 +95,7 @@ var ActiveList = React.createClass({
       for(var i = 0; i < this.activeList.length; i++){
         elements.push(<li>{this.activeList[i]}</li>);
       }
-      
+
       React.render(
         <div>
           <ul>{elements}</ul>

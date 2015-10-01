@@ -30,13 +30,15 @@ app.post('/signup',
     // req.headers.username
     // req.headers.password
     console.log("signup!");
-    res.send(200);
+    res.send(201);
   }
 );
 
 app.get('/data',
   function(req, res){
     // db.getStudentData(req.headers.token)
+  console.log('calling GET on /data')
+  res.send(200)
   }
 );
 

@@ -21,55 +21,89 @@ var options ={
 };
 
 var teacher1 = {'username':'Mrs. Landingham'};
-var teacher2 = {'username': 'Mr. Socket', 'code':'1234'}
-var student1 = {'username':'Bertie', 'code': '1234'};
+var teacher2 = {'username': 'Mr. Socket'};
+var teacher3 = {'username': 'Ms. Lonely'};
+var student1 = {'username':'Bertie'};
 var student2 = {'username':'Charlie'};
 var student3 = {'username':'Danny'};
 var student4 = {'username':'Edward'};
 
 
-describe('Basic server', function(){
+describe('Socket integration', function(){
 
-//test for server POST on /signup
-  it('/signup should accept POST requests', function (done){
-    request(server)
-      .post('/signup')
-      .expect(201, done)
-  });
 
-//test for server GET call from /data
 
-  it('/data should accept GET requests', function (done){
-    request(server)
-      .get('/data')
-      .expect(200, done)
-  });
+  it('Should allow multiple clients to create different games' ,function (done){
+    var client1 = io.connect(socketURL, options);
+    var client2 = io.connect(socketURL, options);
+    var client3 = io.connect(socketURL, options);
 
-//test for broadcast of creating a game: 
+    var stdclient = io.connect(socketURL, options);
 
-  it('Should be able to create a game with an owner and emit a code' ,function (done){
-    var teacher = io.connect(socketURL, options);
-
-    teacher.emit('new-game', teacher1);
+    //first teacher signs in
+    client1.emit('new-game', teacher1);
     
-    teacher.on('made-game', function (game){
-      game.should.have.property('code').which.is.a.String();
-      handler.games.should.have.property(game.code);
+    client1.on('made-game', function (game){
+      student1.code = game.code;
+    
+    //student signs in
+      stdclient.emit('student-join', student1);
+    
+    //handler of first game should have code property
+      expect(handler.games).to.have.property(student1.code);
 
-      handler.games[game.code].owner.should.exist;
-
-      handler.games[game.code].owner.should.not.have.property('students');
+    //second teacher signs in, creates new game
+      client2.emit('new-game', teacher2);
       
-      teacher.disconnect();
-      done();
+      client2.on('made-game', function (game){
+    
+      //there must be two different codes
+        expect(game.code).to.not.equal(student1.code);
+      
+      //there should be two diff. handlers          
+        expect(handler.games[student1.code]).to.not.equal(handler.games[game.code])
+
+      //student 1 should still be in old game
+        handler.games[student1.code].students.should.have.property(student1.username);
+
+      //student1 should not be in new game  
+        handler.games[game.code].students.should.not.have.property(student1.username);
+
+      //new client creates a game and student signs off, client 1 signs off  
+        client3.emit('new-game', teacher3);
+      
+        var oldCode = game.code; 
+        client1.disconnect();  
+        stdclient.disconnect();
+      
+      client3.on('made-game', function (game){
+      
+      //student joins into new game
+        student1.code = game.code;
+        stdclient.emit('student-join', student1);
+      
+      //check that oldCode is still usable and different than new game
+        expect(oldCode).to.exist;
+        expect(oldCode).to.not.equal(game.code);
+      //handlers must be different again
+        expect(handler.games[game.code]).to.not.equal(handler.games[oldCode]);
+        
+        client2.disconnect();
+        client3.disconnect();
+        stdclient.disconnect();
+        done();
+      });      
+      });
     });
   });
 
 
-  it('Should allow students to join a created game', function (done){
+  it('Should allow student clients to disconnect without disconnecting any other clients', function (done){
     
     var teacher = io.connect(socketURL, options);
-    var student = io.connect(socketURL, options);
+    var client1 = io.connect(socketURL, options);
+    var client2 = io.connect(socketURL, options);
+    var client3 = io.connect(socketURL, options);
 
       teacher.emit('new-game', teacher1);
     
@@ -195,23 +229,3 @@ describe('Basic server', function(){
     });    
   });
 });
-
-  // xit('Should allow multiple students to join a game', function (done){
-  //   var teacher = io.connect(socketURL, options);
-  //   var client2 = io.connect(socketURL, options);
-  //   var client3 = io.connect(socketURL, options);
-  //   var client4 = io.connect(socketURL, options);
-
-  //   teacher.emit('new-game', teacher1);
-  //   client2.emit('student-join', student2);
-  //   client3.emit('student-join', student3);
-  //   client4.emit('student-join', student4);
-
-    
-  // });
-  
-
-	//test for two users: one user logs in, second user emits login and first user waits for second user to emit new log in. 
-
-
-

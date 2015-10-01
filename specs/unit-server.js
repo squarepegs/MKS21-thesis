@@ -4,8 +4,13 @@ var request    = require('supertest')
   , bodyParser = require('body-parser')
   , io         = require('socket.io-client')
   ,	should     = require('should')
+  , chai       = require('chai')
+  , expect     = chai.expect
+  , assert     = chai.assert
+  , sinon      = require('sinon')
   , request    = require('supertest')
   , server     = require('../server.js')
+  , handler    = require('../server/requestHandler.js')
 
 var socketURL = 'http://0.0.0.0:8000';
 
@@ -15,16 +20,20 @@ var options ={
   'force new connection': true
 };
 
-var student1 = {'name':'Ariel'};
-var student2 = {'name':'Bertie'};
-var student3 = {'name':'Charlie'};
+var teacher1 = {'username':'Mrs. Landingham'};
+var teacher2 = {'username': 'Mr. Socket'}
+var student1 = {'username':'Bertie', 'code': '1234'};
+var student2 = {'username':'Charlie'};
+var student3 = {'username':'Danny'};
+var student4 = {'username':'Edward'};
+
 
 describe('Basic server', function(){
 
 //test for server POST on /signup
   it('/signup should accept POST requests', function (done){
     request(server)
-      .post('/data')
+      .post('/signup')
       .expect(201, done)
   });
 
@@ -36,94 +45,131 @@ describe('Basic server', function(){
       .expect(200, done)
   });
 
-//test for broadcast of one game: 
+//test for broadcast of creating a game: 
 
-  xit('Should broadcast new user once they connect',function(done){
-    var client = io.connect(socketURL, options);
+  it('Should be able to create a game with an owner and emit a code' ,function (done){
+    var teacher = io.connect(socketURL, options);
 
-    client.on('connect',function(data){
-      client.emit('connection name', student1);
-    });
+    teacher.emit('new-game', teacher1);
+    
+    teacher.on('made-game', function (game){
+      game.should.have.property('code').which.is.a.String();
+      handler.games.should.have.property(game.code);
 
-    client.on('new user',function(usersName){
-      usersName.should.be.type('string');
-      usersName.should.equal(student1.name + " has joined");
-      client.disconnect();
-      done(); 
+      handler.games[game.code].owner.should.exist;
+
+      handler.games[game.code].owner.should.not.have.property('students');
+      
+      teacher.disconnect();
+      done();
     });
   });
+
+  it('Should allow students to join a created game', function (done){
+    
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+
+      teacher.emit('new-game', teacher1);
+    
+      teacher.on('made-game', function (game){
+        var room = game.code;
+        student2.code = room;
+        student.emit('student-join', student2);
+        
+        handler.games.should.have.property(room);
+
+        handler.games[room].should.have.property('students');
+        });
+
+      teacher.on('update-list', function (keys){
+        keys[0].should.equal('Charlie');
+        teacher.disconnect();
+        student.disconnect();
+        done();
+      });     
+  });
+
+  it('Should not allow students to join non-existent games', function (done){
+
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+    
+    teacher.emit('new-game', teacher1);
+    student.emit('student-join', student1);
+    
+    teacher.on('made-game', function (data){
+      
+      student1.code.should.equal('1234');
+      handler.games[data.code].should.exist;
+      expect(handler.games[student1.code]).to.not.exist;
+      student.disconnect();
+      teacher.disconnect();
+      done();
+    });
+  });
+
+  it('Should brodcast buzzes of students in a room', function (done){
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+    
+    teacher.emit('new-game', teacher1);
+    teacher.on('made-game', function (game){
+      var room = game.code;
+      student2.code = room;
+      student.emit('student-join', student2);
+      student2.time = new Date();
+      student.emit('buzz', student2);
+    });
+    
+    teacher.on('buzzed-in', function (buzzed){
+      expect(handler.games[student2.code].owner).to.exist;
+      buzzed.username.should.equal(student2.username);
+      //test of should pass but it's failing; sockets seem to convert time as it passes through into a different string
+      expect(buzzed.time).to.equal(student2.time.toISOString());
+      buzzed.time.should.exist;
+      student.disconnect();
+      teacher.disconnect();
+      done();
+    });
+    
+  });
+
+  it('Should not broadcast buzzes of students in a non-existent room', function (done){
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+
+    teacher.emit('new-game', teacher1);
+    student.emit('student-join', student1);
+    
+    student1.time = new Date();
+    student.emit('buzz', student1);
+  
+    expect(handler.games['1234']).to.not.exist;
+
+    student.disconnect();
+    teacher.disconnect();
+    done();
+
+  });
+
+  // xit('Should allow multiple students to join a game', function (done){
+  //   var teacher = io.connect(socketURL, options);
+  //   var client2 = io.connect(socketURL, options);
+  //   var client3 = io.connect(socketURL, options);
+  //   var client4 = io.connect(socketURL, options);
+
+  //   teacher.emit('new-game', teacher1);
+  //   client2.emit('student-join', student2);
+  //   client3.emit('student-join', student3);
+  //   client4.emit('student-join', student4);
+
+    
+  // });
+  
 
 	//test for two users: one user logs in, second user emits login and first user waits for second user to emit new log in. 
 
-	xit('Should broadcast new user to all users', function(done){
-		
-		var numUsers = 0;
-
-	  var client1 = io.connect(socketURL, options);
-
-	  client1.on('connect', function(data){
-	    client1.emit('connection name', student1);
-
-	    client1.on('new user', function(usersName){
-	    numUsers += 1;
-			if(numUsers === 2){
-	      usersName.should.equal(student2.name + " has joined");
-	      client1.disconnect();
-	      done();
-	    }
-	  });
-
-	    /* Since first client is connected, we connect
-	    the second client. */
-	    var client2 = io.connect(socketURL, options);
-
-	    client2.on('connect', function(data){
-	      client2.emit('connection name', student2);
-	    });
-
-	    client2.on('new user', function(usersName){
-	      usersName.should.equal(student1.name + " has joined");
-	      client2.disconnect();
-	    });
-	  });	  
-	});
-
-  //one client broadcasts one message to all clients
-
-	  xit('Should be able to broadcast messages', function (done){
-    var client1, client2, client3;
-    var message = 'Hello World';
-    var messages = 0;
-
-    var checkMessage = function(client){
-      client.on('message', function (msg){
-        message.should.equal(msg);
-        client.disconnect();
-        messages++;
-        if(messages === 3){
-        messages.should.equal(3);  
-          done();
-        };
-      });
-    };
-
-    client1 = io.connect(socketURL, options);
-    checkMessage(client1);
-
-    client1.on('connect', function(data){
-      client2 = io.connect(socketURL, options);
-      checkMessage(client2);
-
-      client2.on('connect', function(data){
-        client3 = io.connect(socketURL, options);
-        checkMessage(client3);
-
-        client3.on('connect', function(data){
-          client2.send(message);
-        });
-      });
-    });
-  });
 
 
 });

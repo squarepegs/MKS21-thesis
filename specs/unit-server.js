@@ -192,11 +192,8 @@ describe('Basic server', function(){
         student.disconnect();
         done();
       })
-    });
-    
-  })
-
-
+    });    
+  });
 });
 
   // xit('Should allow multiple students to join a game', function (done){

@@ -66,6 +66,9 @@ var Main = React.createClass({
   }
 })
 
+//module exports for testing
+module.exports = Main
+
 // initial page render
 React.render(
   <div>

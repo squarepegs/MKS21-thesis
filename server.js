@@ -20,10 +20,12 @@ app.use(bodyParser.json());
 app.use('/client',express.static(__dirname + '/client'));
 app.use(morgan('dev'));
 
-app.use('/teacher', express.static(__dirname+ '/client/teacher'));
-app.use('/student', express.static(__dirname+ '/client/student'));
+app.use('/teacher', express.static(__dirname + '/client/teacher'));
+app.use('/student', express.static(__dirname + '/client/student'));
+app.use('/modules', express.static(__dirname + '/node_modules'));
+app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css/'));
 
-app.use('/', express.static(__dirname + '/client'));
+app.use('/', express.static(__dirname + '/client/landing_page'));
 
 app.post('/signup',
   function(req, res){

@@ -1,0 +1,43 @@
+.signin label {
+  font-size: 150%;
+}
+
+.signin input {
+  font-size: 150%;
+}
+
+.jep-panel{
+  padding: 2vh 4vw 2vh 4vw;
+  margin: 2vh 1vw 2vh 1vw;
+  max-height: 80vh;
+
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+
+.category{
+  font-family: 'Montserrat', 'Helvetica Neue', 'Helvetica', 'Arial', 'Sans';
+  text-align:center;
+  font-size:4vh;
+  padding: 0 0 3vh 0;
+}
+
+.question{
+  text-align:center;
+  font-family: 'Arvo', 'Georgia', 'Times New Roman', 'Serif';
+  font-size:30px;
+  line-height:30px;
+  font-weight:700;
+}
+
+.buzzer .btn-large {
+  margin: 2vh 5vw 2vh 5vw;
+  width: 90vw;
+
+.buzzer a{
+  text-align:center;
+  font-size:5vh;
+  padding:3vh 5vw 3vh 5vw;
+  height:15vh;
+}

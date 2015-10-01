@@ -56,47 +56,120 @@ describe('Basic server', function(){
       game.should.have.property('code').which.is.a.String();
       handler.games.should.have.property(game.code);
 
-	    client2.on('new user', function(usersName){
-	      usersName.should.equal(student1.name + " has joined");
-	      client2.disconnect();
-	    });
-	  });	  
-	});
+      handler.games[game.code].owner.should.exist;
 
-	  it('Should be able to broadcast messages', function (done){
-    var client1, client2, client3;
-    var message = 'Hello World';
-    var messages = 0;
+      handler.games[game.code].owner.should.not.have.property('students');
+      
+      teacher.disconnect();
+      done();
+    });
+  });
+})
 
-    var checkMessage = function(client){
-      client.on('message', function (msg){
-        message.should.equal(msg);
-        client.disconnect();
-        messages++;
-        if(messages === 3){
-        messages.should.equal(3);  
-          done();
-        };
-      });
-    };
+  it('Should allow students to join a created game', function (done){
+    
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
 
-    client1 = io.connect(socketURL, options);
-    checkMessage(client1);
+      teacher.emit('new-game', teacher1);
+    
+      teacher.on('made-game', function (game){
+        var room = game.code;
+        student2.code = room;
+        student.emit('student-join', student2);
+        
+        handler.games.should.have.property(room);
 
-    client1.on('connect', function(data){
-      client2 = io.connect(socketURL, options);
-      checkMessage(client2);
-
-      client2.on('connect', function(data){
-        client3 = io.connect(socketURL, options);
-        checkMessage(client3);
-
-        client3.on('connect', function(data){
-          client2.send(message);
+        handler.games[room].should.have.property('students');
         });
-      });
+
+      teacher.on('update-list', function (keys){
+        keys[0].should.equal('Charlie');
+        teacher.disconnect();
+        student.disconnect();
+        done();
+      });     
+  });
+
+  it('Should not allow students to join non-existent games', function (done){
+
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+    
+    teacher.emit('new-game', teacher1);
+    student.emit('student-join', student1);
+    
+    teacher.on('made-game', function (data){
+      
+      student1.code.should.equal('1234');
+      handler.games[data.code].should.exist;
+      expect(handler.games[student1.code]).to.not.exist;
+      student.disconnect();
+      teacher.disconnect();
+      done();
     });
   });
 
+  it('Should brodcast buzzes of students in a room', function (done){
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+    
+    teacher.emit('new-game', teacher1);
+    teacher.on('made-game', function (game){
+      var room = game.code;
+      student2.code = room;
+      student.emit('student-join', student2);
+      student2.time = new Date();
+      student.emit('buzz', student2);
+    });
+    
+    teacher.on('buzzed-in', function (buzzed){
+      expect(handler.games[student2.code].owner).to.exist;
+      buzzed.username.should.equal(student2.username);
+      //test of should pass but it's failing; sockets seem to convert time as it passes through into a different string
+      expect(buzzed.time).to.equal(student2.time.toISOString());
+      buzzed.time.should.exist;
+      student.disconnect();
+      teacher.disconnect();
+      done();
+    });
+    
+  });
 
-});
+  it('Should not broadcast buzzes of students in a non-existent room', function (done){
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+
+    teacher.emit('new-game', teacher1);
+    student.emit('student-join', student1);
+    
+    student1.time = new Date();
+    student.emit('buzz', student1);
+  
+    expect(handler.games['1234']).to.not.exist;
+
+    student.disconnect();
+    teacher.disconnect();
+    done();
+
+  });
+
+  // xit('Should allow multiple students to join a game', function (done){
+  //   var teacher = io.connect(socketURL, options);
+  //   var client2 = io.connect(socketURL, options);
+  //   var client3 = io.connect(socketURL, options);
+  //   var client4 = io.connect(socketURL, options);
+
+  //   teacher.emit('new-game', teacher1);
+  //   client2.emit('student-join', student2);
+  //   client3.emit('student-join', student3);
+  //   client4.emit('student-join', student4);
+
+    
+  // });
+  
+
+	//test for two users: one user logs in, second user emits login and first user waits for second user to emit new log in. 
+
+
+

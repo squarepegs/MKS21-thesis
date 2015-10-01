@@ -21,7 +21,7 @@ var options ={
 };
 
 var teacher1 = {'username':'Mrs. Landingham'};
-var teacher2 = {'username': 'Mr. Socket'}
+var teacher2 = {'username': 'Mr. Socket', 'code':'1234'}
 var student1 = {'username':'Bertie', 'code': '1234'};
 var student2 = {'username':'Charlie'};
 var student3 = {'username':'Danny'};
@@ -64,7 +64,7 @@ describe('Basic server', function(){
       done();
     });
   });
-})
+
 
   it('Should allow students to join a created game', function (done){
     
@@ -126,7 +126,7 @@ describe('Basic server', function(){
     teacher.on('buzzed-in', function (buzzed){
       expect(handler.games[student2.code].owner).to.exist;
       buzzed.username.should.equal(student2.username);
-      //test of should pass but it's failing; sockets seem to convert time as it passes through into a different string
+
       expect(buzzed.time).to.equal(student2.time.toISOString());
       buzzed.time.should.exist;
       student.disconnect();
@@ -153,6 +153,51 @@ describe('Basic server', function(){
     done();
 
   });
+
+  it('Should not create questions from non-existent rooms', function (done){
+
+    var teacher = io.connect(socketURL, options);
+
+    teacher.emit('new-game', teacher2);
+    
+    teacher.on('made-game', function (game){
+      var room = game.code;
+      expect(room).to.not.equal('1234');        
+      handler.games.should.have.property(room);
+      teacher.emit('newQ', {code: '1234'});
+      expect(handler.games['1234']).to.not.exist;
+      teacher.disconnect();
+      done();
+    });  
+  })
+
+  it('Should broadcast questions ', function (done){
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+
+    teacher.emit('new-game', teacher1);
+    teacher.on('made-game', function (game){
+      student2.code = game.code;
+      student.emit('student-join', student2);
+      teacher.emit('newQ', {code: game.code});
+    });
+
+    teacher.on('asked-question', function (ques){
+      expect(ques).to.have.property('category').that.is.a('string');
+      expect(ques).to.have.property('question').that.is.a('string');
+      expect(ques).to.have.property('answer').that.is.a('string');
+      student.on('ask-question', function (ans){
+        expect(ques.question).to.equal(ans.question);
+        teacher.disconnect();
+        student.disconnect();
+        done();
+      })
+    });
+    
+  })
+
+
+});
 
   // xit('Should allow multiple students to join a game', function (done){
   //   var teacher = io.connect(socketURL, options);

@@ -30,7 +30,7 @@ app.post('/signup',
     // req.headers.username
     // req.headers.password
     console.log("signup!");
-    res.send(200);
+    res.send(201);
   }
 );
 

@@ -1,13 +1,40 @@
-var bodyParser  = require('body-parser');
-var express     = require('express');
+var bodyParser   = require('body-parser');
+var express      = require('express');
 // var server = require('http').createServer(app);
-var morgan      = require('morgan');
-var handler     = require('./server/requestHandler.js');
-var http 				= require('http');
-var io          = require('socket.io');
-var jeopardy    = require('./server/jService.js');
+var morgan       = require('morgan');
+var handler      = require('./server/requestHandler.js');
+var http 			   = require('http');
+var io           = require('socket.io');
+var jeopardy     = require('./server/jService.js');
 // simplified http client supporting HTTPs https://github.com/request/request
 // for accessing Jeopardy API.
+var pg           = require('pg');
+var databasehost = process.env.HOST || '0.0.0.0';
+var databaseport = 5432
+var knex         = require('knex')({
+ client: 'pg',
+ connection: {
+   host: databasehost,
+   port: databaseport,
+   user: 'postgres',
+   password: 'postgres',
+   database: 'jeopardy',
+ }
+});
+
+//TEMP! Testing
+var models       = require('./server/models.js');
+
+models(knex).createTeacher('testlogin', 'testemail', 'testhashedPassword', 'testfirstName', 'testlastName')
+  .then(function(){
+  models(knex).getTeachers()
+    .then(function(a){
+      console.log(a);
+    })
+    .catch(function(err){
+      console.log(err, 'error');
+    })
+  })
 
 var app = express();
 // process.env.PORT is provided by the deployment server -- if we're running localhost, use 8000;

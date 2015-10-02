@@ -37,7 +37,7 @@
     <type label="SET" length="1" sql="SET" quote=""/>
     <type label="Bit" length="0" sql="bit" quote=""/>
   </group>
-</datatypes><table x="45" y="160" name="teachers">
+</datatypes><table x="64" y="311" name="teachers">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -60,7 +60,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="962" y="435" name="students">
+<table x="1032" y="475" name="students">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -86,7 +86,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="1183" y="445" name="test scores">
+<table x="1283" y="453" name="test scores">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -106,11 +106,14 @@
 <row name="score" null="1" autoincrement="0">
 <datatype>DOUBLE</datatype>
 <default>NULL</default></row>
+<row name="notes_json" null="1" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+<default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
 </table>
-<table x="280" y="308" name="classes">
+<table x="293" y="482" name="classes">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -129,7 +132,7 @@
 </key>
 <comment>Not the javascript kind.  School classes.</comment>
 </table>
-<table x="1193" y="174" name="question">
+<table x="1071" y="143" name="question">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -153,7 +156,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="759" y="57" name="decks">
+<table x="701" y="69" name="decks">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -163,11 +166,14 @@
 <row name="topic" null="1" autoincrement="0">
 <datatype>VARCHAR(255)</datatype>
 <default>NULL</default></row>
+<row name="description" null="1" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+<default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
 </table>
-<table x="366" y="44" name="teacher_decks">
+<table x="302" y="120" name="teacher_decks">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -183,7 +189,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="546" y="433" name="student_classes">
+<table x="627" y="581" name="student_classes">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -199,7 +205,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="508" y="192" name="game">
+<table x="496" y="300" name="games">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -221,13 +227,13 @@
 <part>id</part>
 </key>
 </table>
-<table x="748" y="252" name="response">
+<table x="769" y="285" name="responses">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
 <row name="game_id" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
-<default>NULL</default><relation table="game" row="id" />
+<default>NULL</default><relation table="games" row="id" />
 </row>
 <row name="question_id" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>

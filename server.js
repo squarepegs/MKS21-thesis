@@ -1,19 +1,18 @@
-var bodyParser  = require('body-parser');
-var express     = require('express');
-// var server = require('http').createServer(app);
-var morgan      = require('morgan');
-var handler     = require('./server/requestHandler.js');
-var http 				= require('http');
-var io          = require('socket.io');
-var jeopardy    = require('./server/jService.js');
-// simplified http client supporting HTTPs https://github.com/request/request
-// for accessing Jeopardy API.
+var bodyParser   = require('body-parser');
+var express      = require('express');
+var morgan       = require('morgan');
+var handler      = require('./server/requestHandler.js');
+var http 			   = require('http');
+var io           = require('socket.io');
+//for accessing jeopardy API:
+var jeopardy     = require('./server/jService.js');
+var pg           = require('pg');
+// var knex         = require('./db/knexfile.js'); 
+var models       = require('./server/models.js');
 
 var app = express();
-// process.env.PORT is provided by the deployment server -- if we're running localhost, use 8000;
 var PORT = process.env.PORT || 8000;
 app.use(bodyParser.json());
-
 
 // Everything in the /client directory and subdirectories will be served at [hostname]/client.
 // As of now, there is no route to '/' so don't worry if you get a "cannot GET" error at Localhost:8000
@@ -38,9 +37,18 @@ app.post('/signup',
 
 app.get('/data',
   function(req, res){
-    // db.getStudentData(req.headers.token)
-  console.log('calling GET on /data')
-  res.send(200)
+    console.log('calling GET on /data; doesn\'t do anything right now');
+    res.send("not doing anything right now... go code me!");
+  }
+);
+
+app.post('/data',
+  function(req, res){
+    for(var key in req){
+      console.log(req.key);
+    }
+    //console.log('req.body: ', req.body)
+    //models.users.createUser(req.body.login, req.body.email, req.body.hashedPassword, req.body.firstName, req.body.lastName);
   }
 );
 
@@ -97,6 +105,25 @@ io.sockets.on('connection', function(socket) {
     });
   });
 
+// Websockets to Database
+
+  socket.on('add-user', function(data){
+    console.log("attempting to add user: " + data.login);
+    console.log(data);
+    var output = models.users.addUser(data.login, data.email, data.password, data.firstName, data.lastName, data.type)
+    socket.emit('db-response', output);
+  })
+
+  socket.on('login', function(data){
+    var user = models.users.login(data.username, data.password)
+    socket.emit('db-response', user);
+  })
+
+  socket.on('create-deck', function(data){
+    var deck = models.decks.addDeck(data.name,data.topic,data.description,data.user)
+    socket.emit('db-response', deck)
+  })
+  
 });
 
 //--------------------------------

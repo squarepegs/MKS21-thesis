@@ -1,8 +1,6 @@
-// database stuff here
+var db         = require('../db/knexfile.js');
 
 module.exports = {
-	createUser: function(username, password){
-		//insert db query in knex here
-		return function(){return "nothing here yet... need db. username/password were: " + username + "/" + password;};
-	}
+  users:    require('../db/userModel.js'),
+  decks:    require('../db/deckModel.js')
 };

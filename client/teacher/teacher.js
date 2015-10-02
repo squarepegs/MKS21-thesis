@@ -16,6 +16,38 @@ var sortByTime = function(a,b){
 // REACT COMPONENTS:
 //
 
+var TestArea = React.createClass({
+  handleClick: function(){
+    var login          = $('#login').val();
+    var email          = $('#email').val();
+    var hashedPassword = $('#hashedPassword').val();
+    var firstName      = $('#firstName').val();
+    var lastName       = $('#lastName').val();
+    makeTeacher(login, email, hashedPassword, firstName, lastName);
+  },
+  render: function(){
+    return (
+      <div>
+      <hr />
+      <p>Test area for adding teachers to DB from web</p>
+        <label>Username: </label>
+        <input type="text" className="input" defaultValue="TestLogin2" id="login" />
+        <label>Username: </label>
+        <input type="text" className="input" defaultValue="test@email2.com" id="email" />
+        <label>Username: </label>
+        <input type="text" className="input" defaultValue="sekret pass" id="hashedPassword" />
+        <label>Username: </label>
+        <input type="text" className="input" defaultValue="Alberta" id="firstName" />
+        <label>Username: </label>
+        <input type="text" className="input" defaultValue="Landingham" id="lastName" />
+        <button onClick={this.handleClick}>INSERT TEACHER TO DB</button>
+        <div id="status"></div>
+      </div>
+    )
+  }
+})
+
+
 var Dashboard = React.createClass({
   render:function(){
     return (
@@ -153,10 +185,13 @@ var Main = React.createClass({
   }
 })
 
+
+
 // initial page render
 React.render(
   <div>
     <Main />
+    <TestArea />
   </div>,
   document.getElementById('main')
 );

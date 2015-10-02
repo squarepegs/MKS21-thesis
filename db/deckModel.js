@@ -1,7 +1,6 @@
 var db         = require('./knexfile.js');
 
 module.exports = {
-  //should be a single user table
   addDeck: function(name,topic,description,user) {
     var newDeck;
     console.log(arguments)
@@ -27,6 +26,8 @@ module.exports = {
     });
   },
   addCard: function(deckName, question, type, question, points, metadata) {
+    // work in progress?
+    // not tested yet.
     return db('decks').where({
         name: deckName
       })
@@ -45,14 +46,21 @@ module.exports = {
       })
     // return db.select().table('question');
   },
-  getDeck: function(deck) {
+  getDeck: function(deckName) {
     // should this go and retrieve every question, I guess?
+    // actually, should probably different models to do either functionality.
+    // at the moment it will just return name, topic, description.
     return db('decks').where({
         name: deckName
       })
-      .select('id')
+      .select().then(function(deck){
+        console.log("this is deck[0]: ");
+        console.log(deck[0]);
+        return deck[0];
+      })
   },
   deleteDeck: function(deck) {
+    console.log("this doesn't do anything yet.")
     // return db.select(deck).table('decks').delete() // ???
   }
 };

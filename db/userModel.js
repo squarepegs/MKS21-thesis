@@ -1,7 +1,8 @@
 var db         = require('./knexfile.js');
 
 module.exports = {
-  //should be a single user table
+  //type should be 'student' or 'teacher'
+  //currently the schema allows duplicates; this will be fixed in the future.
   addUser: function(login, email, hashedPassword, firstName, lastName, type) {
     console.log(arguments)
     return db('users').insert({
@@ -11,8 +12,10 @@ module.exports = {
       'first_name': firstName,
       'last_name': lastName,
       'user_type': type
-    }).then(function(x){
-      console.log("result of adding a user: " + x)
+    }).then(function(output){
+      // console.log("result of adding a user: ");
+      // console.log(x);
+      return output
     });
   },
   login: function(username,password) {
@@ -25,7 +28,8 @@ module.exports = {
     .select()
     .then(function(x){
       console.log("result of login attempt is: ");
-      console.log(x);
+      console.log(x[0]);
+      return x[0];
     })
   }
 };

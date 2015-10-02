@@ -111,16 +111,17 @@ io.sockets.on('connection', function(socket) {
     console.log("attempting to add user: " + data.login);
     console.log(data);
     var output = models.users.addUser(data.login, data.email, data.password, data.firstName, data.lastName, data.type)
-    socket.emit(output);
-      // .then(function(outputDb){
-      //   console.log(outputDb);
-      //   socket.emit(outputDb)
-      // })
+    socket.emit('db-response', output);
   })
 
   socket.on('login', function(data){
     var user = models.users.login(data.username, data.password)
-    socket.emit(user);
+    socket.emit('db-response', user);
+  })
+
+  socket.on('create-deck', function(data){
+    var deck = models.decks.addDeck(data.name,data.topic,data.description,data.user)
+    socket.emit('db-response', deck)
   })
   
 });

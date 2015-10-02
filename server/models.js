@@ -1,5 +1,6 @@
 var db         = require('../db/knexfile.js');
 
 module.exports = {
-  teachers: require('../db/teacherModel.js')
+  users:    require('../db/userModel.js'),
+  decks:    require('../db/deckModel.js')
 };

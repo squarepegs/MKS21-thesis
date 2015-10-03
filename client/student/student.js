@@ -8,7 +8,7 @@ var QA = React.createClass({
     React.render(
       <div className="container">
         <div className="jep-panel yellow-text blue darken-4 card-panel flow-text">
-          <div className="flow-text category">{window.jeopardy.question.category.toUpperCase()} - ${window.jeopardy.question.value}</div>
+          <div className="flow-text white-text category"><strong>{window.jeopardy.question.category.toUpperCase()} - ${window.jeopardy.question.value}</strong></div>
           <div className="flow-text question">{window.jeopardy.question.question.toUpperCase()}</div>
         </div>
         <p>{window.jeopardy.buzzed}</p>
@@ -23,7 +23,10 @@ var Waiting = React.createClass({
       window.s = 4;
       window.jeopardy.buzzed = false;
       window.jeopardy.question = data;
-      React.render( <QA />, document.getElementById('question') )
+      React.render( 
+        <div>
+        <QA />
+        </div>, document.getElementById('question') )
     })
     return ( <div id="question">Waiting for new question...</div> )
   },
@@ -32,8 +35,8 @@ var Waiting = React.createClass({
 var Buzzer = React.createClass({
   render:function(){
     return (
-    <div className="buzzer">
-      <a className="waves-effect waves-light btn-large" id="buzzer" onClick={this.clickHandler}>Buzz in!</a>
+    <div className="buzzer center-align valign-wrapper">
+      <a className="waves-effect center-align valign waves-light btn-large" id="buzzer" onClick={this.clickHandler}>Buzz in!</a>
     </div>
     )
   },
@@ -72,9 +75,6 @@ var Main = React.createClass({
     )
   }
 })
-
-//module exports for testing
-module.exports = Main
 
 // initial page render
 React.render(

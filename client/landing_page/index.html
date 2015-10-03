@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" type="text/css" href="/materialize/dist/css/materialize.min.css">
+  <link rel="stylesheet" type="text/css" href="/client/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  <link href="/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="/client/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <meta charset="UTF-8">
   <title>Learngage: Educational Gamification with Real-Time Classroom Engagement</title>
 </head>
@@ -53,7 +52,7 @@
         <div class="modal-content">
           <h4 style="color:teal" class="text-teal">Sign Up</h4>
             <P><label>Username:</label><input type="text" id="signupUsername"/></P>
-            <P><label>Password:</label><input type="text" id="signupPassword"/></P>
+            <P><label>Password:</label><input type="password" id="signupPassword"/></P>
         </div>
         <div class="modal-footer">
           <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Create Your Login</a>
@@ -67,7 +66,7 @@
         <div class="modal-content">
           <h4 style="color:teal" class="text-teal">Log In</h4>
             <P><label>Username:</label><input type="text" id="signupUsername"/></P>
-            <P><label>Password:</label><input type="text" id="signupPassword"/></P>
+            <P><label>Password:</label><input type="password" id="signupPassword"/></P>
         </div>
         <div class="modal-footer">
           <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Login</a>
@@ -161,7 +160,7 @@ Soufflé tootsie roll fruitcake halvah icing fruitcake fruitcake halvah. Wafer b
       <div class="row">
         <div class="col l6 s12">
           <h5 class="white-text">About Square Pegs</h5>
-          <div class="card blue-grey darken-1"><img src="/client/images/squarepegs.png" style="height:15vh; float:left; margin:2px" /><p style="margin:2px 4px 2px 4px;" class="grey-text text-lighten-4">Square Pegs is Juan Sierra (Scrum Master), Brian Boyko (Product Owner), Peter Do (Full-stack Engineer), and Kyle Baker (Full-Stack Engineer). We're a small research team based out of MakerSquare in Austin, Texas.</p></div> 
+          <div class="card blue-grey darken-1"><img src="/client/images/squarepegs.png" style="height:15vh; float:left; margin:2px" /><p style="margin:2px 4px 2px 4px;" class="grey-text text-lighten-4">Square Pegs is Juan Sierra (Scrum Master), Brian Boyko (Product Owner), and Peter Do (Full-stack Engineer). We're a small research team based out of MakerSquare in Austin, Texas.</p></div> 
 
         </div>
         <div class="col l3 s12">
@@ -197,8 +196,8 @@ Soufflé tootsie roll fruitcake halvah icing fruitcake fruitcake halvah. Wafer b
 
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/init.js"></script>
+  <script src="/client/js/materialize.js"></script>
+  <script src="/client/js/init.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.7/socket.io.js"></script>
 <!-- JSX transformer converts HTML-like syntax to the javascript React needs to create views -->
@@ -208,5 +207,5 @@ Soufflé tootsie roll fruitcake halvah icing fruitcake fruitcake halvah. Wafer b
 <!-- Marked converts "markdown text" used in JSX to the appropriate HTML tags -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 <!-- Main Logic for this web page, including where React draws the page -->
-<script type="text/jsx;harmony=true" src="./landingpage.js"></script>
+<script type="text/javascript" src="./landingpage.js"></script>
 </html>

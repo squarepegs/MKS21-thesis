@@ -1,4 +1,4 @@
-var models = require('./models.js');
+//var models = require('./models.js');
 // var auth  = require ('./auth.js');
 
 module.exports = {
@@ -38,17 +38,5 @@ module.exports = {
     // need to think about all the things to happen here.
     // client side saving, or server side saving of stats?
     delete games[req.headers.code];
-  },
-
-  signup: function(req, res){
-    var username = req.headers.username;
-    var password = req.headers.password;
-    models.createUser(username,password)
-    .then(function(result){
-      // "your username might be " + username + " and your password could be: " + password
-
-      // this breaks.
-      res.send( result() );
-    });
-  }
+   }
 };

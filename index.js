@@ -1,0 +1,61 @@
+var app = require('./server/server.js');
+
+//set up for heroku deployment; it will search for a .env port first
+//otherwise, will default to the local port 8000
+var port = process.env.PORT || 8000;
+ 
+var server = app.listen(port);
+var io = require('socket.io').listen(server);
+
+
+
+//--------------------------------
+// WEBSOCKETS
+//--------------------------------
+
+//Everything that requires Websockets lives INSIDE this callback.
+io.sockets.on('connection', function(socket) {
+
+  // new game
+  socket.on('new-game', function(data){
+    var code = handler.gameMaker(data);
+    handler.games[code].owner = socket;
+    socket.emit('made-game', {code: code});
+  });
+
+  // when student joins
+  socket.on('student-join', function(data){
+    if (!handler.games[data.code]) {
+      console.log("tried to enter a non existant game: " + data.code);
+      socket.emit('no-game');
+    }
+    else {
+      handler.games[data.code].students[data.username] = socket;
+      socket.emit('you-joined');
+      handler.games[data.code].owner.emit('update-list', Object.keys(
+        handler.games[data.code].students
+      ));
+      console.log(Object.keys(handler.games[data.code].students));
+    }
+  });
+
+  socket.on('buzz', function(data){
+    handler.games[data.code].owner.emit('buzzed-in', {username:data.username, time: data.time});
+  });
+
+  socket.on('newQ', function(data){
+    if (!handler.games[data.code]) socket.emit('error');
+    else jeopardy.getQ(function(ques){
+      handler.games[data.code].owner.emit('asked-question', ques);
+      delete ques.answer;
+      for(var student in handler.games[data.code].students){
+        handler.games[data.code].students[student].emit('ask-question', ques);
+      }
+    });
+  });
+
+});
+
+//--------------------------------
+// END WEBSOCKETS
+//--------------------------------

@@ -1,14 +1,61 @@
-var app = require('./server/server.js');
+var bodyParser   = require('body-parser');
+var express      = require('express');
+var morgan       = require('morgan');
+var handler      = require('./server/requestHandler.js');
+var http         = require('http');
+var io           = require('socket.io');
+//for accessing jeopardy API:
+var jeopardy     = require('./server/jService.js');
 
-//set up for heroku deployment; it will search for a .env port first
-//otherwise, will default to the local port 8000
-var port = process.env.PORT || 8000;
+var app = express();
+var PORT = process.env.PORT || 8000;
+app.use(bodyParser.json());
 
-console.log('App is listening on port ' + port);
-var server = app.listen(port);
+// Everything in the /client directory and subdirectories will be served at [hostname]/client.
+// As of now, there is no route to '/' so don't worry if you get a "cannot GET" error at Localhost:8000
+app.use('/client',express.static(__dirname + '/client'));
+app.use(morgan('dev'));
+
+app.use('/teacher', express.static(__dirname + '/client/teacher'));
+app.use('/student', express.static(__dirname + '/client/student'));
+app.use('/modules', express.static(__dirname + '/node_modules'));
+app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css/'));
+
+app.use('/', express.static(__dirname + '/client/landing_page'));
+
+// app.post('/signup',
+//   function(req, res){
+//     // req.headers.username
+//     // req.headers.password
+//     console.log("signup!");
+//     res.send(201);
+//   }
+// );
+
+// app.get('/data',
+//   function(req, res){
+//     console.log('calling GET on /data; doesn\'t do anything right now');
+//     res.send("not doing anything right now... go code me!");
+//   }
+// );
+
+// app.post('/data',
+//   function(req, res){
+//     for(var key in req){
+//       console.log(req.key);
+//     }
+//     //console.log('req.body: ', req.body)
+//     //models.users.createUser(req.body.login, req.body.email, req.body.hashedPassword, req.body.firstName, req.body.lastName);
+//   }
+// );
+
+console.log('App is listening on port ' + PORT);
+// We require socket.io to have the entire server passed in as an argument,
+// so we create a server variable to pass into socket.io's .listen method.
+var server = app.listen(PORT);
 var io = require('socket.io').listen(server);
 
-
+module.exports = app;
 
 //--------------------------------
 // WEBSOCKETS
@@ -55,6 +102,7 @@ io.sockets.on('connection', function(socket) {
     });
   });
 
+  
 });
 
 //--------------------------------

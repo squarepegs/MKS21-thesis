@@ -4,17 +4,33 @@ var morgan       = require('morgan');
 var handler      = require('./server/requestHandler.js');
 var http         = require('http');
 var io           = require('socket.io');
-//for accessing jeopardy API:
+var cookieParser = require('cookie-parser')
+var session      = require('express-session');
+var mongoose     = require('mongoose');
 var jeopardy     = require('./server/jService.js');
 
 var app = express();
 var PORT = process.env.PORT || 8000;
-app.use(bodyParser.json());
 
-// Everything in the /client directory and subdirectories will be served at [hostname]/client.
-// As of now, there is no route to '/' so don't worry if you get a "cannot GET" error at Localhost:8000
-app.use('/client',express.static(__dirname + '/client'));
+var configDB = require('./db/config.js');
+mongoose.connect(configDB.url);
+
 app.use(morgan('dev'));
+app.use(cookieParser());
+app.use(session({secret: 'anystringoftext',
+                saveUnintialitzed: true,
+                resave: true}));
+
+require('./config/routes.js')(app);
+
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+
+// require('./config/middleware.js')(app, express);
+
+app.use(bodyParser.json());
+// Everything in the /client directory and subdirectories will be served at [hostname]/client.
+app.use('/client',express.static(__dirname + '/client'));
 
 app.use('/teacher', express.static(__dirname + '/client/teacher'));
 app.use('/student', express.static(__dirname + '/client/student'));

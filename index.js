@@ -8,12 +8,15 @@ var cookieParser = require('cookie-parser')
 var session      = require('express-session');
 var mongoose     = require('mongoose');
 var jeopardy     = require('./server/jService.js');
+var passport     - require('passport');
+var flash        = require('connect-flash')
 
 var app = express();
 var PORT = process.env.PORT || 8000;
 
 var configDB = require('./db/config.js');
 mongoose.connect(configDB.url);
+require('./config/passport')(passport);
 
 app.use(morgan('dev'));
 app.use(cookieParser());
@@ -21,6 +24,9 @@ app.use(session({secret: 'anystringoftext',
                 saveUnintialitzed: true,
                 resave: true}));
 
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
@@ -38,7 +44,7 @@ app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css
 
 app.use('/', express.static(__dirname + '/client/landing_page'));
 
-require('./config/routes.js')(app);
+require('./config/routes.js')(app, passport);
 // app.post('/signup',
 //   function(req, res){
 //     // req.headers.username

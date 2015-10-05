@@ -1,7 +1,7 @@
 var LocalStrategy = require('passport-local').Strategy;
 
 //TODO: need to make a user 
-var Users = require('../db/userModel');
+var User = require('../db/userModel');
 
 module.exports = function(passport){
   
@@ -18,8 +18,8 @@ module.exports = function(passport){
 
   passport.use('local-signup', new LocalStrategy({
     //this should look at index.html sign up class
-    usernameField: 'username',
-    passwordField: 'password',
+    usernameField: 'signupUsername',
+    passwordField: 'signupPassword',
     passReqToCallback: true
   },
   function(req, username, password, done){
@@ -30,28 +30,26 @@ module.exports = function(passport){
         if(err)
           return done(err);
         if(user){
-          return done(null, false, req.flash('signupMessage', 'Username already taken'));
+          return done(null, false, req.flash('signupMessage', 'Sorry! Username already taken'));
         } else {
-          
-            var login = username;
-            var hashed_password = password;//need bcrypt
-            Users.addUser(login, 'test email', hashedPassword, 'firstname test', 'lastname test','type test')
-            // var newUser = new User();
-            // newUser.local.email = email;
-            // newUser.local.password = password;
-            // var hashedPassword = bcrypt stuff
-           //this is what the model wantsaddUser: function(login, email, hashedPassword, firstName, lastName, type)
-            //model.users.addUser(username, email, hashedPassword, firstName, lastName, type)
-        }
-      }
+            var newUser = new User
+            newUser.login = username;
+            newUser.password = password;
+            newUser.save(function(err){
+              if(err){
+                throw err
+              }
+              return done(null, newUser);
+            })
+       }
     });
 
   })),
 
   passport.use('local-signin', new LocalStrategy({
 
-    usernameField: 'username',
-    passwordField: 'password',
+    usernameField: 'loginUsername',
+    passwordField: 'loginPassword',
     passReqToCallback: true
   },
   function(req, username, password, done){

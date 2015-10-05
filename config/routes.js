@@ -4,7 +4,7 @@ module.exports = function(app){
 
 
   app.get('/', function(req, res){
-    res.render('../client/landing_page')//may need to be client/teacher/index
+    res.render('../client/landing_page', { message: req.flash('signupMessage') });
   });
 
   app.post('/', function(req, res){
@@ -20,7 +20,6 @@ module.exports = function(app){
     })
     res.redirect('/teacher');
   })
-
 
 
   app.get('/signup/:username/:password', function(req, res){

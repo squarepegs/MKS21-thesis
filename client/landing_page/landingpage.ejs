@@ -47,10 +47,18 @@
 
 
 <div id="modal-signup" class="modal">
+  <!-- show any messages that come back with authentication -->
+  <% if (message.length > 0) { %>
+  <% $('#createLoginButton').preventDefault(); %>
+  <% } %>
     <form id="signupForm" method="post">
       <fieldset>
         <div class="modal-content">
           <h4 style="color:teal" class="text-teal">Sign Up</h4>
+                    <!-- show any messages that come back with authentication -->
+  <% if (message.length > 0) { %>
+    <div class="alert alert-danger"><%= message %></div>
+  <% } %>
             <P><label>Username:</label><input type="text" name="signupUsername"/></P>
             <P><label>Password:</label><input type="password" name="signupPassword"/></P>
         </div>
@@ -65,8 +73,8 @@
       <fieldset>
         <div class="modal-content">
           <h4 style="color:teal" class="text-teal">Log In</h4>
-            <P><label>Username:</label><input type="text" id="loginUsername"/></P>
-            <P><label>Password:</label><input type="password" id="loginPassword"/></P>
+            <P><label>Username:</label><input type="text" id="signupUsername"/></P>
+            <P><label>Password:</label><input type="password" id="signupPassword"/></P>
         </div>
         <div class="modal-footer">
           <a href="#!"  id="loginButton" onclick="submit" class="modal-action modal-close waves-effect waves-green btn-flat">Login</a>
@@ -78,6 +86,7 @@
 
     <div class="parallax"><img src="/client/images/worldboard.jpg" alt="Unsplashed background img 1"></div>
   </div>
+            <!-- show any messages that come back with authentication -->
 
 
   <div class="container">
@@ -208,5 +217,5 @@ Soufflé tootsie roll fruitcake halvah icing fruitcake fruitcake halvah. Wafer b
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 <!-- Main Logic for this web page, including where React draws the page -->
 <!-- TODO: Refactor this into browserify during refactor week -->
-<script type="text/javascript" src="./landingpage.js"></script>
+<script type="text/javascript" src="/client/landing_page/landingpage.js"></script>
 </html>

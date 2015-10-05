@@ -1,25 +1,17 @@
 var User    = require('../db/models/userModel')
 
-module.exports = function(app){
+module.exports = function(app, passport){
 
 
   app.get('/', function(req, res){
-    res.render('../client/landing_page', { message: req.flash('signupMessage') });
+    res.render('../client/landing_page/landingpage.ejs', { message: req.flash('signupMessage') });
   });
 
-  app.post('/', function(req, res){
-    console.log('post works', req.body)
-    var newUser = new User();
-    newUser.local.username = req.body.signupUsername;
-    newUser.local.password = req.body.signupPassword; 
-    console.log("Username & Password", newUser.local.username, newUser.local.password);
-    newUser.save(function(err){
-      if(err){
-        throw err;
-      }
-    })
-    res.redirect('/teacher');
-  })
+  app.post('/', passport.authenticate('local-signup', {
+    successRedirect: '/teacher',
+    failureRedirect: '#',
+    failureFlash: true
+  }));
 
 
   app.get('/signup/:username/:password', function(req, res){

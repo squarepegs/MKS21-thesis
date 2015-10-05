@@ -1,9 +1,27 @@
-var User = require('../db/models/userModel')
+var User    = require('../db/models/userModel')
 
 module.exports = function(app){
+
+
   app.get('/', function(req, res){
     res.render('../client/landing_page')//may need to be client/teacher/index
   });
+
+  app.post('/', function(req, res){
+    console.log('post works', req.body)
+    var newUser = new User();
+    newUser.local.username = req.body.signupUsername;
+    newUser.local.password = req.body.signupPassword; 
+    console.log("Username & Password", newUser.local.username, newUser.local.password);
+    newUser.save(function(err){
+      if(err){
+        throw err;
+      }
+    })
+    res.redirect('/teacher');
+  })
+
+
 
   app.get('/signup/:username/:password', function(req, res){
     var newUser = new User();
@@ -17,4 +35,5 @@ module.exports = function(app){
     })
     res.send('Success!');
   })
+
 };

@@ -21,14 +21,13 @@ app.use(session({secret: 'anystringoftext',
                 saveUnintialitzed: true,
                 resave: true}));
 
-require('./config/routes.js')(app);
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 // require('./config/middleware.js')(app, express);
 
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}));
 // Everything in the /client directory and subdirectories will be served at [hostname]/client.
 app.use('/client',express.static(__dirname + '/client'));
 
@@ -39,6 +38,7 @@ app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css
 
 app.use('/', express.static(__dirname + '/client/landing_page'));
 
+require('./config/routes.js')(app);
 // app.post('/signup',
 //   function(req, res){
 //     // req.headers.username

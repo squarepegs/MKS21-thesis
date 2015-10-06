@@ -19,10 +19,12 @@
   "homepage": "https://github.com/brianboyko/MKS21-thesis#readme",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
+    "bluebird": "^2.10.2",
     "body-parser": "^1.14.1",
     "browserify": "~11.2.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.0",
+    "csvtojson": "^0.4.3",
     "ejs": "^2.3.4",
     "express": "^4.13.3",
     "express-session": "~1.11.3",

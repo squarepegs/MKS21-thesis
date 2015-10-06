@@ -4,12 +4,13 @@ var morgan       = require('morgan');
 var handler      = require('./server/requestHandler.js');
 var http         = require('http');
 var io           = require('socket.io');
-var cookieParser = require('cookie-parser')
+var cookieParser = require('cookie-parser');
 var session      = require('express-session');
 var mongoose     = require('mongoose');
 var jeopardy     = require('./server/jService.js');
 var passport     = require('passport');
 var flash        = require('connect-flash');
+var helpers      = require('./config/helpers');
 
 var app = express();
 var PORT = process.env.PORT || 8000;
@@ -47,36 +48,13 @@ app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css
 app.use('/', express.static(__dirname + '/client/landing_page'));
 
 require('./config/routes.js')(app, passport);
-// app.post('/signup',
-//   function(req, res){
-//     // req.headers.username
-//     // req.headers.password
-//     console.log("signup!");
-//     res.send(201);
-//   }
-// );
-
-// app.get('/data',
-//   function(req, res){
-//     console.log('calling GET on /data; doesn\'t do anything right now');
-//     res.send("not doing anything right now... go code me!");
-//   }
-// );
-
-// app.post('/data',
-//   function(req, res){
-//     for(var key in req){
-//       console.log(req.key);
-//     }
-//     //console.log('req.body: ', req.body)
-//     //models.users.createUser(req.body.login, req.body.email, req.body.hashedPassword, req.body.firstName, req.body.lastName);
-//   }
-// );
 
 console.log('App is listening on port ' + PORT);
 // We require socket.io to have the entire server passed in as an argument,
 // so we create a server variable to pass into socket.io's .listen method.
 var server = app.listen(PORT);
+helpers.csvParser();
+
 var io = require('socket.io').listen(server);
 
 module.exports = app;

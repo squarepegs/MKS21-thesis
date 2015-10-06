@@ -32,7 +32,7 @@ passport.use('local-signup', new LocalStrategy({
           } else {
             var newUser = new User();
             newUser.local.username = username;
-            newUser.local.password = password;
+            newUser.local.password = newUser.generateHash(password);
 
             newUser.save(function(err){
               if(err)
@@ -64,7 +64,7 @@ passport.use('local-signup', new LocalStrategy({
            console.log("if(!user)")
           return done(null, false, req.flash('loginMessage', 'no user found'));
         }
-        if(user.local.password !== password){
+        if(user.validPassword(password)){
           console.log("if password doesn't match")
           return done(null, false, req.flash('loginMessage', 'incorrect password'));
         }

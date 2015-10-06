@@ -15,24 +15,18 @@ module.exports = function(app,passport){
 
   app.post('/login', passport.authenticate('local-signin', {
     successRedirect: '/teacher',
-    failureRedirect: '/student',
+    failureRedirect: '/fail',
     failureFlash: true
   }));  
 
 
 
-  app.get('/signup/:username/:password', function(req, res){
-    console.log('doesthiswork?');
-    var newUser = new User();
-    newUser.local.username = req.params.username;
-    newUser.local.password = req.params.password; 
-    console.log("Username & Password", newUser.local.username, newUser.local.password);
-    newUser.save(function(err){
-      if(err){
-        throw err;
-      }
-    })
-    res.send('Success!');
-  })
-
 };
+
+function isLoggedIn(req, res, next){
+  if(req.isAuthenticated()){
+    return next();
+  } else {
+    res.redirect('/')
+  }
+}

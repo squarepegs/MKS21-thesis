@@ -55,10 +55,13 @@ passport.use('local-signup', new LocalStrategy({
     process.nextTick(function(){
       User.findOne({'local.username': username}), function(err,user){
         if(err)
+          console.log("passport err");
           return done(err);
         if(!user){
+          console.log('user ' + username + ' not found');
           return done(null, false, req.flash('loginMessage', 'no user found'));
         if(user.local.password !== password){
+          console.log('username: ' + username + ' exists, but password is not ' + password + '. its really ' + user.local.password);
           return done(null, false, req.flash('loginMessage', 'incorrect password'));
         }
         return done(null, user);  

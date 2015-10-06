@@ -32,7 +32,7 @@ passport.use('local-signup', new LocalStrategy({
           } else {
             var newUser = new User();
             newUser.local.username = username;
-            newUser.local.password = password;
+            newUser.local.password = newUser.generateHash(password);
 
             newUser.save(function(err){
               if(err)

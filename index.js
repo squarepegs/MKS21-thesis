@@ -9,7 +9,7 @@ var session      = require('express-session');
 var mongoose     = require('mongoose');
 var jeopardy     = require('./server/jService.js');
 var passport     = require('passport');
-var flash        = require('connect-flash')
+var flash        = require('connect-flash');
 
 var app = express();
 var PORT = process.env.PORT || 8000;
@@ -20,6 +20,7 @@ require('./config/passport')(passport);
 
 app.use(morgan('dev'));
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended:false}));
 app.use(session({secret: 'anystringoftext',
                 saveUnintialitzed: true,
                 resave: true}));
@@ -28,12 +29,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
+
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 
 // require('./config/middleware.js')(app, express);
 
-app.use(bodyParser.urlencoded({extended:false}));
 // Everything in the /client directory and subdirectories will be served at [hostname]/client.
 app.use('/client',express.static(__dirname + '/client'));
 
@@ -42,7 +43,7 @@ app.use('/student', express.static(__dirname + '/client/student'));
 app.use('/modules', express.static(__dirname + '/node_modules'));
 app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css/'));
 
-
+app.use('/', express.static(__dirname + '/client/landing_page'));
 
 require('./config/routes.js')(app, passport);
 // app.post('/signup',

@@ -16,6 +16,7 @@ var PORT = process.env.PORT || 8000;
 
 var configDB = require('./db/config.js');
 mongoose.connect(configDB.url);
+require('./config/passport')(passport);
 
 app.use(morgan('dev'));
 app.use(cookieParser());

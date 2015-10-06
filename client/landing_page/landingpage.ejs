@@ -47,18 +47,12 @@
 
 
 <div id="modal-signup" class="modal">
-  <!-- show any messages that come back with authentication -->
-  <% if (message.length > 0) { %>
-  <% $('#createLoginButton').preventDefault(); %>
-  <% } %>
-    <form id="signupForm" method="post">
+ 
+    <form action="/signup" method="post">
       <fieldset>
         <div class="modal-content">
           <h4 style="color:teal" class="text-teal">Sign Up</h4>
-                    <!-- show any messages that come back with authentication -->
-  <% if (message.length > 0) { %>
-    <div class="alert alert-danger"><%= message %></div>
-  <% } %>
+
             <P><label>Username:</label><input type="text" name="signupUsername"/></P>
             <P><label>Password:</label><input type="password" name="signupPassword"/></P>
         </div>
@@ -69,7 +63,7 @@
     </div>
 
       <div id="modal-login" class="modal">
-    <form>
+    <form action="/login" method="post">
       <fieldset>
         <div class="modal-content">
           <h4 style="color:teal" class="text-teal">Log In</h4>

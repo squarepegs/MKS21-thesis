@@ -1,7 +1,5 @@
 var mongoose = require('mongoose');
 
-console.log('userModel.js');
-
 var userSchema = mongoose.Schema({
   local: {
     username: String,

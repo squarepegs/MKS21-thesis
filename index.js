@@ -39,6 +39,7 @@ app.use('/client',express.static(__dirname + '/client'));
 
 app.use('/teacher', express.static(__dirname + '/client/teacher'));
 app.use('/student', express.static(__dirname + '/client/student'));
+app.use('/form', express.static(__dirname + '/client/teacher/form'));
 app.use('/modules', express.static(__dirname + '/node_modules'));
 app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css/'));
 

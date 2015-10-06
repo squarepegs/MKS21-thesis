@@ -1,16 +1,30 @@
 var form = {
 	fields:{
-		question: "Who is your daddy?",
-		answer: "Johannes Kepler",
-		pointValue: "3.14"
+		question: null,
+		answer: null,
+		pointValue: null
 	},
 	username: null
 }
 
 //---helper functions start---//
 
-var onChangeField = function(value){
+//adds a field to the form
+var onAddField = function(value, index){
+	var field = {value: value, index: index}
+	form.fields[index] = value;
+	onChange(); 
 
+}
+//detects a change in the form; if there'se a field, then the form changes
+var onChangeField = function(value, index){
+	var field = _.find(form.fields, function (field) {
+		return field.index === index
+	});
+	if (field){
+		form.fields[index] = value;
+	}
+	onChange();
 }
 
 
@@ -19,25 +33,27 @@ var onChangeField = function(value){
 //---Form creation functions start---//
 var FieldCreate = React.createClass({
 	render: function (){
-		var userField = this.props.userField
+		var fieldValue = this.props.fieldValue
+		var index = this.props.index
 		return (
 			<div  className="form-field">
-						{userField}
-				<input type="text" value={userField}/>
+						{index}
+			  <input type="text" value={fieldValue}/>
 			</div> 
 		)
 	}
 })
 
 var QuestionFormCreate = React.createClass({
-	render: function(){
+render: function(){
 		var fields = this.props.form.fields
 		return (
 			<div className="form-fields">
 			{
-				_.map(fields, function (field, key){
+				_.map(fields, function (field, index){
+					console.log('these are the keys that must be fed', index)
 					return (
-						<FieldCreate	key={key} userField={field} />
+						<FieldCreate	key={index} index={index}fieldValue={field} />
 					)
 				})
 			}
@@ -46,12 +62,23 @@ var QuestionFormCreate = React.createClass({
 	}
 })
 
+// var AnswerEditor = React.createClass({
+// 	onChange : function (event){
+// 		this.props.onChange(this.props.field.index, event.target.value);
+// 		render: function () {
+// 			return (
+// 			)
+// 		}
+// 	}
+
+// })
+
 //---Form creation functions end ---//
 var name = 'Moe';
 
 var onChange = function () {
 	React.render(
-		<QuestionFormCreate form={form} onChangeField={onChangeField} />
+		<QuestionFormCreate form={form} onChangeField={onChangeField} onAddField={onAddField} />
 	,
 	document.getElementById('main')
 );

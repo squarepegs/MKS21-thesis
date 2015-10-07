@@ -3,6 +3,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 //TODO: need to make a user 
 var User = require('../db/models/userModel');
 var configAuth = require('./auth')
+var bcrypt = require('bcrypt-nodejs');
 
 module.exports = function(passport){
   
@@ -54,14 +55,13 @@ passport.use('local-signup', new LocalStrategy({
   function(req, username, password, done){
     process.nextTick(function(){
       User.findOne({'local.username': username}, function(err,user){
-        console.log("After User.findOne")
         if(err){
           return done(err);
         }
         if(!user){
           return done(null, false, req.flash('loginMessage', 'no user found'));
         }
-        if(user.local.password !== password){
+        if(!user.validPassword(password) && user.validPassword !== undefined){
           return done(null, false, req.flash('loginMessage', 'incorrect password'));
         }
         return done(null, user);  

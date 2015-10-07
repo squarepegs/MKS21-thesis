@@ -3,19 +3,20 @@ var form = {
 	username: 'Mrs. Landingham'
 }
 
-var fieldObject = {
-	question: null,
-	pointValue: null,
-	answer: null,
+var fields = {
+	question: 'who am i?',
+	pointValue: '3',
+	answer: 'Juan',
 }
 //---helper functions start---//
 
 var QuestionBox = React.createClass({
+
+
 	render: function(){
 		return (
 			<div className="questionBox">
-			Hello World Im a question box
-			<QuestionForm />
+			<QuestionForm fields={this.props.fields} />
 			</div>
 		);
 	}
@@ -23,26 +24,65 @@ var QuestionBox = React.createClass({
 });
 
 var QuestionForm = React.createClass({
+	handleSubmit: function(e){
+		e.preventDefault();
+	
+	},
+
 	render: function() {
 		return (
-			<div className="commentForm">
-			Hello world Im a question form
-			</div>
+			<form className="questionForm" onSubmit={this.handleSubmit}>
+				<FieldList fields={this.props.fields}/>
+				<input type="submit" value="Submit" />
+			</form>
 		)
 	}
 })
 
 var Field = React.createClass({
-	render: function(){
+	getInitialState: function(){
+		return {value: ''}
+	},
+
+	handleChange: function(event){
+		this.setState({value: event.target.value})
+	},
+
+	render: function (){
+		var value = this.state.value;
+
 		return (
-			
+			<div className="field">
+			{this.props.category}
+			<input type="text" value={value} onChange={this.handleChange}/>
+			</div>
+		)
+	}
+})
+
+var FieldList = React.createClass({
+	render: function(){
+		var fieldNodes = _.map(this.props.fields, function (field, index){
+			return (
+				<Field key={index} ref={index} category={index}>
+				{field}
+				</Field>
+
+			);
+		});
+
+		return (
+			<div className="fieldList">
+				{fieldNodes}
+			</div>
 		)
 	}
 })
 
 var onChange = function () {
+
 	React.render(
-		<QuestionBox />
+		<QuestionBox fields={fields}/>
 	,
 	document.getElementById('main')
 );

@@ -27,8 +27,9 @@ app.use(bodyParser.json());
 app.use(session({secret: 'anystringoftext',
                 saveUnintialitzed: true,
                 resave: true,
-                store: new MongoStore({mongooseConnection: mongoose.connection})
-                }));
+                store: new MongoStore({ mongooseConnection: mongoose.connection,
+                                        ttl: 1 * 24 * 60 * 60   
+                                      })}));
 
 app.use(passport.initialize());
 app.use(passport.session());

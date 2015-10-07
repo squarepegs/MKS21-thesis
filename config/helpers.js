@@ -1,4 +1,6 @@
 var jwt  = require('jwt-simple');
+var Converter = require("csvtojson").Converter;
+var fs = require('fs');
 
 module.exports = {
   errorLogger: function (error, req, res, next) {
@@ -31,6 +33,18 @@ module.exports = {
     } catch(error) {
       return next(error);
     }
-
+  },
+  csvParser: function(){
+    var converter = new Converter({});
+   
+    //end_parsed will be emitted once parsing finished 
+    converter.on("end_parsed", function (jsonArray) {
+       console.log(jsonArray); //here is your result jsonarray 
+    });
+     
+    //read from file 
+    fs.createReadStream("file.csv").pipe(converter);
   }
 };
+
+

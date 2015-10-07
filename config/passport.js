@@ -46,27 +46,29 @@ passport.use('local-signup', new LocalStrategy({
   }));
 
   passport.use('local-signin', new LocalStrategy({
-
     usernameField: 'loginUsername',
     passwordField: 'loginPassword',
     passReqToCallback: true
   },
   function(req, username, password, done){
     process.nextTick(function(){
-      User.findOne({'local.username': username}), function(err,user){
-        if(err)
+      User.findOne({'local.username': username}, function(err,user){
+        console.log("After User.findOne")
+        if(err){
           return done(err);
+        }
         if(!user){
           return done(null, false, req.flash('loginMessage', 'no user found'));
+        }
         if(user.local.password !== password){
           return done(null, false, req.flash('loginMessage', 'incorrect password'));
         }
         return done(null, user);  
-        };
-      }
+      });
+      
     });
   }
   ));
-  
+   
 
 };

@@ -10,6 +10,8 @@ var fields = {
 }
 //---helper functions start---//
 
+var formObj = {}
+
 var QuestionBox = React.createClass({
 
 
@@ -26,6 +28,8 @@ var QuestionBox = React.createClass({
 var QuestionForm = React.createClass({
 	handleSubmit: function(e){
 		e.preventDefault();
+		form.fields.push(formObj);
+		console.log(form)
 	
 	},
 
@@ -50,6 +54,8 @@ var Field = React.createClass({
 
 	render: function (){
 		var value = this.state.value;
+		formObj[this.props.category] = this.state.value;
+		console.log(formObj)
 
 		return (
 			<div className="field">

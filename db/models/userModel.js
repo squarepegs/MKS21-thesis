@@ -7,7 +7,15 @@ var userSchema = mongoose.Schema({
   local: {
     username: String,
     password: String
-  }
+  },
+
+  facebook: {
+		id: String,
+		token: String,
+		email: String,
+		name: String
+	}
+
 });
 
 userSchema.methods.generateHash = function(password){

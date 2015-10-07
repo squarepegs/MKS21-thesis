@@ -90,24 +90,24 @@ passport.use('local-signup', new LocalStrategy({
           return done(err);
         if(user)
           return done(null,user);
-       else {
-        var newUser = new User();
-        newUser.facebook.id = profile.id;
-        newUser.facebook.token = accessToken;
-        newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-        newUser.facebook.email = profile.emails[0].value;
+        else {
+          var newUser = new User();
+          newUser.facebook.id = profile.id;
+          newUser.facebook.token = accessToken;
+        // newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
+        // newUser.facebook.email = profile.emails[0].value;
 
-        newUser.save(function(err){
-          if(err)
-            throw err;
+          newUser.save(function(err){
+            if(err)
+              throw err;
 
-          return done(null, newUser);
-        })
-      }
+            return done(null, newUser);
+          })
+        }
       });
     });
   }
-));
+  ));
    
 
 };

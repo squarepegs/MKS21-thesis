@@ -22,8 +22,8 @@ module.exports = function(app,passport){
   app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
 
   app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { successRedirect: '/pass', 
-                                      failureRedirect: '/fail' }));
+  passport.authenticate('facebook', { successRedirect: '/teacher', 
+                                      failureRedirect: '/' }));
 
 
 };

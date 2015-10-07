@@ -11,6 +11,7 @@ var jeopardy     = require('./server/jService.js');
 var passport     = require('passport');
 var flash        = require('connect-flash');
 var helpers      = require('./config/helpers');
+var MongoStore = require('connect-mongo')(session);
 
 var app = express();
 var PORT = process.env.PORT || 8000;
@@ -25,7 +26,9 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 app.use(session({secret: 'anystringoftext',
                 saveUnintialitzed: true,
-                resave: true}));
+                resave: true,
+                store: new MongoStore({mongooseConnection: mongoose.connection})
+                }));
 
 app.use(passport.initialize());
 app.use(passport.session());

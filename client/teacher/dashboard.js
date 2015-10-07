@@ -50,22 +50,140 @@ var Tabs = React.createClass({
 })
 
 var Profile = React.createClass({
+  profile: {},
+  getProfile: function() {
+    // session is not defined
+    console.log(user);
+    $.get('/api/profile', passport.user, function(err, user){
+      console.log('success', user)
+      // this.profile.firstName = user.firstName;
+      // this.profile.lastName = user.lastName;
+      // this.profile.email = user.email;
+    })
+    // return {
+    //   username: '',
+    //   lastGistUrl: ''
+    // };
+  },
+  updateProfile: function(){
+    // if ($('#firstName').val()) {
+    //   this.profile.firstName = $('#firstName').val();
+    // }
+    // if ($('#lastName').val()) {
+    //   this.profile.lastName = $('#lastName').val();
+    // }
+    // if ($('#email').val()) {
+    //   this.profile.email = $('#email').val();
+    // }
+    // $.post('/api/updateProfile', this.profile, function(null, user){
+    //   console.log('success', user)
+    // })
+    
+  },
+  render:function(){
+    return(
+      <div>
+        <form>
+          <fieldset>
+            <ul>
+              <li>Username: {window.jeopardy.username || 'username'}</li>
+              <li>First Name: {window.jeopardy.username || 'firstname'} &mdash;&mdash;  <input type="text" name="firstName"/><button>Change First Name</button></li>
+              <li>Last Name: {window.jeopardy.username || 'lastname'} &mdash;&mdash;  <input type="text" name="lastName"/><button>Change Last Name</button></li>
+              <li>E&ndash;mail: {window.jeopardy.username || 'email'} &mdash;&mdash;  <input type="text" name="email"/><button>Change E&ndash;mail</button></li>
+              <li><a className="btn" onClick={this.getProfile}>Update Profile</a></li>
+            </ul>
+          </fieldset>
+        </form>
+      </div>
+      )
+  }
+})
+
+var MyDecks = React.createClass({
   render:function(){
     return(
       <div>
         <ul>
-          <li>Username: {window.jeopardy.username || 'username'}</li>
-          <li>First Name: {window.jeopardy.username || 'firstname'} &mdash;&mdash;  <input type="text" name="firstname"/><button>Change First Name</button></li>
-          <li>Last Name: {window.jeopardy.username || 'lastname'} &mdash;&mdash;  <input type="text" name="lastname"/><button>Change Last Name</button></li>
-          <li>E&ndash;mail: {window.jeopardy.username || 'email'} &mdash;&mdash;  <input type="text" name="email"/><button>Change E&ndash;mail</button></li>
-          <li>New Password: <input type="password" name="password1"/></li>
-          <li>Confirm Password: <input type="password" name="password2"/></li>
-          <li><button>Change Password</button></li>
+          <li>List Decks Here</li>
         </ul>
       </div>
       )
   }
 })
+
+var CreateDecks = React.createClass({
+  render:function(){
+    return(
+      <div>
+        <div>
+          <label>Deck Name:</label><input type="text" name="deckName" />
+          <label>Notes:</label><input type="textarea" name="deckNotes" />
+          <button>Start New Deck</button>
+          <div id="questionArea">QuestionArea</div>
+        </div>
+      </div>
+      )
+  }
+})
+
+// needed for CreateQuestion's select tag
+
+var CreateQuestion = React.createClass({
+  componentDidMount: function(){
+        $('select').material_select();
+  },
+  render:function(){
+    return(
+      <div>
+        <div>
+          <div className="input-field col s12">
+          <select>
+            <option value="" disabled defaultValue>Choose QuestionType</option>
+            <option value="Jeopardy">Jeopardy</option>
+            <option value="Multiple Choice">Multiple Choice</option>
+            <option value="Hangman">Hangman</option>
+          </select>
+          <label>Question Type: </label> 
+        </div>
+          <label>Category: </label><input type="text" name="category" />
+          <label>Question: </label><input type="text" name="question" />
+          <label>Answer: </label><input type="text" name="answer" />
+          <label>Points: </label><input type="text" name="points" />
+
+          <button>Add Question To Deck</button>
+        </div>
+      </div>
+      )
+  }
+})
+
+
+var ListQuestions = React.createClass({
+  questions: [],
+  render:function(){
+    // socket.on('update-list', function(data){
+    //   this.activeList = data;
+    //   console.log("this.activeList, data: ", this.activeList, data)
+    //   var elements = [];
+    //   for(var i = 0; i < this.activeList.length; i++){
+    //     elements.push(<li>{this.activeList[i]}</li>);
+    //   }
+
+    //   React.render(
+    //     <div>
+    //       <ul>{elements}</ul>
+    //     </div>,document.getElementById('questionList')
+    //   )
+    // })
+    return (
+    <div>
+      <h2>Questions</h2>
+      <p id="questionList"></p>
+    </div>
+    )
+  },
+})
+
 
 var Dashboard = React.createClass({
   render:function(){
@@ -210,7 +328,15 @@ var Main = React.createClass({
 React.render(
   <div>
     <Tabs />
+    <hr/><hr/>
     <Profile />
+    <hr/><hr/>
+    <MyDecks />
+    <hr/><hr/>
+    <CreateDecks />
+    <hr/><hr/>
+    <CreateQuestion />
+    <hr/><hr/>
     <Main />
   </div>,
   document.getElementById('main')

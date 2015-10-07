@@ -53,7 +53,8 @@ console.log('App is listening on port ' + PORT);
 // We require socket.io to have the entire server passed in as an argument,
 // so we create a server variable to pass into socket.io's .listen method.
 var server = app.listen(PORT);
-helpers.csvParser();
+
+// helpers.csvParser();
 
 var io = require('socket.io').listen(server);
 

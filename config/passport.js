@@ -51,24 +51,18 @@ passport.use('local-signup', new LocalStrategy({
     passReqToCallback: true
   },
   function(req, username, password, done){
-    console.log("Before process.nextTick")
     process.nextTick(function(){
-          console.log("After process.nextTick")
       User.findOne({'local.username': username}, function(err,user){
         console.log("After User.findOne")
         if(err){
-          console.log("if(err)")
           return done(err);
         }
         if(!user){
-           console.log("if(!user)")
           return done(null, false, req.flash('loginMessage', 'no user found'));
         }
         if(user.local.password !== password){
-          console.log("if password doesn't match")
           return done(null, false, req.flash('loginMessage', 'incorrect password'));
         }
-        console.log("got all the way through")
         return done(null, user);  
       });
       

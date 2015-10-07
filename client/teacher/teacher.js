@@ -54,7 +54,7 @@ var QA = React.createClass({
 var BuzzedInList = React.createClass({
   buzzedIn: [],
   render:function(){
-    socket.on('asked-question', function(data){
+    socket.on('asked-question', function (data){
       this.buzzedIn = [];
       React.render(
         <div>

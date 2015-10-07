@@ -48,7 +48,7 @@ var QuestionForm = React.createClass({
 })
 
 var Field = React.createClass({
-	getDefalutProps: function(){
+	getInitialState: function(){
 		return {value: ''}
 	},
 

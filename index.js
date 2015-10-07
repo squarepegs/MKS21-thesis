@@ -69,8 +69,13 @@ module.exports = app;
 //--------------------------------
 
 //Everything that requires Websockets lives INSIDE this callback.
-io.sockets.on('connection', function(socket) {
+var allClients = [];
+var allsocketIds = []
 
+io.sockets.on('connection', function(socket) {
+  allClients.push(socket);
+  allsocketIds.push(socket.conn.id)
+  console.log(allsocketIds);
   // new game
   socket.on('new-game', function(data){
     var code = handler.gameMaker(data);
@@ -108,7 +113,16 @@ io.sockets.on('connection', function(socket) {
       }
     });
   });
+  socket.on('disconnect', function (){
 
+    console.log(socket.conn.id, 'client about to disconnect')
+    var i = allClients.indexOf(socket);
+    allClients.splice(i, 1)
+    var j = allsocketIds.indexOf(socket.conn.id)
+    allsocketIds.splice(j, 1);
+    console.log('these are all clients after disconnect: ', allClients);
+    console.log('these are all ids after disconnect: ,', allsocketIds)
+  })
   socket.on('error', function (err){
     console.log('error: ', err)
   })

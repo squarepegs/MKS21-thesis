@@ -157,24 +157,24 @@ describe('Basic server', function(){
 
     var teacher = io.connect(socketURL, options);
 
-    teacher.emit('new-game', teacher2);
-    
     teacher.on('made-game', function (game){
+      teacher.emit('newQ', {code: '1234'});
       var room = game.code;
       expect(room).to.not.equal('1234');        
       handler.games.should.have.property(room);
-      teacher.emit('newQ', {code: '1234'});
       expect(handler.games['1234']).to.not.exist;
       teacher.disconnect();
       done();
-    });  
+    });
+
+    teacher.emit('new-game', teacher2);
+     
   })
 
-  it('Should broadcast questions ', function (done){
+  it.only('Should broadcast questions ', function (done){
     var teacher = io.connect(socketURL, options);
     var student = io.connect(socketURL, options);
 
-    teacher.emit('new-game', teacher1);
     teacher.on('made-game', function (game){
       student2.code = game.code;
       student.emit('student-join', student2);
@@ -192,7 +192,19 @@ describe('Basic server', function(){
         done();
       })
     });    
+    teacher.emit('new-game', teacher1);
   });
+
+  it('Should listen to disconnects', function (done){
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+    
+    teacher.emit('new-game', teacher1);
+    teacher.on('made-game', function (game){
+      student.disconnect();
+
+    })
+  })
 
 });
 

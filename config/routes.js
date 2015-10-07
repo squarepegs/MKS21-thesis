@@ -13,26 +13,25 @@ module.exports = function(app,passport){
     failureFlash: true
   }));
 
-  app.post('/login', passport.authenticate('local-login', {
+  app.post('/login', passport.authenticate('local-signin', {
     successRedirect: '/teacher',
-    failureRedirect: '/',
+    failureRedirect: '/fail',
     failureFlash: true
   }));  
 
+  app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
 
+  app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { successRedirect: '/pass', 
+                                      failureRedirect: '/fail' }));
 
-  app.get('/signup/:username/:password', function(req, res){
-    console.log('doesthiswork?');
-    var newUser = new User();
-    newUser.local.username = req.params.username;
-    newUser.local.password = req.params.password; 
-    console.log("Username & Password", newUser.local.username, newUser.local.password);
-    newUser.save(function(err){
-      if(err){
-        throw err;
-      }
-    })
-    res.send('Success!');
-  })
 
 };
+
+function isLoggedIn(req, res, next){
+  if(req.isAuthenticated()){
+    return next();
+  } else {
+    res.redirect('/')
+  }
+}

@@ -14,7 +14,6 @@ var formObj = {}
 
 var QuestionBox = React.createClass({
 
-
 	render: function(){
 		return (
 			<div className="questionBox">
@@ -26,11 +25,16 @@ var QuestionBox = React.createClass({
 });
 
 var QuestionForm = React.createClass({
+	getInitialState: function(){
+		return {value: ''}
+	},
+
 	handleSubmit: function(e){
 		e.preventDefault();
 		form.fields.push(formObj);
-		console.log(form)
-	
+		console.log('this is the form: ', form)
+		this.setState({value: e.target.value})
+		console.log('this is the state in questionform', this.state)
 	},
 
 	render: function() {
@@ -44,7 +48,7 @@ var QuestionForm = React.createClass({
 })
 
 var Field = React.createClass({
-	getInitialState: function(){
+	getDefalutProps: function(){
 		return {value: ''}
 	},
 
@@ -60,7 +64,7 @@ var Field = React.createClass({
 		return (
 			<div className="field">
 			{this.props.category}
-			<input type="text" value={value} onChange={this.handleChange}/>
+			<input type="text" value={value} onChange={this.handleChange} ref='myInput'/>
 			</div>
 		)
 	}

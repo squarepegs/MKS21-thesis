@@ -30,7 +30,7 @@ var student4 = {'username':'Edward'};
 describe('Basic server', function(){
 
 //test for server POST on /signup
-  it('/signup should accept POST requests', function (done){
+  xit('/signup should accept POST requests', function (done){
     request(server)
       .post('/signup')
       .expect(201, done)
@@ -38,7 +38,7 @@ describe('Basic server', function(){
 
 //test for server GET call from /data
 
-  it('/data should accept GET requests', function (done){
+  xit('/data should accept GET requests', function (done){
     request(server)
       .get('/data')
       .expect(200, done)

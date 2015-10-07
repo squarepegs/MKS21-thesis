@@ -51,13 +51,16 @@
     <form action="/signup" method="post">
       <fieldset>
         <div class="modal-content">
-          <h4 style="color:teal" class="text-teal">Sign Up</h4>
+        <div class="valign-wrapper">
+        <a href="#" class="valign modal-action modal-close waves-effect waves-indigo indigo darken-2 white-text btn-flat"><img src="/client/images/facebook.png" style="height:20px; position:relative; margin-top:7px; float:left; padding-right:6px;">Sign up with Facebook</a></div>
+        <hr />
+                  <h4 style="color:teal" class="text-teal">Create An Account</h4>        
 
             <P><label>Username:</label><input type="text" name="signupUsername"/></P>
             <P><label>Password:</label><input type="password" name="signupPassword"/></P>
         </div>
         <div class="modal-footer">
-          <a href="#" id="createLoginButton" class="modal-action modal-close waves-effect waves-green btn-flat">Create Your Login</a>
+          <a href="#" id="createLoginButton" class="modal-action modal-close waves-effect waves-green btn-flat">Sign Up</a>
     </fieldset>
   </form>
     </div>
@@ -66,6 +69,9 @@
     <form action="/login" method="post">
       <fieldset>
         <div class="modal-content">
+          <div class="valign-wrapper">
+        <a href="#" class="valign modal-action modal-close waves-effect waves-indigo indigo darken-2 white-text btn-flat"><img src="/client/images/facebook.png" style="height:20px; position:relative; margin-top:7px; float:left; padding-right:6px;">Login with Facebook</a></div>
+        <hr />
           <h4 style="color:teal" class="text-teal">Log In</h4>
             <P><label>Username:</label><input type="text" name="loginUsername"/></P>
             <P><label>Password:</label><input type="password" name="loginPassword"/></P>

@@ -1,5 +1,5 @@
 var LocalStrategy = require('passport-local').Strategy;
-
+var FacebookStrategy = require('passport-facebook').Strategy;
 //TODO: need to make a user 
 var User = require('../db/models/userModel');
 var configAuth = require('./auth')
@@ -82,6 +82,7 @@ passport.use('local-signup', new LocalStrategy({
     clientSecret: configAuth.facebookAuth.clientSecret,
     callbackURL: configAuth.facebookAuth.callbackURL
   },
+
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function(){
       User.findOne({'facebook.id': profile.id}, function(err, user){
@@ -89,12 +90,12 @@ passport.use('local-signup', new LocalStrategy({
           return done(err);
         if(user)
           return done(null,user);
-      }else{
+       else {
         var newUser = new User();
         newUser.facebook.id = profile.id;
         newUser.facebook.token = accessToken;
-        newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-        newUser.facebook.email = profile.emails[0].value;
+        // newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
+        // newUser.facebook.email = profile.emails[0].value;
 
         newUser.save(function(err){
           if(err)
@@ -102,6 +103,7 @@ passport.use('local-signup', new LocalStrategy({
 
           return done(null, newUser);
         })
+      }
       });
     });
   }

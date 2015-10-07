@@ -6,18 +6,23 @@ module.exports = function(app,passport){
   app.get('/', function(req, res){
     res.render('../client/landing_page/landingpage.ejs')//may need to be client/teacher/index
   });
+  app.get('/dashboard', function(req, res){
+    res.render('../client/teacher/dashboard.ejs')//may need to be client/teacher/index
+  });
 
   app.post('/signup', passport.authenticate('local-signup', {
-    successRedirect: '/teacher',
-    failureRedirect: '/',
+    successRedirect: '/dashboard',
+    failureRedirect: '/fail',
     failureFlash: true
   }));
 
   app.post('/login', passport.authenticate('local-signin', {
-    successRedirect: '/teacher',
+    successRedirect: '/dashboard',
     failureRedirect: '/fail',
     failureFlash: true
-  }));  
+  }), function(user){
+    console.log(user);
+  });
 
   app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
 

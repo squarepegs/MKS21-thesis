@@ -25,26 +25,34 @@ passport.use('local-signup', new LocalStrategy({
     passReqToCallback: true
   },
   function(req, username, password, done) {
-    process.nextTick(function(){
-        User.findOne({'local.username': username}, function(err, user){
-          if(err)
-            return done(err);
-          if(user){
-            return done(null, false, req.flash('signupMessage', 'That username already taken'));
-          } else {
-            var newUser = new User();
-            newUser.local.username = username;
-            newUser.local.password = newUser.generateHash(password);
+    process.nextTick(function() {
+      User.findOne({
+        'local.username': username
+      }, function(err, user) {
+        if (err)
+          return done(err);
+        if (user) {
+          return done(null, false, req.flash('signupMessage', 'That username already taken'));
+        } else {
+          var newUser = new User();
+          newUser.local.username = username;
+          newUser.local.password = newUser.generateHash(password);
 
-            newUser.save(function(err){
-              if(err)
-                throw err;
-              return done(null, newUser);
-            })
-          }
-        })
+          newUser.save(function(err) {
+            if (err)
+              throw err;
+            return done(null, newUser);
+          })
+.then(User.findOne({
+        'local.username': username
+      }, function(err, user) {
+        console.log("we got one!, ", user);
+      }));
 
-      });
+          ;
+        }
+      })
+    });
   }));
 
   passport.use('local-signin', new LocalStrategy({

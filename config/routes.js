@@ -19,6 +19,11 @@ module.exports = function(app,passport){
     failureFlash: true
   }));  
 
+  app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
+
+  app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { successRedirect: '/teacher', 
+                                      failureRedirect: '/' }));
 
 
 };

@@ -7,6 +7,10 @@ module.exports = function(app,passport){
     res.render('../client/landing_page/landingpage.ejs')//may need to be client/teacher/index
   });
 
+  app.get('/dashboard', function(req, res){
+    res.render('../client/teacher/dashboard.ejs')//may need to be client/teacher/index
+  });
+
   app.post('/signup', passport.authenticate('local-signup', {
     successRedirect: '/teacher',
     failureRedirect: '/',

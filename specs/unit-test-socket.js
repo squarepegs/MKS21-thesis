@@ -193,6 +193,7 @@ describe('Basic server', function(){
       })
     });    
   });
+
 });
 
   // xit('Should allow multiple students to join a game', function (done){

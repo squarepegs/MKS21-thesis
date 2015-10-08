@@ -40,6 +40,10 @@ module.exports = function(app,passport){
     DeckController.getDecks(req, res)
   });
 
+  app.get('/api/decks/:index', function(req, res){
+    DeckController.getADeck(req, res)
+  });
+
   app.post('/api/decks', function(req, res){
     DeckController.newDeck(req, res)
   });

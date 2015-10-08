@@ -109,6 +109,23 @@ var Profile = React.createClass({
   }
 })
 
+var DeckEditor = React.createClass({
+  componentWillMount: function(){
+    $.get('/api/decks/' + this.props.deckNum, function(req, res){
+        console.log("req", req);
+      });
+
+  },
+  render:function(){
+    return(
+      <div>
+        <h3>DeckEditor</h3>
+        {this.props.deckNum}
+      </div>
+      )
+  }
+})
+
 var MyDecks = React.createClass({
   killDeck: function(event){
     var context = this;
@@ -116,6 +133,15 @@ var MyDecks = React.createClass({
         console.log("callback");
         context.getDecks();
       })
+  },
+  editDeck: function(event){
+    var deckNum = event.target.value;
+
+    React.render(
+      <div>
+        <DeckEditor deckNum={deckNum}/>
+      </div>,document.getElementById('deckEditor')
+    )
   },
   getDecks: function(){
     React.render(
@@ -130,8 +156,8 @@ var MyDecks = React.createClass({
       var elements = [];
       for(var i = 0; i < req.decks.length; i++){
         elements.push(
-          <tr value={i}>
-            <td><button>Edit Deck</button>
+          <tr key={i}>
+            <td><button value={i} onClick={context.editDeck}>Edit Deck</button>
             <button value={i} onClick={context.killDeck}>DeleteDeck</button></td>
             <td>{req.decks[i].title}</td>
             <td>{req.decks[i].notes}</td>

@@ -44,6 +44,11 @@ module.exports = function(app,passport){
     DeckController.newDeck(req, res)
   });
 
+  app.post('/api/decks/killdeck', function(req, res){
+    console.log("route killdeck")
+    DeckController.killDeck(req, res)
+  });
+
   app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
 
   app.get('/auth/facebook/callback',

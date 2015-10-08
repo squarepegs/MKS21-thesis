@@ -110,7 +110,15 @@ var Profile = React.createClass({
 })
 
 var MyDecks = React.createClass({
-  componentDidMount: function(){
+  killDeck: function(event){
+    var context = this;
+    console.log('event.target', event.target, event.target.value)
+    $.post('/api/decks/killdeck/', {'deckNum':event.target.value}, function(req, res){
+      context.getDecks()
+    })
+    console.log("killing event.target.value client")
+  },
+  getDecks: function(){
     var context = this;
     $.get('/api/decks', function(req, res){
       console.log('deck req', req)
@@ -118,7 +126,9 @@ var MyDecks = React.createClass({
       var elements = [];
       for(var i = 0; i < req.decks.length; i++){
         elements.push(
-          <tr>
+          <tr value={i}>
+            <td><button>Edit Deck</button>
+            <button value={i} onClick={context.killDeck}>DeleteDeck</button></td>
             <td>{req.decks[i].title}</td>
             <td>{req.decks[i].notes}</td>
             <td>{req.decks[i].questions.length}</td>
@@ -130,6 +140,7 @@ var MyDecks = React.createClass({
       <div>
         <table>
           <tr>
+            <th>&nbsp;</th>
             <th>Title</th>
             <th>Notes</th>
             <th># questions</th>
@@ -141,11 +152,15 @@ var MyDecks = React.createClass({
       )
     });
   },
+  componentDidMount: function(){
+    this.getDecks();
+  },
   render:function(){
     return(
       <div>
         <h3>Decks</h3>
         <div id="listOfDecks"></div>
+        <div id="deckEditor"></div>
       </div>
       )
   }

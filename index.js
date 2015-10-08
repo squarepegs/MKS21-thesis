@@ -2,8 +2,8 @@ var bodyParser   = require('body-parser');
 var express      = require('express');
 var morgan       = require('morgan');
 var handler      = require('./server/requestHandler.js');
-var http         = require('http');
-var io           = require('socket.io');
+var http         = require('http').Server(app);
+var io           = require('socket.io')(http);
 var cookieParser = require('cookie-parser');
 var session      = require('express-session');
 var mongoose     = require('mongoose');
@@ -56,11 +56,11 @@ require('./config/routes.js')(app, passport);
 console.log('App is listening on port ' + PORT);
 // We require socket.io to have the entire server passed in as an argument,
 // so we create a server variable to pass into socket.io's .listen method.
-var server = app.listen(PORT);
+var server = http.listen(PORT);
 
 // helpers.csvParser();
 
-var io = require('socket.io').listen(server);
+var io = require('socket.io')(server);
 
 module.exports = app;
 
@@ -70,62 +70,90 @@ module.exports = app;
 
 //Everything that requires Websockets lives INSIDE this callback.
 var allClients = [];
-var allsocketIds = []
+var allsocketIds = [];
+//rooms array will store a room for the clients to join
+var rooms = [];
+var room;
 
-io.sockets.on('connection', function(socket) {
+io.on('connection', function(socket) {
+
   allClients.push(socket);
   allsocketIds.push(socket.conn.id)
-  console.log(allsocketIds);
-  // new game
-  socket.on('new-game', function(data){
-    var code = handler.gameMaker(data);
-    handler.games[code].owner = socket;
-    socket.emit('made-game', {code: code});
-  });
+  console.log('this is the user: ', socket.id)
 
-  // when student joins
-  socket.on('student-join', function(data){
-    if (!handler.games[data.code]) {
-      console.log("tried to enter a non existant game: " + data.code);
-      socket.emit('no-game');
-    }
-    else {
-      handler.games[data.code].students[data.username] = socket;
-      socket.emit('you-joined');
-      handler.games[data.code].owner.emit('update-list', Object.keys(
-        handler.games[data.code].students
-      ));
-      console.log(Object.keys(handler.games[data.code].students));
-    }
-  });
+  // new game teacher sends in her username--server hears client and emits code to all sockets
+  // var code = handler.gameMaker(data);
+  room = '1234';
+  rooms.push(room);
 
-  socket.on('buzz', function(data){
-    handler.games[data.code].owner.emit('buzzed-in', {username:data.username, time: data.time});
-  });
+  console.log('this is the code for the channel', room)
+  
+  socket.broadcast.emit('message', 'Joining room:'+room);
+  console.log('The socket sent a message')
 
-  socket.on('newQ', function(data){
-    if (!handler.games[data.code]) socket.emit('error');
-    else jeopardy.getQ(function(ques){
-      handler.games[data.code].owner.emit('asked-question', ques);
-      delete ques.answer;
-      for(var student in handler.games[data.code].students){
-        handler.games[data.code].students[student].emit('ask-question', ques);
-      }
-    });
-  });
-  socket.on('disconnect', function (){
+  socket.join(room); 
 
-    console.log(socket.conn.id, 'client about to disconnect')
-    var i = allClients.indexOf(socket);
-    allClients.splice(i, 1)
-    var j = allsocketIds.indexOf(socket.conn.id)
-    allsocketIds.splice(j, 1);
-    console.log('these are all clients after disconnect: ', allClients);
-    console.log('these are all ids after disconnect: ,', allsocketIds)
-  })
+  console.log('The socket joined a room')
+
+  // socket.on('message', function (msg){
+  //   console.log('Server forced teacher to hear', msg)
+  // })
+
+  io.in(room).emit('message', 'Joining room:'+room)
+  
+
   socket.on('error', function (err){
-    console.log('error: ', err)
+    console.log('this is the error: ', err)
   })
+
+  //teacher socket on made-game hears a code, and joins the room
+
+  // // when student joins
+  // socket.on('student-join', function(data){
+  //   if (!handler.games[data.code]) {
+  //     console.log("tried to enter a non existant game: " + data.code);
+  //     socket.emit('no-game');
+  //   }
+  //   else {
+  //     handler.games[data.code].students[data.username] = socket;
+  //     socket.emit('you-joined');
+  //     handler.games[data.code].owner.emit('update-list', Object.keys(
+  //       handler.games[data.code].students
+  //     ));
+  //     console.log(Object.keys(handler.games[data.code].students));
+  //   }
+  // });
+
+  // socket.on('buzz', function(data){
+  //   handler.games[data.code].owner.emit('buzzed-in', {username:data.username, time: data.time});
+  // });
+
+  // socket.on('newQ', function(data){
+  //   if (!handler.games[data.code]) socket.emit('error');
+  //   else jeopardy.getQ(function(ques){
+  //     handler.games[data.code].owner.emit('asked-question', ques);
+  //     delete ques.answer;
+  //     for(var student in handler.games[data.code].students){
+  //       handler.games[data.code].students[student].emit('ask-question', ques);
+  //     }
+  //   });
+  // });
+  // socket.on('disconnect', function (){
+
+    
+
+  //   console.log(socket.conn.id, 'client about to disconnect')
+  //   var i = allClients.indexOf(socket);
+  //   allClients.splice(i, 1)
+  //   var j = allsocketIds.indexOf(socket.conn.id)
+  //   allsocketIds.splice(j, 1);
+  //   console.log('these are all clients after disconnect: ', allClients);
+  //   console.log('these are all ids after disconnect: ,', allsocketIds)
+  // })
+
+  // socket.on('error', function (err){
+  //   console.log('error: ', err)
+  // })
 });
 
 //--------------------------------

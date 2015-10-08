@@ -46,22 +46,14 @@ describe('Basic server', function(){
 
 //test for broadcast of creating a game: 
 
-  it('Should be able to create a game with an owner and emit a code' ,function (done){
-    var teacher = io.connect(socketURL, options);
-
-    teacher.emit('new-game', teacher1);
-    
-    teacher.on('made-game', function (game){
-      game.should.have.property('code').which.is.a.String();
-      handler.games.should.have.property(game.code);
-
-      handler.games[game.code].owner.should.exist;
-
-      handler.games[game.code].owner.should.not.have.property('students');
-      
-      teacher.disconnect();
-      done();
-    });
+  it.only('Should be able to create a game with an owner and emit a code' ,function (done){
+    var teacher = io.connect(socketURL);
+         
+    teacher.on('message', function (msg){
+        expect(msg).to.equal('Joining room:1234')
+        done();
+      });
+  
   });
 
 
@@ -171,7 +163,7 @@ describe('Basic server', function(){
      
   })
 
-  it.only('Should broadcast questions ', function (done){
+  it('Should broadcast questions ', function (done){
     var teacher = io.connect(socketURL, options);
     var student = io.connect(socketURL, options);
 
@@ -199,11 +191,8 @@ describe('Basic server', function(){
     var teacher = io.connect(socketURL, options);
     var student = io.connect(socketURL, options);
     
-    teacher.emit('new-game', teacher1);
-    teacher.on('made-game', function (game){
-      student.disconnect();
+    teacher.disconnect();
 
-    })
   })
 
 });

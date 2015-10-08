@@ -84,7 +84,12 @@ var Profile = React.createClass({
     this.setState({'email': event.target.value});
   },
   updateProfile: function(){
-
+    var context = this;
+    var query = context.state
+    $.post('/api/profile', query, function(req, res){})
+    context.setState({'firstName': ''});
+    context.setState({'lastName': ''});
+    context.setState({'email': ''});
   },
   render:function(){
     return(
@@ -96,7 +101,7 @@ var Profile = React.createClass({
               <li>First Name:  <input type="text" value={this.state.firstName} onChange={this.prepFirstName} name="firstName"/>{this.state.firstName}</li>
               <li>Last Name: <input type="text" value={this.state.lastName} onChange={this.prepLastName} name="lastName"/>{this.state.lastName}</li>
               <li>E&ndash;mail: <input type="text" value={this.state.email} onChange={this.prepEmail} name="email"/>{this.state.email}</li>
-              <li><a className="btn" onClick={this.updateProfile}>Update Profile</a></li>
+              <li><p>{this.status}</p><a className="btn" onClick={this.updateProfile}>Update Profile</a></li>
             </ul>
           </fieldset>
         </form>

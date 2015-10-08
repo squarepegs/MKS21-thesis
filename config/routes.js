@@ -31,6 +31,10 @@ module.exports = function(app,passport){
     UserController.getProfile(req, res)
   });
 
+  app.post('/api/profile', function(req, res){
+    UserController.amendProfile(req, res)
+  });
+
   app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
 
   app.get('/auth/facebook/callback',

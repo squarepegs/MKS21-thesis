@@ -15,10 +15,18 @@ var userSchema = mongoose.Schema({
 	},
 
   profile: {
-    username:String,
-    firstName: String,
-    lastName: String,
-    email: String
+    firstName: {
+      type: String,
+      default: "First name not set"
+    },
+    lastName: {
+      type: String,
+      default: "Last name not set"
+    },
+    email: {
+      type: String,
+      default: "Email not set"
+    }
   }
 
 });

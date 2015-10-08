@@ -50,38 +50,41 @@ var Tabs = React.createClass({
 })
 
 var Profile = React.createClass({
-  profile: {},
-  // getInitialState: function(){
-  //   console.log(this.getProfile())
-  //   return this.getProfile();
-  // },
-  getProfile: function() {
-    // session is not defined
+  getInitialState: function(){
+    return {
+      username: 'loading', 
+      firstName: 'loading',
+      lastName: 'loading',
+      email: 'loading'
+      }
+  },
+  componentDidMount: function(){
+    var context = this;
     $.get('/api/profile', function(req, res){
      console.log('req',req)
-      // this.profile.firstName = user.firstName;
-      // this.profile.lastName = user.lastName;
-      // this.profile.email = user.email;
-    })
-    // return {
-    //   username: '',
-    //   lastGistUrl: ''
-    // };
+     if (req.local){
+      context.setState({'username': req.local.username});
+     }
+     if (req.facebook){
+      context.setState({'username': req.facebook.name});
+     }
+      context.setState({'firstName': req.profile.firstName});
+      context.setState({'lastName': req.profile.lastName});
+      context.setState({'email': req.profile.email});
+     });
+  },
+  prepFirstName: function(event){
+    this.setState({'firstName': event.target.value});
+    console.log()
+  },
+  prepLastName: function(event){
+    this.setState({'lastName': event.target.value});
+  },
+  prepEmail: function(event){
+    this.setState({'email': event.target.value});
   },
   updateProfile: function(){
-    // if ($('#firstName').val()) {
-    //   this.profile.firstName = $('#firstName').val();
-    // }
-    // if ($('#lastName').val()) {
-    //   this.profile.lastName = $('#lastName').val();
-    // }
-    // if ($('#email').val()) {
-    //   this.profile.email = $('#email').val();
-    // }
-    // $.post('/api/updateProfile', this.profile, function(null, user){
-    //   console.log('success', user)
-    // })
-    
+
   },
   render:function(){
     return(
@@ -89,11 +92,11 @@ var Profile = React.createClass({
         <form>
           <fieldset>
             <ul>
-              <li>Username: {window.jeopardy.username || 'username'}</li>
-              <li>First Name: {window.jeopardy.username || 'firstname'} &mdash;&mdash;  <input type="text" name="firstName"/><button>Change First Name</button></li>
-              <li>Last Name: {window.jeopardy.username || 'lastname'} &mdash;&mdash;  <input type="text" name="lastName"/><button>Change Last Name</button></li>
-              <li>E&ndash;mail: {window.jeopardy.username || 'email'} &mdash;&mdash;  <input type="text" name="email"/><button>Change E&ndash;mail</button></li>
-              <li><a className="btn" onClick={this.getProfile}>Update Profile</a></li>
+              <li>Username: { this.state.username }</li>
+              <li>First Name:  <input type="text" value={this.state.firstName} onChange={this.prepFirstName} name="firstName"/>{this.state.firstName}</li>
+              <li>Last Name: <input type="text" value={this.state.lastName} onChange={this.prepLastName} name="lastName"/>{this.state.lastName}</li>
+              <li>E&ndash;mail: <input type="text" value={this.state.email} onChange={this.prepEmail} name="email"/>{this.state.email}</li>
+              <li><a className="btn" onClick={this.updateProfile}>Update Profile</a></li>
             </ul>
           </fieldset>
         </form>

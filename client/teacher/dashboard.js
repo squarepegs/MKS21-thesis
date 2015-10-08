@@ -51,10 +51,14 @@ var Tabs = React.createClass({
 
 var Profile = React.createClass({
   profile: {},
+  // getInitialState: function(){
+  //   console.log(this.getProfile())
+  //   return this.getProfile();
+  // },
   getProfile: function() {
     // session is not defined
-    $.get('/api/profile', user, function(req, res){
-      console.log('success', req.user, req.user.id)
+    $.get('/api/profile', function(req, res){
+     console.log('req',req)
       // this.profile.firstName = user.firstName;
       // this.profile.lastName = user.lastName;
       // this.profile.email = user.email;

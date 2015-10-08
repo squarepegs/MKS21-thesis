@@ -69,38 +69,123 @@ module.exports = app;
 //--------------------------------
 
 //Everything that requires Websockets lives INSIDE this callback.
-var allClients = [];
-var allsocketIds = [];
+
+var allSocketIds = [];
 //rooms array will store a room for the clients to join
 var rooms = [];
-var room;
 
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
 
-  allClients.push(socket);
-  allsocketIds.push(socket.conn.id)
-  console.log('this is the user: ', socket.id)
+console.log(socket.id, 'connected to the server')
+allSocketIds.push(socket.id)
+console.log('these are all the active clients', allSocketIds)
 
-  // new game teacher sends in her username--server hears client and emits code to all sockets
-  // var code = handler.gameMaker(data);
-  room = '1234';
-  rooms.push(room);
+//NEW GAME listener for teacher created by server: 
+socket.on('new game', function (user){
 
-  console.log('this is the code for the channel', room)
+//request handler creates room code
+var room = handler.gameMaker(user);
+rooms.push(room);
+
+
+//username saved in socket
+socket.userid = user.id;
+
+//checks if teacher is in room, if it is socket leaves saved room, and joins new created room
+
+if(socket.code){
+console.log('this should not appear')
+    socket.leave(socket.code);
+    socket.join(room);  
+} else {
+
+//if it isn't, new room saved in socket.code  
+socket.code = room;
+
+//teacher socket joins new room
+socket.join(socket.code); 
+console.log('the teacher should be in these rooms on new game', socket.rooms)
+}
+//server emits welcome message and room code
+io.in(socket.code).emit('welcome message', room)
+    
+});
+
+//STUDENT JOIN ROOM LISTENER
+
+socket.on('student join', function (room){
   
-  socket.broadcast.emit('message', 'Joining room:'+room);
-  console.log('The socket sent a message')
-
-  socket.join(room); 
-
-  console.log('The socket joined a room')
-
-  // socket.on('message', function (msg){
-  //   console.log('Server forced teacher to hear', msg)
-  // })
-
-  io.in(room).emit('message', 'Joining room:'+room)
+  console.log('this should ping when student attempts to joins this room: ', room)
+//if room exists, then ...
+  if(rooms.indexOf(room) !== -1){
   
+  //save room in student's socket
+  socket.code = room;
+  console.log('the room is saved as', socket.code)
+  //student now joins room
+  socket.join(socket.code);
+  
+  //server says hello
+  io.to(socket.code).emit('welcome message', room)
+
+  } else {
+
+  io.emit('error', 'this is an error')
+    console.log('these are the error', socket.rooms)
+  }
+  console.log('these are the existing rooms', rooms)
+
+});
+
+
+//CHAMGE ROOMS LISTENER for stdnt and teacher
+
+socket.on('change room', function (newRoom){
+  
+  console.log('this should be the room saved in the socket', socket.code, 'this should be the newRoom', newRoom)
+  console.log('the socket should be in these rooms before change', socket.rooms)
+  
+  socket.leave(socket.code)
+  
+  socket.join(newRoom);
+  
+  socket.code = newRoom;
+  
+  io.to(socket.code).emit('change message', 'welcome to '+socket.code)
+  
+  console.log('the socket should be in these rooms on change game', socket.rooms)
+})
+
+//END GAME for teacher
+console.log('these are the active rooms before join', socket.rooms)
+
+socket.on('end game', function (room) {
+  //if teacher is in room then check
+
+  //if not
+
+})
+
+//NEW QUESTION LISTENER for teacher
+
+// socket.on('newQ', function (data){
+  
+//   if (!socket.code){ 
+//     socket.emit('error');
+//   }
+//   else jeopardy.getQ(function(ques){
+//       handler.games[data.code].owner.emit('asked-question', ques);
+//       delete ques.answer;
+//       for(var student in handler.games[data.code].students){
+//         handler.games[data.code].students[student].emit('ask-question', ques);
+//       }
+//     });
+//   });
+
+
+socket.on('disconnect', function(){
+  console.log(socket.id, ' has disconnected from the server')
+})
 
   socket.on('error', function (err){
     console.log('this is the error: ', err)

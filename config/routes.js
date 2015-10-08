@@ -1,4 +1,5 @@
 var User    = require('../db/models/userModel')
+var mongoose = require('mongoose');
 
 module.exports = function(app,passport){
 
@@ -23,6 +24,17 @@ module.exports = function(app,passport){
   }), function(user){
     console.log(user);
   });
+
+  app.get('/api/profile', function(req, res){
+    console.log("req.user.id", req.user.id)
+    var lookup = mongoose.Types.ObjectId(req.user.id);
+    User.findOne({"_id" : lookup}, function(err, data){
+      if (err){
+        throw err;
+      }
+      console.log("data", data);
+    })
+  })
 
   app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
 

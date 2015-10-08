@@ -53,9 +53,8 @@ var Profile = React.createClass({
   profile: {},
   getProfile: function() {
     // session is not defined
-    console.log(user);
-    $.get('/api/profile', passport.user, function(err, user){
-      console.log('success', user)
+    $.get('/api/profile', user, function(req, res){
+      console.log('success', req.user, req.user.id)
       // this.profile.firstName = user.firstName;
       // this.profile.lastName = user.lastName;
       // this.profile.email = user.email;

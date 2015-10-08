@@ -3,7 +3,6 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 //TODO: need to make a user 
 var User = require('../db/models/userModel');
 var configAuth = require('./auth')
-var bcrypt = require('bcrypt-nodejs');
 
 module.exports = function(passport){
   
@@ -19,41 +18,33 @@ module.exports = function(passport){
   });
 
 passport.use('local-signup', new LocalStrategy({
-    //this should look at index.html sign up class
-    usernameField: 'signupUsername',
-    passwordField: 'signupPassword',
-    passReqToCallback: true
-  },
-  function(req, username, password, done) {
-    process.nextTick(function() {
-      User.findOne({
-        'local.username': username
-      }, function(err, user) {
-        if (err)
-          return done(err);
-        if (user) {
-          return done(null, false, req.flash('signupMessage', 'That username already taken'));
-        } else {
-          var newUser = new User();
-          newUser.local.username = username;
-          newUser.local.password = newUser.generateHash(password);
-
-          newUser.save(function(err) {
-            if (err)
-              throw err;
-            return done(null, newUser);
-          })
-.then(User.findOne({
-        'local.username': username
-      }, function(err, user) {
-        console.log("we got one!, ", user);
-      }));
-
-          ;
-        }
-      })
+  //this should look at index.html sign up class
+  usernameField: 'signupUsername',
+  passwordField: 'signupPassword',
+  passReqToCallback: true
+}, function(req, username, password, done) {
+  process.nextTick(function() {
+    User.findOne({
+      'local.username': username
+    }, function(err, user) {
+      if (err) return done(err);
+      if (user) {
+        return done(null, false, req.flash('signupMessage', 'That username already taken'));
+      } else {
+        var newUser = new User();
+        newUser.local.username = username;
+        newUser.local.password = newUser.generateHash(password);
+        newUser.save(function(err) {
+          if (err) throw err;
+          return done(null, newUser);
+        }).then(User.findOne({
+          'local.username': username
+        }, function(err, user) {
+        }));
+      }
     });
-  }));
+  });
+}));
 
   passport.use('local-signin', new LocalStrategy({
     usernameField: 'loginUsername',

@@ -27,6 +27,9 @@ var userSchema = mongoose.Schema({
       type: String,
       default: "Email not set"
     }
+  },
+  decks: {
+    type: Array
   }
 
 });

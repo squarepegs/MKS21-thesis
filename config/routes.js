@@ -1,5 +1,6 @@
 var User    = require('../db/models/userModel');
 var UserController    = require('../db/controllers/userController');
+var DeckController    = require('../db/controllers/deckController');
 
 var mongoose = require('mongoose');
 
@@ -33,6 +34,14 @@ module.exports = function(app,passport){
 
   app.post('/api/profile', function(req, res){
     UserController.amendProfile(req, res)
+  });
+
+  app.get('/api/decks', function(req, res){
+    DeckController.getDecks(req, res)
+  });
+
+  app.post('/api/decks', function(req, res){
+    DeckController.newDeck(req, res)
   });
 
   app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions

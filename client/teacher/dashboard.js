@@ -75,7 +75,6 @@ var Profile = React.createClass({
   },
   prepFirstName: function(event){
     this.setState({'firstName': event.target.value});
-    console.log()
   },
   prepLastName: function(event){
     this.setState({'lastName': event.target.value});
@@ -111,26 +110,75 @@ var Profile = React.createClass({
 })
 
 var MyDecks = React.createClass({
+  componentDidMount: function(){
+    var context = this;
+    $.get('/api/decks', function(req, res){
+      console.log('deck req', req)
+  
+      var elements = [];
+      for(var i = 0; i < req.decks.length; i++){
+        elements.push(
+          <tr>
+            <td>{req.decks[i].title}</td>
+            <td>{req.decks[i].notes}</td>
+            <td>{req.decks[i].questions.length}</td>
+          </tr>
+          )
+        }
+      console.log('elements', elements)
+      React.render(
+      <div>
+        <table>
+          <tr>
+            <th>Title</th>
+            <th>Notes</th>
+            <th># questions</th>
+          </tr>    
+          {elements}
+        </table>
+      </div>
+      ,document.getElementById('listOfDecks')
+      )
+    });
+  },
   render:function(){
     return(
       <div>
-        <ul>
-          <li>List Decks Here</li>
-        </ul>
+        <h3>Decks</h3>
+        <div id="listOfDecks"></div>
       </div>
       )
   }
 })
 
 var CreateDecks = React.createClass({
+  getInitialState: function(){
+    return {
+      title: 'insert',
+      notes: 'insert',
+      questions: []
+      }
+  },
+  createDeck: function(){
+    var context = this;
+    var query = context.state
+    $.post('/api/decks', query, function(req, res){})
+    context.setState({'title': ''});
+    context.setState({'notes': ''});
+  },
+  prepTitle: function(event){
+    this.setState({'title': event.target.value});
+  },
+  prepNotes: function(event){
+    this.setState({'notes': event.target.value});
+  },
   render:function(){
     return(
       <div>
         <div>
-          <label>Deck Name:</label><input type="text" name="deckName" />
-          <label>Notes:</label><input type="textarea" name="deckNotes" />
-          <button>Start New Deck</button>
-          <div id="questionArea">QuestionArea</div>
+          <label>Deck Name:</label><input type="text" value={this.state.title} onChange={this.prepTitle} name="deckName" />
+          <label>Notes:</label><input type="textarea" value={this.state.notes} onChange={this.prepNotes} name="deckNotes" />
+          <a className="btn" onClick={this.createDeck}>Create New Deck</a>
         </div>
       </div>
       )

@@ -112,13 +112,17 @@ var Profile = React.createClass({
 var MyDecks = React.createClass({
   killDeck: function(event){
     var context = this;
-    console.log('event.target', event.target, event.target.value)
     $.post('/api/decks/killdeck/', {'deckNum':event.target.value}, function(req, res){
-      context.getDecks()
-    })
-    console.log("killing event.target.value client")
+        console.log("callback");
+        context.getDecks();
+      })
   },
   getDecks: function(){
+    React.render(
+      <div>
+      </div>
+    ,document.getElementById('listOfDecks')
+    ) // clear fields
     var context = this;
     $.get('/api/decks', function(req, res){
       console.log('deck req', req)

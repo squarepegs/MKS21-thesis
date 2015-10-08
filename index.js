@@ -161,8 +161,8 @@ console.log('these are the active rooms before join', socket.rooms)
 
 socket.on('end game', function (room) {
   //if teacher is in room then check
-
-  //if not
+  
+  
 
 })
 

@@ -75,7 +75,14 @@ module.exports = {
     Deck.findOne(
         {"_id" : lookup}, // selector
         function(err, deck){ //callback
-         res.send(deck)
+          var sendDeck = {
+            '_id': deck._id,
+            'notes': deck.notes,
+            'title': deck.title,
+            'questions': deck.questions
+          }
+          console.log("server-side sendDeck", sendDeck)
+         res.send(sendDeck)
        })
   },
   amendADeck: function(req, res){

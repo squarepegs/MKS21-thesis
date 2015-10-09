@@ -146,37 +146,51 @@ var DeckEditor = React.createClass({
     setTimeout(console.log(context.state.questions), 2000);
     this.setState({nextCat: '', nextVal: '', nextQues: '', nextAns: ''})
   },
+  editQuestion: function(index, property){
+    var amendments = this.state.questions;
+    amendments[index][property] = event.target.value;
+    this.setState({questions: amendments});
+  },
+  loadQs: function(qs){
+    this.setState({'questions': qs})
+  },
   showQs: function(){
     var context = this;
         $.get('/api/decks/' + this.props.deckID, function(req, res){
           console.log("req", req)
-            context.setState({ 'questions' : req.questions })
+            console.log("req.questions", req.questions);
+            var questions = req.questions.slice();
+            context.loadQs(questions);
             context.setState({ 'title' : req.title })
             context.setState({ 'notes' : req.notes })
             console.log("context.state", context.state)
-            var quesElements = []
-            for (var i = 0; i < context.state.questions.length; i++){
+            var quesElements = [];
+            for (var i = 0; i < questions.length; i++){
+              console.log("run")
               quesElements.push(
                 <div key={i}>
                   <fieldset>
                      <div className="row"> 
-                        <div className="col s1"><button key={i} onClick={this.clearQ}>Clear</button>
+                        <div className="col s1"><button key={i} onClick={context.clearQ}>Clear</button>
                         </div>
-                        <div className="col s1"><input type="text" className="category" name={'ques' + i + 'category'} value={context.state.questions[i].category}/>
+                        <div className="col s1"><input type="text" className="category" name={'ques' + i + 'category'} onChange={context.editQuestion(i, 'category')} defaultValue={questions[i].category}/>
                         </div>
-                        <div className="col s2"><input type="text" className="value" name={'ques' + i + 'value'} value={context.state.questions[i].value}/>
+                        <div className="col s2"><input type="text" className="value" name={'ques' + i + 'value'} onChange={context.editQuestion(i, 'value')} defaultValue={questions[i].value}/>
                         </div>
-                        <div className="input-field col s6"><textarea className="question" name={'ques' + i + 'question'} value={context.state.questions[i].question}></textarea>
+                        <div className="input-field col s6"><textarea className="question" name={'ques' + i + 'question'}  onChange={context.editQuestion(i, 'question')}  defaultValue={questions[i].question}></textarea>
                         </div>
-                        <div className="input-field col s2"><input type="text" className="answer" name={'ques' + i + 'answer'} value={context.state.questions[i].answer}/>
+                        <div className="input-field col s2"><input type="text" className="answer" name={'ques' + i + 'answer'} onChange={context.editQuestion(i, 'answer')}  defaultValue={questions[i].answer}/>
                         </div>
                       </div>
                     </fieldset>
                   </div>
                 )
-        context.setState({ 'quesElements' : quesElements })
-          }});
-    this.render();
+          }
+context.setState({ 'quesElements' : quesElements })
+
+context.render();
+        });
+
   },
   componentWillMount: function(){
     this.showQs();

@@ -27,6 +27,7 @@ var student3 = {'id':'Danny'};
 var student4 = {'id':'Edward'};
 
 
+
 describe('Basic server', function(){
 
 //test for server POST on /signup
@@ -60,27 +61,41 @@ describe('Basic server', function(){
       }); 
   });
 
-  it.only('teacher should be able to disconnect all users on ending a game', function (done){
+  it('teacher should be able to change rooms users on ending a game', function (done){
 
     var teacher = io.connect(socketURL, options);
-    var teacher2 = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
 
     teacher.emit('new game', teacher1);
-    teacher2.emit('new game', teacher1);
-
     teacher.emit('change room', '1234');
-    
-    teacher2.on('welcome message', function (code){
-      expect(code).to.equal('1234')
-    });
 
     teacher.on('change message', function (msg){
-      expect(msg).to.equal('welcome to 1234')
+      student.emit('student join', {'id':'Billy', 'code': '1234'});
+      teacher.disconnect();
+      student.disconnect();
       done();
-    })
-  
-    
-  })
+    });
+  });
+
+  it.only('teacher should be able to emit questions', function (done){
+
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+
+    teacher.emit('new game', teacher1);
+    teacher.emit('change room', '1234');
+
+    teacher.on('change message', function (msg){
+      student.emit('student join', {'id':'Billy', 'code': '1234'});
+      teacher.emit('newQ', '1234');
+      student.on('student question', function (ques){
+      teacher.disconnect();
+      student.disconnect();
+      done();
+      })
+    });
+  });
+
 
   it('Student should be able to join a room', function (done){
     var teacher = io.connect(socketURL);

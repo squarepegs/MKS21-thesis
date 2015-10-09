@@ -70,175 +70,204 @@ module.exports = app;
 
 //Everything that requires Websockets lives INSIDE this callback.
 
-var allSocketIds = [];
 //rooms array will store a room for the clients to join
-var rooms = [];
+
 
 io.on('connection', function (socket) {
-
-console.log(socket.id, 'connected to the server')
-allSocketIds.push(socket.id)
-console.log('these are all the active clients', allSocketIds)
-
-//NEW GAME listener for teacher created by server: 
-socket.on('new game', function (user){
-
-//request handler creates room code
-var room = handler.gameMaker(user);
-rooms.push(room);
+  //server connections object of total clients
+  var clients = io.sockets.connected;
 
 
-//username saved in socket
-socket.userid = user.id;
+  console.log(socket.id, 'connected to the server')
 
-//checks if teacher is in room, if it is socket leaves saved room, and joins new created room
 
-if(socket.code){
-console.log('this should not appear')
-    socket.leave(socket.code);
-    socket.join(room);  
-} else {
+  //TEACHER NEW GAME reated by server, only teachers can create new rooms: 
+  socket.on('new game', function (user){
+    //a teacher can host several rooms
 
-//if it isn't, new room saved in socket.code  
-socket.code = room;
+    var hostRooms = clients[socket.id].rooms;
 
-//teacher socket joins new room
-socket.join(socket.code); 
-console.log('the teacher should be in these rooms on new game', socket.rooms)
-}
-//server emits welcome message and room code
-io.in(socket.code).emit('welcome message', room)
+    //userid added to the socket
+    socket.username = user.id;
+    //user is marked as a HOST
+
+    socket.teacher = true;
+
+    //request handler creates room code
+    var room = handler.gameMaker(user);
+
+    console.log(socket.id, 'created a new game');
+
+    console.log('the teacher ', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
+
+    //checks if teacher is in room, if it is socket leaves saved room, and joins new room created by server
+
+    if(socket.code){
+    console.log('this should only appear if ', socket.id, 'is already in a room on new game')
+        socket.leave(socket.code);
+        socket.join(room);  
+    } else {
+
+    //if it isn't in a room, the  new room saved in socket.code  
+    socket.code = room;
+
+    //teacher socket joins new room
+    socket.join(socket.code); 
+
+    }
+    //server emits welcome message and room code
+    io.to(socket.id).emit('welcome message', 'Hello '+socket.username+'here is your new game code'+room);
+
+  });
+
+  //STUDENT JOIN ROOM LISTENER
+
+  socket.on('student join', function (user){
+
+    //socket code assigned
+    socket.code = user.code;
+
+    //userid added to socket
+    socket.username = user.id
     
-});
+    //student is not marked as a host;
+    socket.teacher = false;
 
-//STUDENT JOIN ROOM LISTENER
+    //handler finds the host socket of the room by entering the student's code;
 
-socket.on('student join', function (room){
-  
-  console.log('this should ping when student attempts to joins this room: ', room)
-//if room exists, then ...
-  if(rooms.indexOf(room) !== -1){
-  
-  //save room in student's socket
-  socket.code = room;
-  console.log('the room is saved as', socket.code)
-  //student now joins room
-  socket.join(socket.code);
-  
-  //server says hello
-  io.to(socket.code).emit('welcome message', room)
-
-  } else {
-
-  io.emit('error', 'this is an error')
-    console.log('these are the error', socket.rooms)
-  }
-  console.log('these are the existing rooms', rooms)
-
-});
+    var host = handler.findHost(clients, socket.code);
 
 
-//CHAMGE ROOMS LISTENER for stdnt and teacher
+    console.log('the student', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
+    
+    //if the room matches the teacher, then the student can join the room
+    console.log('this is the host', host.username)
+    if(host.code === socket.code){
+    
+    //save room in student's socket
+    socket.code = user.code;
+    
+    //student now joins room
+    socket.join(socket.code);
 
-socket.on('change room', function (newRoom){
-  
-  console.log('this should be the room saved in the socket', socket.code, 'this should be the newRoom', newRoom)
-  console.log('the socket should be in these rooms before change', socket.rooms)
-  
-  socket.leave(socket.code)
-  
-  socket.join(newRoom);
-  
-  socket.code = newRoom;
-  
-  io.to(socket.code).emit('change message', 'welcome to '+socket.code)
-  
-  console.log('the socket should be in these rooms on change game', socket.rooms)
-})
+    //server sends username to room
+    io.to(socket.code).emit('student joined', socket.username);
 
-//END GAME for teacher
-console.log('these are the active rooms before join', socket.rooms)
+    //and server sends host, the student info
+    io.to(host.code).emit('student joined', socket.username)
 
-socket.on('end game', function (room) {
-  //if teacher is in room then check
-  
-  
+    //other wise, there is an error and the student may not join the room.
+    } else {
 
-})
+    io.emit('error', room+' does not match your the games you can play');
 
-//NEW QUESTION LISTENER for teacher
+    }
 
-// socket.on('newQ', function (data){
-  
-//   if (!socket.code){ 
-//     socket.emit('error');
-//   }
-//   else jeopardy.getQ(function(ques){
-//       handler.games[data.code].owner.emit('asked-question', ques);
-//       delete ques.answer;
-//       for(var student in handler.games[data.code].students){
-//         handler.games[data.code].students[student].emit('ask-question', ques);
-//       }
-//     });
-//   });
+  });
 
 
-socket.on('disconnect', function(){
-  console.log(socket.id, ' has disconnected from the server')
-})
+  //CHAMGE ROOMS LISTENER for stdnt and teacher
+
+  socket.on('change room', function (newRoom){
+    
+    console.log('the client', socket.id,' should be in these rooms before change', socket.rooms)
+    
+    //client leaves old room
+
+    socket.leave(socket.code);
+    
+    //client joins the new room
+    socket.join(newRoom);
+    
+    socket.code = newRoom;
+    
+    //server sends room code back to client
+    io.to(socket.id).emit('change message', socket.code)
+
+    //server sends username to new room
+
+    io.to(socket.code).emit('change message', socket.username)
+    
+    //logging the state of each client at room change
+
+    for(var client in clients){
+
+    console.log('when ', socket.id, 'changed rooms; this ', client, ' has these rooms ', clients[client].rooms)
+
+    };
+
+  });
+
+  //END GAME for teacher, teacher leaves room and students leave room.
+
+  socket.on('end game', function (room){  
+    //server checks to see that socket is a teacher
+    if(socket.teacher === true){
+      if(hostRooms.indexOf(room) !== -1){
+
+        for(var client in clients){
+
+          console.log('this host ', socket.id, 'has these rooms before closing the room', hostRooms)
+
+          console.log('this client', client, ' has these rooms before closing the room', hostRooms)
+          
+            
+            clients[client].leave(room);
+            handler.endGame(room);
+        };
+      } else {
+        io.emit('error');
+      }
+    } else {
+      io.emit('error');
+    }
+  });
+
+  //NEW QUESTION LISTENER for teacher, functionality remains as before. Not sure how 'ques' is passed.
+
+  socket.on('newQ', function (room){
+
+    console.log('in newQ this is the room index ', socket.rooms.indexOf(room))
+    
+    //checks to see that the room exists
+    if (socket.rooms.indexOf(room) !== -1){ 
+      //callback to get question, not messing with this on change.
+       console.log(socket.username,'should have a room', socket.code, 'that should be ', room)
+
+      jeopardy.getQ(function (ques){
+
+        
+        io.to(socket.id).emit('teacher question', ques);
+
+        delete ques.answer;
+       
+        //goes through the clients in the server   
+         
+         io.to(socket.code).emit('student question', ques)
+      });
+      
+    }
+  });
+
+  //BUZZ LISTENR FOR STUDENT and TEACHER
+  socket.on('buzz', function (data){
+    io.to(socket.code).emit('buzzed-in', {'userid': socket.username, time: data.time});
+  });
+
+
+
+  socket.on('disconnect', function(){
+    console.log(socket.id, ' has disconnected from the server and has these rooms :', socket.rooms)
+
+    for(var i = 0; i<socket.rooms.length; i++){
+      io.to(socket.rooms[i]).emit('message', socket.username+" has disconnected from the server");
+    }
+
+  });
 
   socket.on('error', function (err){
-    console.log('this is the error: ', err)
-  })
-
-  //teacher socket on made-game hears a code, and joins the room
-
-  // // when student joins
-  // socket.on('student-join', function(data){
-  //   if (!handler.games[data.code]) {
-  //     console.log("tried to enter a non existant game: " + data.code);
-  //     socket.emit('no-game');
-  //   }
-  //   else {
-  //     handler.games[data.code].students[data.username] = socket;
-  //     socket.emit('you-joined');
-  //     handler.games[data.code].owner.emit('update-list', Object.keys(
-  //       handler.games[data.code].students
-  //     ));
-  //     console.log(Object.keys(handler.games[data.code].students));
-  //   }
-  // });
-
-  // socket.on('buzz', function(data){
-  //   handler.games[data.code].owner.emit('buzzed-in', {username:data.username, time: data.time});
-  // });
-
-  // socket.on('newQ', function(data){
-  //   if (!handler.games[data.code]) socket.emit('error');
-  //   else jeopardy.getQ(function(ques){
-  //     handler.games[data.code].owner.emit('asked-question', ques);
-  //     delete ques.answer;
-  //     for(var student in handler.games[data.code].students){
-  //       handler.games[data.code].students[student].emit('ask-question', ques);
-  //     }
-  //   });
-  // });
-  // socket.on('disconnect', function (){
-
-    
-
-  //   console.log(socket.conn.id, 'client about to disconnect')
-  //   var i = allClients.indexOf(socket);
-  //   allClients.splice(i, 1)
-  //   var j = allsocketIds.indexOf(socket.conn.id)
-  //   allsocketIds.splice(j, 1);
-  //   console.log('these are all clients after disconnect: ', allClients);
-  //   console.log('these are all ids after disconnect: ,', allsocketIds)
-  // })
-
-  // socket.on('error', function (err){
-  //   console.log('error: ', err)
-  // })
+    console.log('this is the error: ', err);
+  });
 });
 
 //--------------------------------

@@ -8,8 +8,11 @@ module.exports = {
 
   getQ: function(socketCallback) {
 
+
     request('http://jservice.io/api/random', function(error, response, body) {
+      
       console.log("getJeopardyQ being called");
+      
       if (!error && response.statusCode == 200) {
         ques = JSON.parse(body)[0]; // get just ONE question. We might be able to queue up multiples, reducing the number of API calls
 

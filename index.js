@@ -58,8 +58,6 @@ http.listen(PORT, function (){
 
 });
 
-var io = require('socket.io')(http);
-
 module.exports = app;
 
 // --------------------------------
@@ -68,16 +66,13 @@ module.exports = app;
 
 // Everything that requires Websockets lives INSIDE this callback.
 
-// rooms array will store a room for the clients to join
-
+var io = require('socket.io')(http);
 
 io.on('connection', function (socket) {
   //server connections object of total clients
   var clients = io.sockets.connected;
 
-
   console.log(socket.id, 'connected to the server')
-
 
   //TEACHER NEW GAME reated by server, only teachers can create new rooms: 
   socket.on('new game', function (user){
@@ -123,12 +118,13 @@ io.on('connection', function (socket) {
   //STUDENT JOIN ROOM LISTENER
 
   socket.on('student join', function (user){
-
+  	console.log('this is the data from the student', user)
     //socket code assigned
     socket.code = user.code;
 
     //userid added to socket
     socket.username = user.id
+
     
     //student is not marked as a host;
     socket.teacher = false;
@@ -151,10 +147,8 @@ io.on('connection', function (socket) {
     socket.join(socket.code);
 
     //server sends username to room
-    io.to(socket.code).emit('student joined', socket.username);
+    io.to(host.code).emit('student joined', socket.username);
 
-    //and server sends host, the student info
-    io.to(host.code).emit('student joined', socket.username)
 
     //other wise, there is an error and the student may not join the room.
     } else {
@@ -253,7 +247,9 @@ io.on('connection', function (socket) {
 
   //BUZZ LISTENR FOR STUDENT and TEACHER
   socket.on('buzz', function (data){
-    io.to(socket.code).emit('buzzed in', {'userid': socket.username, time: data.time});
+
+    io.to(socket.code).emit('buzzed in', {'id': socket.username, time: data.time});
+
   });
 
 

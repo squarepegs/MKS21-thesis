@@ -2,9 +2,13 @@ var socket = io();
 window.jeopardy = {buzzed:false, question:{}};
 
 var QA = React.createClass({
-  render:function(){
+
+  componentDidMount: function(){
     $('#buzzer').removeClass("red darken-3");
     $('#buzzer').text('Buzz in!');
+  },
+  
+  render:function(){
     React.render(
       <div className="container">
         <div className="jep-panel yellow-text blue darken-4 card-panel flow-text">
@@ -18,15 +22,18 @@ var QA = React.createClass({
 });
 
 var Waiting = React.createClass({
-  render:function(){
-    socket.on('student question', function(data){
+  componentDidMount: function(){
+      socket.on('student question', function(data){
       window.jeopardy.buzzed = false;
       window.jeopardy.question = data;
       React.render( 
         <div>
         <QA />
         </div>, document.getElementById('question') )
-    })
+    })  
+  },
+  render:function(){
+
     return ( <div id="question">Waiting for new question...</div> )
   },
 })
@@ -39,27 +46,33 @@ var Buzzer = React.createClass({
     </div>
     )
   },
+
   clickHandler: function(){
     $('#buzzer').addClass("red darken-3");
     $('#buzzer').text('BUZZ!');
-    socket.emit('buzz',{code:window.jeopardy.code, time:new Date(), username:window.jeopardy.username});
+    socket.emit('buzz',{code:window.jeopardy.code, time:new Date(), id:window.jeopardy.username});
     window.jeopardy.buzzed = true;
   }
 })
 
 var Main = React.createClass({
+  componentDidMount: function(){
+    socket.on('student joined', function(){
+    console.log("you joined!");
+    React.render( <div> <Waiting /> <Buzzer /> </div>, document.getElementById('main') )
+    })
+   socket.on('error', function(){alert("No such game. Please try another game code.")})
+
+  },
+
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
     window.jeopardy.code     = $('#code').val().toUpperCase();
     if (window.jeopardy.username.length < 1) alert("Please enter a username.");
-    else socket.emit('student join',{username:window.jeopardy.username, code:window.jeopardy.code});
+    else socket.emit('student join',{id:window.jeopardy.username, code:window.jeopardy.code});
   },
   render: function(){
-    socket.on('student joined', function(){
-      console.log("you joined!");
-      React.render( <div> <Waiting /> <Buzzer /> </div>, document.getElementById('main') )
-    })
-    socket.on('error', function(){alert("No such game. Please try another game code.")})
+
     return (
       <div className="signin">
         <h1>Sign in to play:</h1>

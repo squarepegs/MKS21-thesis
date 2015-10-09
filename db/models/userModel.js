@@ -1,8 +1,6 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
-console.log('userModel.js');
-
 var userSchema = mongoose.Schema({
   local: {
     username: String,
@@ -14,7 +12,25 @@ var userSchema = mongoose.Schema({
 		token: String,
 		email: String,
 		name: String
-	}
+	},
+
+  profile: {
+    firstName: {
+      type: String,
+      default: "First name not set"
+    },
+    lastName: {
+      type: String,
+      default: "Last name not set"
+    },
+    email: {
+      type: String,
+      default: "Email not set"
+    }
+  },
+  decks: {
+    type: Array  // stores _id s of decks
+  }
 
 });
 

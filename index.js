@@ -9,7 +9,7 @@ var jeopardy     = require('./server/jService.js');
 var passport     = require('passport');
 var flash        = require('connect-flash');
 var helpers      = require('./config/helpers');
-var MongoStore = require('connect-mongo')(session);
+var MongoStore   = require('connect-mongo')(session);
 
 var app = express();
 var http         = require('http').Server(app);

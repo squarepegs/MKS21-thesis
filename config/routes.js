@@ -40,19 +40,20 @@ module.exports = function(app,passport){
     DeckController.getDecks(req, res)
   });
 
-  app.get('/api/decks/:index', function(req, res){
-    DeckController.getADeck(req, res)
-  });
-
-  app.post('/api/decks/:index', function(req, res){
-    DeckController.amendADeck(req, res)
-  });
-
   app.post('/api/decks', function(req, res){
     DeckController.newDeck(req, res)
   });
 
-  app.post('/api/decks/killdeck', function(req, res){
+  app.get('/api/decks/:id', function(req, res){
+    DeckController.getADeck(req, res)
+  });
+
+  app.post('/api/decks/:id', function(req, res){
+    DeckController.amendADeck(req, res)
+  });
+
+
+  app.post('/api/killdeck', function(req, res){
     console.log("route killdeck")
     DeckController.killDeck(req, res)
   });

@@ -29,7 +29,7 @@ var userSchema = mongoose.Schema({
     }
   },
   decks: {
-    type: Array
+    type: Array  // stores _id s of decks
   }
 
 });

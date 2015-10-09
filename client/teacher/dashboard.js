@@ -117,7 +117,8 @@ var DeckEditor = React.createClass({
       'nextCat'  : '',
       'nextVal'  : '',
       'nextQues' : '',
-      'nextAns'  : ''
+      'nextAns'  : '',
+      'quesElements': []
     }
   },
   saveChanges: function(){
@@ -173,7 +174,9 @@ var DeckEditor = React.createClass({
                     </fieldset>
                   </div>
                 )
+        context.setState({ 'quesElements' : quesElements })
           }});
+    this.render();
   },
   componentWillMount: function(){
     this.showQs();
@@ -205,6 +208,8 @@ var DeckEditor = React.createClass({
           </div>
           <div className="col s8"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
           </div>
+          <hr/>{this.state.quesElements}
+          <hr/>
         </div>
             <div className="addQues row"> 
               <div className="col s1"><label>Category</label><input type="text" className="category" value={this.state.nextCat} onChange={this.prepNextCat} />

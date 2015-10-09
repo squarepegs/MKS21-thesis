@@ -68,37 +68,37 @@ module.exports = {
         })
     })
   },
-//   getADeck: function(req, res){
-//     // console.log("req.user.id", req.user.id)
-//     var lookup = mongoose.Types.ObjectId(req.user.id);
-//     User.findOne(
-//         {"_id" : lookup}, // selector
-//         function(err, user){ //callback
-//           var deck = user.decks[req.params.index];
-//           console.log("deck:", deck);
-//           res.send(deck);
-//        })
-//   },
+  getADeck: function(req, res){
+    // console.log("req.user.id", req.user.id)
+    var lookup = mongoose.Types.ObjectId(req.params.id);
+    console.log(req.params.id)
+    Deck.findOne(
+        {"_id" : lookup}, // selector
+        function(err, deck){ //callback
+         res.send(deck)
+       })
+  },
+  amendADeck: function(req, res){
+    console.log("req.body amendadeck", req.body)
+    var newInfo = {
+      'title': req.body.title,
+      'notes' : req.body.notes,
+      'questions' : JSON.parse(req.body.questions)
+    }
+    // console.log("req.user.id", req.user.id)
+    var lookup = mongoose.Types.ObjectId(req.params.id);
+    Deck.findOneAndUpdate({"_id" : lookup}, newInfo, function(err, data){
+      if (err){
+        throw err;
+      }
+      console.log(data);
 
-//   ///// WRITE THIS OUT NEXT!!!!! -- BB THURSDAY OCT 8TH
-//   amendADeck: function(req, res){
-//     // console.log("req.user.id", req.user.id)
-//     var lookup = mongoose.Types.ObjectId(req.user.id);
-//     User.findByIdAndUpdate(
-//         {"_id" : lookup}, // selector
-//         {$push: {decks[req.params.index]: {'title':req.body.title, 'notes': req.body.notes, 'questions': []}}}, //query
-//         {safe: true, upsert: true}, //options
-//         function(err, data){ //callback
-//            console.log(err); 
-//         })
-//   }
+      // console.log("data", data);
+      res.send("success!");
+    })
+  }
 
-//   var query = {'username':req.user.username};
-// req.newData.username = req.user.username;
-// MyModel.findOneAndUpdate(query, req.newData, {upsert:true}, function(err, doc){
-//     if (err) return res.send(500, { error: err });
-//     return res.send("succesfully saved");
-// });
+
 
 
 }

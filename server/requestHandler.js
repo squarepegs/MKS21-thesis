@@ -4,6 +4,16 @@
 module.exports = {
   games: {"empty":"empty"}, //lets lines 20/21 be written very cleanly
 
+  findHosts: function(clients){
+    var hosts = [];
+    for (var client in clients){
+      if(clients[client].teacher===true){
+        host.push(clients[client]);
+      }
+    }
+    return hosts;
+  },
+
   findHost: function(clients, code){
     var host = null;
     console.log('this is the student code', code);

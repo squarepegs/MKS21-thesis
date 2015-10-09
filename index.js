@@ -62,13 +62,13 @@ var io = require('socket.io')(http);
 
 module.exports = app;
 
-//--------------------------------
+// --------------------------------
 // WEBSOCKETS
-//--------------------------------
+// --------------------------------
 
-//Everything that requires Websockets lives INSIDE this callback.
+// Everything that requires Websockets lives INSIDE this callback.
 
-//rooms array will store a room for the clients to join
+// rooms array will store a room for the clients to join
 
 
 io.on('connection', function (socket) {
@@ -274,4 +274,4 @@ io.on('connection', function (socket) {
 
 //--------------------------------
 // END WEBSOCKETS
-//--------------------------------
+// //--------------------------------

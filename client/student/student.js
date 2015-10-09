@@ -19,8 +19,7 @@ var QA = React.createClass({
 
 var Waiting = React.createClass({
   render:function(){
-    socket.on('ask-question', function(data){
-      window.s = 4;
+    socket.on('student question', function(data){
       window.jeopardy.buzzed = false;
       window.jeopardy.question = data;
       React.render( 
@@ -53,14 +52,14 @@ var Main = React.createClass({
     window.jeopardy.username = $('#username').val();
     window.jeopardy.code     = $('#code').val().toUpperCase();
     if (window.jeopardy.username.length < 1) alert("Please enter a username.");
-    else socket.emit('student-join',{username:window.jeopardy.username, code:window.jeopardy.code});
+    else socket.emit('student join',{username:window.jeopardy.username, code:window.jeopardy.code});
   },
   render: function(){
-    socket.on('you-joined', function(){
+    socket.on('student joined', function(){
       console.log("you joined!");
       React.render( <div> <Waiting /> <Buzzer /> </div>, document.getElementById('main') )
     })
-    socket.on('no-game', function(){alert("No such game. Please try another game code.")})
+    socket.on('error', function(){alert("No such game. Please try another game code.")})
     return (
       <div className="signin">
         <h1>Sign in to play:</h1>

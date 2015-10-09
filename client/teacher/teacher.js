@@ -32,7 +32,7 @@ var Dashboard = React.createClass({
 
 var QA = React.createClass({
   render:function(){
-    socket.on('asked-question', function(data){
+    socket.on('teacher question', function(data){
       React.render(
         <div>
           <h4>Category: {data.category} - ${data.value}</h4>
@@ -54,7 +54,7 @@ var QA = React.createClass({
 var BuzzedInList = React.createClass({
   buzzedIn: [],
   render:function(){
-    socket.on('asked-question', function (data){
+    socket.on('teacher question', function (data){
       this.buzzedIn = [];
       React.render(
         <div>
@@ -62,7 +62,7 @@ var BuzzedInList = React.createClass({
         </div>,document.getElementById('buzzedIn')
         )
     })
-    socket.on('buzzed-in', function(data){
+    socket.on('buzzed in', function(data){
       if (this.buzzedIn.indexOf(data.username) === -1){
         this.buzzedIn.push(data.username);
         this.buzzedIn.sort(sortByTime);
@@ -132,7 +132,7 @@ var NewQ = React.createClass({
 var Main = React.createClass({
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
-    socket.emit('new-game',{username:window.jeopardy.username});
+    socket.emit('new game',{username:window.jeopardy.username});
     React.render(
       <Dashboard />
       ,document.getElementById('main'))

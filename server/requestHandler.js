@@ -4,22 +4,6 @@
 module.exports = {
   games: {"empty":"empty"}, //lets lines 20/21 be written very cleanly
 
-  // roomProfiles: function (clients, room){
-  //   var profiles = [];
-  //   var profile = {};
-
-  //   for(var client in clients){
-  //     profile[client.id] = client.username;
-  //     profile.host = client.teacher; 
-  //     profile.joinedRooms = client.rooms;
-  //     proflies.push(profile)
-  //   }
-    
-    
-    
-  //   return profiles
-  // },
-
   findHost: function(clients, code){
     var host = null;
     console.log('this is the student code', code);
@@ -43,6 +27,11 @@ module.exports = {
     return host;
   },
 
+  findStudents: function (clients, code){
+
+  
+  },
+  
   gameMaker: function(data){
     // to test type this in the terminal:
     //// curl -X POST --header "username: billy" localhost:8000/newGame

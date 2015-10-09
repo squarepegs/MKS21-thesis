@@ -251,7 +251,7 @@ io.on('connection', function (socket) {
 
   //BUZZ LISTENR FOR STUDENT and TEACHER
   socket.on('buzz', function (data){
-    io.to(socket.code).emit('buzzed-in', {'userid': socket.username, time: data.time});
+    io.to(socket.code).emit('buzzed in', {'userid': socket.username, time: data.time});
   });
 
 

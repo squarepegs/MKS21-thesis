@@ -118,6 +118,7 @@ var DeckEditor = React.createClass({
       'nextVal'  : '',
       'nextQues' : '',
       'nextAns'  : '',
+      'headers'  : '',
       'quesElements': []
     }
   },
@@ -152,43 +153,59 @@ var DeckEditor = React.createClass({
     this.setState({questions: amendments});
   },
   loadQs: function(qs){
-    this.setState({'questions': qs})
+    // this.setState({'questions': qs})
   },
   showQs: function(){
     var context = this;
         $.get('/api/decks/' + this.props.deckID, function(req, res){
           console.log("req", req)
             console.log("req.questions", req.questions);
-            var questions = req.questions.slice();
-            context.loadQs(questions);
             context.setState({ 'title' : req.title })
             context.setState({ 'notes' : req.notes })
             console.log("context.state", context.state)
             var quesElements = [];
-            for (var i = 0; i < questions.length; i++){
-              console.log("run")
+            for (var i = 0; i < req.questions.length; i++){
               quesElements.push(
                 <div key={i}>
-                  <fieldset>
                      <div className="row"> 
-                        <div className="col s1"><button key={i} onClick={context.clearQ}>Clear</button>
+                        <div className="col s1"><button key={i} onClick={console.log('todo')}>Delete</button>
                         </div>
-                        <div className="col s1"><input type="text" className="category" name={'ques' + i + 'category'} onChange={context.editQuestion(i, 'category')} defaultValue={questions[i].category}/>
+                        <div className="col s1"><button key={i} onClick={context.editQuestion}>Edit</button>
                         </div>
-                        <div className="col s2"><input type="text" className="value" name={'ques' + i + 'value'} onChange={context.editQuestion(i, 'value')} defaultValue={questions[i].value}/>
+                        <div className="col s2 category" name={'ques' + i + 'category'}>{req.questions[i].category}
                         </div>
-                        <div className="input-field col s6"><textarea className="question" name={'ques' + i + 'question'}  onChange={context.editQuestion(i, 'question')}  defaultValue={questions[i].question}></textarea>
+                        <div className="col s1 value" name={'ques' + i + 'value'}>{req.questions[i].value}
                         </div>
-                        <div className="input-field col s2"><input type="text" className="answer" name={'ques' + i + 'answer'} onChange={context.editQuestion(i, 'answer')}  defaultValue={questions[i].answer}/>
+                        <div className="col s5 question" name={'ques' + i + 'question'}>{req.questions[i].question}
+                        </div>
+                        <div className="col s2 answer" name={'ques' + i + 'answer'}>{req.questions[i].answer}
                         </div>
                       </div>
-                    </fieldset>
                   </div>
                 )
           }
+
+var headers = (
+      <div key='headers'>
+           <div className="row"> 
+              <div className="col s1">Delete
+              </div>
+              <div className="col s1">Edit
+              </div>
+              <div className="col s2">Category
+              </div>
+              <div className="col s1">Value
+              </div>
+              <div className="col s5">Question
+              </div>
+              <div className="col s2">Answer
+              </div>
+            </div>
+        </div>
+        );
+context.setState({'headers': headers})
 context.setState({ 'quesElements' : quesElements })
 
-context.render();
         });
 
   },
@@ -222,7 +239,7 @@ context.render();
           </div>
           <div className="col s8"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
           </div>
-          <hr/>{this.state.quesElements}
+          <hr/>{this.state.headers}{this.state.quesElements}
           <hr/>
         </div>
             <div className="addQues row"> 

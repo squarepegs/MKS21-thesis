@@ -30,6 +30,7 @@
     "express": "^4.13.3",
     "express-session": "~1.11.3",
     "fs": "0.0.2",
+    "http": "0.0.0",
     "jwt-simple": "^0.3.1",
     "materialize-css": "^0.97.1",
     "mongodb": "~2.0.45",

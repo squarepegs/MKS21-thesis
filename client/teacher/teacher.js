@@ -125,21 +125,22 @@ var NewQ = React.createClass({
     )
   },
   clickHandler: function(){
-    socket.emit('newQ',{code: window.jeopardy.code});
+    socket.emit('newQ', window.jeopardy.code);
   }
 })
 
 var Main = React.createClass({
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
-    socket.emit('new game',{username:window.jeopardy.username});
+    socket.emit('new game',{id:window.jeopardy.username});
     React.render(
       <Dashboard />
       ,document.getElementById('main'))
   },
   render: function(){
-    socket.on('made-game', function(data){
-      window.jeopardy.code = data.code;
+    socket.on('welcome message', function (code){
+      console.log('these are the rooms i am in', socket)
+      window.jeopardy.code = code;
       React.render(<Dashboard />, document.getElementById('main'));
     })
     return (

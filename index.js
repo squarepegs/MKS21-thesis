@@ -2,8 +2,6 @@ var bodyParser   = require('body-parser');
 var express      = require('express');
 var morgan       = require('morgan');
 var handler      = require('./server/requestHandler.js');
-var http         = require('http').Server(app);
-var io           = require('socket.io')(http);
 var cookieParser = require('cookie-parser');
 var session      = require('express-session');
 var mongoose     = require('mongoose');
@@ -14,6 +12,7 @@ var helpers      = require('./config/helpers');
 var MongoStore = require('connect-mongo')(session);
 
 var app = express();
+var http         = require('http').Server(app);
 var PORT = process.env.PORT || 8000;
 
 var configDB = require('./db/config.js');
@@ -53,14 +52,13 @@ app.use('/', express.static(__dirname + '/client/landing_page'));
 
 require('./config/routes.js')(app, passport);
 
-console.log('App is listening on port ' + PORT);
-// We require socket.io to have the entire server passed in as an argument,
-// so we create a server variable to pass into socket.io's .listen method.
-var server = http.listen(PORT);
 
-// helpers.csvParser();
+http.listen(PORT, function (){
+  console.log('Server is listening on port ' + PORT);
 
-var io = require('socket.io')(server);
+});
+
+var io = require('socket.io')(http);
 
 module.exports = app;
 
@@ -98,8 +96,6 @@ io.on('connection', function (socket) {
 
     console.log(socket.id, 'created a new game');
 
-    console.log('the teacher ', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
-
     //checks if teacher is in room, if it is socket leaves saved room, and joins new room created by server
 
     if(socket.code){
@@ -115,8 +111,12 @@ io.on('connection', function (socket) {
     socket.join(socket.code); 
 
     }
+
+    console.log('the teacher ', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
+
+    console.log('this is the code sent to teacher', socket.code)
     //server emits welcome message and room code
-    io.to(socket.id).emit('welcome message', 'Hello '+socket.username+'here is your new game code'+room);
+    io.to(socket.id).emit('welcome message', socket.code);
 
   });
 
@@ -227,7 +227,9 @@ io.on('connection', function (socket) {
 
   socket.on('newQ', function (room){
 
-    console.log('in newQ this is the room index ', socket.rooms.indexOf(room))
+    console.log('in newQ these are the rooms', socket.rooms, 'that', socket.username, 'is in when sending the questions')
+
+    console.log('and ', socket.username, 'sent this room to the server', room)
     
     //checks to see that the room exists
     if (socket.rooms.indexOf(room) !== -1){ 

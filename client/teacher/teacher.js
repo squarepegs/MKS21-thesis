@@ -32,6 +32,25 @@ var Dashboard = React.createClass({
   }
 })
 
+var Room = React.createClass({
+
+  render: function(){
+    return(
+    <options>Hello world Im an option</options>
+    )
+  }
+})
+
+var ChangeRoom = React.createClass({
+  
+
+  render: function(){
+    return (
+      <select><Room /></select>
+    )
+  }
+});
+
 var QA = React.createClass({
   componentDidMount: function(){
     socket.on('teacher question', function(data){
@@ -42,7 +61,8 @@ var QA = React.createClass({
           <h2>{data.question}</h2>
           <h3>Answer:</h3>
           <h2>{data.answer}</h2>
-        </div>,document.getElementById('question')
+          <ChangeRoom />
+        </div>, document.getElementById('question')
         )
     })
   },

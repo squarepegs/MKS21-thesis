@@ -48,6 +48,19 @@ module.exports = {
           console.log("deck:", deck);
           res.send(deck);
        })
+  },
+
+  ///// WRITE THIS OUT NEXT!!!!! -- BB THURSDAY OCT 8TH
+  amendADeck: function(req, res){
+    // console.log("req.user.id", req.user.id)
+    var lookup = mongoose.Types.ObjectId(req.user.id);
+    User.findOne(
+        {"_id" : lookup}, // selector
+        function(err, user){ //callback
+          var deck = user.decks[req.params.index];
+          console.log("deck:", deck);
+          res.send(deck);
+       })
   }
   // amendProfile: function(req, res){
   //   var query = {

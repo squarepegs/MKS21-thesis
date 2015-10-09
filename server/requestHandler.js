@@ -4,6 +4,44 @@
 module.exports = {
   games: {"empty":"empty"}, //lets lines 20/21 be written very cleanly
 
+  findHosts: function(clients){
+    var hosts = [];
+    for (var client in clients){
+      if(clients[client].teacher===true){
+        host.push(clients[client]);
+      }
+    }
+    return hosts;
+  },
+
+  findHost: function(clients, code){
+    var host = null;
+    console.log('this is the student code', code);
+
+    for(var client in clients){
+
+    console.log('this client ', client, 'is a teacher', clients[client].teacher, 'and has a room', clients[client].code);
+    
+      if(clients[client].teacher === true){
+        if(clients[client].rooms.indexOf(code)){
+
+          host = clients[client];
+          return host;
+        } else {
+          continue;  
+        }
+      } else {
+        continue;
+      }
+    }
+    return host;
+  },
+
+  findStudents: function (clients, code){
+
+  
+  },
+  
   gameMaker: function(data){
     // to test type this in the terminal:
     //// curl -X POST --header "username: billy" localhost:8000/newGame
@@ -25,18 +63,14 @@ module.exports = {
       code += possible.charAt(Math.floor(Math.random() * possible.length));
       }
     } while (this.games[code] || (badWords.indexOf(code) != -1)); // while game code is taken or it has created a bad word
-
-    var username = data.username;
-    this.games[code] = {owner:'', students:{}};
-    console.log("created gamecodes: " + code + ", " + username);
+    
+    console.log("created gamecodes: " + code);
     console.log("current gameCodes: ");
     console.log(Object.keys(this.games));
     return code;
   },
 
-  endGame: function(req, res){
-    // need to think about all the things to happen here.
-    // client side saving, or server side saving of stats?
-    delete games[req.headers.code];
+  endGame: function(code){
+    delete this.games[code];
    }
 };

@@ -63,11 +63,8 @@ module.exports = {
       code += possible.charAt(Math.floor(Math.random() * possible.length));
       }
     } while (this.games[code] || (badWords.indexOf(code) != -1)); // while game code is taken or it has created a bad word
-
-    var username = data.id;
-    this.games[code] = {owner:'', students:{}};
     
-    console.log("created gamecodes: " + code + ", " + username);
+    console.log("created gamecodes: " + code);
     console.log("current gameCodes: ");
     console.log(Object.keys(this.games));
     return code;

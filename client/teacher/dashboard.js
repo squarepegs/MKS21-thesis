@@ -108,6 +108,61 @@ var Profile = React.createClass({
   }
 })
 
+var ShowQuestion = React.createClass({
+  var context = this;
+  render:function(){
+    <div key={'deck:'+this.props.key+'|index:'+this.props.index}>
+       <div className="row"> 
+          <div className="col s1"><button key={'deck:'+this.props.key+'|index:'+this.props.index+'|action:delete'} onClick={console.log('todo')}>Delete</button>
+          </div>
+          <div className="col s1"><button key={'deck:'+this.props.key+'|index:'+this.props.index+'|action:edit'} onClick={console.log('todo')}>Edit</button>
+          </div>
+          <div className="col s2 category" name={{'deck:'+this.props.key+'|index:'+this.props.index+'|category'}>{this.props.category}
+          </div>
+          <div className="col s1 value" name={'deck:'+this.props.key+'|index:'+this.props.index+'|value'}>{this.props.value}
+          </div>
+          <div className="col s5 question" name={'deck:'+this.props.key+'|index:'+this.props.index+'|question'}>{this.props.question}
+          </div>
+          <div className="col s2 answer" name={'deck:'+this.props.key+'|index:'+this.props.index+'|answer'}>{this.props.question}
+          </div>
+        </div>
+        <div name={'deck:'+this.props.key+'|index:'+this.props.index+'|editor'}></div>
+    </div>
+  }
+})
+
+var EditQuestion = React.createClass({
+  getInitialState: function(){
+    var newCat = this.props.category || '';
+    var newVal = this.props.value || '';
+    var newQues = this.props.question || '';
+    var newAns = this.props.question || '',
+    return {
+      'newCat' : newCat, 
+      'newVal' : newVal,
+      'newQues' : newQues,
+      'newAns' : newAns
+    }
+  },
+  render: function(){
+    return (
+      <div className="addQues row"> 
+        <div className="col s1"><label>Category</label><input type="text" className="category" value={this.state.nextCat} onChange={this.prepNextCat} />
+        </div>
+        <div className="col s2"><label>Value</label><input type="text" className="value" value={this.state.nextVal} onChange={this.prepNextVal}  />
+        </div>
+        <div className="input-field col s6"><label>Question</label><textarea className="question materialize-textarea" value={this.state.nextQues} onChange={this.prepNextQues} ></textarea>
+        </div>
+        <div className="col s2"><label>Answer</label><input type="text" className="answer" value={this.state.nextAns} onChange={this.prepNextAns}  />
+        </div>
+        <div className="col s1"><button onClick={this.addQ}>Add Question</button>
+        </div>
+     </div>
+     , document.getElementById('editQuestionArea') )
+  }
+})
+
+
 var DeckEditor = React.createClass({
   getInitialState: function(){
     return {
@@ -133,25 +188,14 @@ var DeckEditor = React.createClass({
     $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res){})
   },
   addQ: function(){
-    var context = this;
-    question = {
-      category : this.state.nextCat,
-      value    : this.state.nextVal,
-      question : this.state.nextQues,
-      answer   : this.state.nextAns,
-    }
-    console.log("this.state", this.state)
-    var newQs = this.state.questions;
-    newQs.push(question)
-    this.setState({questions: newQs})
-    setTimeout(console.log(context.state.questions), 2000);
-    this.setState({nextCat: '', nextVal: '', nextQues: '', nextAns: ''})
+    React.render(
+    <EditQuestion />
+    , document.getElementById('newQ'))
   },
-  editQuestion: function(index, property){
-    var amendments = this.state.questions;
-    amendments[index][property] = event.target.value;
-    this.setState({questions: amendments});
-  },
+  editQ: function(append, property){
+    React.render(
+    <EditQuestion />
+    , document.getElementById('newQ'))
   loadQs: function(qs){
     // this.setState({'questions': qs})
   },
@@ -166,22 +210,7 @@ var DeckEditor = React.createClass({
             var quesElements = [];
             for (var i = 0; i < req.questions.length; i++){
               quesElements.push(
-                <div key={i}>
-                     <div className="row"> 
-                        <div className="col s1"><button key={i} onClick={console.log('todo')}>Delete</button>
-                        </div>
-                        <div className="col s1"><button key={i} onClick={context.editQuestion}>Edit</button>
-                        </div>
-                        <div className="col s2 category" name={'ques' + i + 'category'}>{req.questions[i].category}
-                        </div>
-                        <div className="col s1 value" name={'ques' + i + 'value'}>{req.questions[i].value}
-                        </div>
-                        <div className="col s5 question" name={'ques' + i + 'question'}>{req.questions[i].question}
-                        </div>
-                        <div className="col s2 answer" name={'ques' + i + 'answer'}>{req.questions[i].answer}
-                        </div>
-                      </div>
-                  </div>
+                <ShowQuestion key={this.props.deckID} value={req.questions[i].value} question={req.questions[i].question} category={req.questions[i].category} answer={req.questions[i].answer} />
                 )
           }
 
@@ -242,24 +271,15 @@ context.setState({ 'quesElements' : quesElements })
           <hr/>{this.state.headers}{this.state.quesElements}
           <hr/>
         </div>
-            <div className="addQues row"> 
-              <div className="col s1"><label>Category</label><input type="text" className="category" value={this.state.nextCat} onChange={this.prepNextCat} />
-              </div>
-              <div className="col s2"><label>Value</label><input type="text" className="value" value={this.state.nextVal} onChange={this.prepNextVal}  />
-              </div>
-              <div className="input-field col s6"><label>Question</label><textarea className="question materialize-textarea" value={this.state.nextQues} onChange={this.prepNextQues} ></textarea>
-              </div>
-              <div className="col s2"><label>Answer</label><input type="text" className="answer" value={this.state.nextAns} onChange={this.prepNextAns}  />
-              </div>
-              <div className="col s1"><button onClick={this.addQ}>Add Question</button>
-              </div>
-           </div>
+        <button onClick={this.addQ}>Add New Question</button>
         <button onClick={this.saveChanges}>Save Changes</button>
         <div name="newQ"></div>
       </div>
       )
   }
 })
+
+
 
 var MyDecks = React.createClass({
   killDeck: function(event){

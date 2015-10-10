@@ -10,6 +10,9 @@ var request    = require('supertest')
   , request    = require('supertest')
   , server     = require('../index.js')
   , handler    = require('../server/requestHandler.js')
+  , chaiAsPromised = require("chai-as-promised")
+
+chai.use(chaiAsPromised);
 
 var socketURL = 'http://0.0.0.0:8000';
 
@@ -77,7 +80,7 @@ describe('Basic server', function(){
     });
   });
 
-  it.only('teacher should be able to emit questions', function (done){
+  it('teacher should be able to emit questions', function (done){
 
     var teacher = io.connect(socketURL, options);
     var student = io.connect(socketURL, options);
@@ -85,14 +88,15 @@ describe('Basic server', function(){
     teacher.emit('new game', teacher1);
     teacher.emit('change room', '1234');
 
-    teacher.on('change message', function (msg){
+    teacher.on('room code', function (msg){
       student.emit('student join', {'id':'Billy', 'code': '1234'});
-      teacher.emit('newQ', '1234');
+
+    teacher.emit('end game', function (msg){
       student.on('student question', function (ques){
       teacher.disconnect();
-      student.disconnect();
       done();
       })
+    })
     });
   });
 
@@ -120,10 +124,21 @@ describe('Basic server', function(){
 
   });
 
-  it('Client should be able to change a room', function (done){
+  it.only('Client should be able to end a game', function (done){
     var teacher = io.connect(socketURL);
     var student = io.connect(socketURL, options);
+    var student2 = io.connect(socketURL, options);
 
+    teacher.emit('new game', teacher1).then(
+    teacher.emit('change room', '1234')
+    ).then(
+    teacher.on('room code', function (room){
+      student.emit('student join', {'id':'Billy', 'code': '1234'})
+    })
+    ).then(
+      teacher.on('student joined', function (data){
+    })
+    )
     //TODO
 
   })

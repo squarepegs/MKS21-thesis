@@ -60,13 +60,13 @@ var RoomSelect = React.createClass({
 
 var EndGame = React.createClass({
   componentDidMount:function(){
-  socket.on('disconnect', function(){
-  console.log('someone has disconnected from the server')
+    socket.on('disconnect', function(){
+    console.log('someone has disconnected from the server')
   
-  if(socket.disconnected===true){
-  alert(window.jeopardy.username+" your game session has ended");
-  } 
-  })   
+      if(socket.disconnected===true){
+      console.log(window.jeopardy.username+" your game session has ended");
+      } 
+    })   
   },
   
   clickHandler: function(){
@@ -139,6 +139,8 @@ var QA = React.createClass({
   },
 })
 
+
+
 var BuzzedInList = React.createClass({
   componentDidMount: function(){
     socket.on('teacher question', function (data){
@@ -184,6 +186,8 @@ var BuzzedInList = React.createClass({
   },
 })
 
+
+
 var ActiveList = React.createClass({
 
   componentDidMount: function(){
@@ -204,6 +208,21 @@ var ActiveList = React.createClass({
         <ul>{elements}</ul>
       </div>,document.getElementById('activeList')
       )
+    })
+    socket.on('user disconnected', function (student){
+      var index = activeList.indexOf(student);
+      if(index !== -1){
+        activeList.splice(index, 1);
+      var elements = [];
+        for(var i = 0; i < activeList.length; i++){
+          elements.push(<li>{activeList[i]}</li>);
+        }
+      React.render(
+        <div>
+          <ul>{elements}</ul>
+        </div>,document.getElementById('activeList')
+      )
+      }
     })
   },
 

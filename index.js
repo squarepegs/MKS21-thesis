@@ -75,12 +75,12 @@ var io = require('socket.io')(http);
 io.on('connection', function (socket) {
   //server connections object of total clients
   var clients = io.sockets.connected;
-
   console.log(socket.id, 'connected to the server')
 
   //TEACHER NEW GAME reated by server, only teachers can create new rooms: 
   socket.on('new game', function (user, deckID){
     //a teacher can host several rooms
+  
 
     deckID = deckID || 'jService' // if user does not provide a deck, use the jService. 
 
@@ -129,6 +129,7 @@ io.on('connection', function (socket) {
     //socket code assigned
     socket.code = user.code;
 
+
     //userid added to socket
     socket.username = user.id
 
@@ -142,27 +143,28 @@ io.on('connection', function (socket) {
 
 
     console.log('the student', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
+
+    console.log('this', socket.code,' will be the new room ', socket.username, 'will join')
     
     //if the room matches the teacher, then the student can join the room
     console.log('this is the host', host.username)
+    console.log('this is the host code', socket.code,'this is the socket code', socket.code)
     if(host.code === socket.code){
-    
     //save room in student's socket
     socket.code = user.code;
     
     //student now joins room
     socket.join(socket.code);
 
-    //server sends username to room
-    io.to(host.code).emit('student joined', socket.username);
+    //server sends username to host
+    io.to(host.id).emit('student joined', socket.username);
+    //server sends hostname to socket
+    io.to(socket.id).emit('student joined', host.username);
 
+    console.log('server sent student join to host socket', host.username)
 
     //other wise, there is an error and the student may not join the room.
-    } else {
-
-    io.emit('error', room+' does not match your the games you can play');
-
-    }
+    } 
 
   });
 
@@ -183,18 +185,15 @@ io.on('connection', function (socket) {
     socket.code = newRoom;
     
     //server sends room code back to client
-    io.to(socket.id).emit('change message', socket.code)
+    io.to(socket.id).emit('room code', socket.code)
 
-    //server sends username to new room
-
-    io.to(socket.code).emit('change message', socket.username)
     
     //logging the state of each client at room change
 
     for(var client in clients){
 
     console.log('when ', socket.id, 'changed rooms; this ', client, ' has these rooms ', clients[client].rooms)
-
+    
     };
 
   });
@@ -203,7 +202,8 @@ io.on('connection', function (socket) {
 
   socket.on('end game', function (room){  
     //server checks to see that socket is a teacher
-    if(socket.teacher === true){
+    var hostRooms = clients[socket.id].rooms;
+    if(socket.teacher === true){     
       if(hostRooms.indexOf(room) !== -1){
 
         for(var client in clients){
@@ -213,7 +213,7 @@ io.on('connection', function (socket) {
           console.log('this client', client, ' has these rooms before closing the room', hostRooms)
           
             
-            clients[client].leave(room);
+            clients[client].disconnect();
             handler.endGame(room);
         };
       } else {
@@ -256,20 +256,17 @@ io.on('connection', function (socket) {
 
   });
 
+  socket.on('disconnect', function (){
 
+    io.to(socket.code).emit('user disconnected', socket.username);
 
-  socket.on('disconnect', function(){
-    console.log(socket.id, ' has disconnected from the server and has these rooms :', socket.rooms)
-
-    for(var i = 0; i<socket.rooms.length; i++){
-      io.to(socket.rooms[i]).emit('message', socket.username+" has disconnected from the server");
-    }
-
+    console.log(socket.username, ' has disconnected from the server')
   });
 
   socket.on('error', function (err){
     console.log('this is the error: ', err);
   });
+
 });
 
 //--------------------------------

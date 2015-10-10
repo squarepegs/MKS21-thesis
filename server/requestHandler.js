@@ -16,24 +16,24 @@ module.exports = {
 
   findHost: function(clients, code){
     var host = null;
-    console.log('this is the student code', code);
+    console.log('in handler: this is the student code', code);
 
     for(var client in clients){
 
-    console.log('this client ', client, 'is a teacher', clients[client].teacher, 'and has a room', clients[client].code);
+
+    console.log('in handler: this client ', client, 'is a teacher', clients[client].teacher, 'and has a room', clients[client].code);
     
       if(clients[client].teacher === true){
-        if(clients[client].rooms.indexOf(code)){
+        if(clients[client].rooms.indexOf(code) !== -1){
 
           host = clients[client];
+          console.log('in handler: this is a host', host.username, 'for this room ', host.code, 'which should match', code)
           return host;
-        } else {
-          continue;  
-        }
-      } else {
-        continue;
-      }
+        } 
+      } 
     }
+
+    console.log('no host found so we return ', host)
     return host;
   },
 

@@ -6,8 +6,10 @@ var buzzedIn = [];
 var testData = [];
 var questionData = {};
 
-socket.on('error', function(){
-  alert("there was a server error. Please try starting a new session.");
+console.log('teacher socket: ', socket)
+
+socket.on('error', function (err){
+  console.log('this is the error', err);
 });
 
 var sortByTime = function(a,b){
@@ -30,6 +32,12 @@ var Room = React.createClass({
 
 var RoomSelect = React.createClass({
 
+  componentDidMount: function(){
+    socket.on('rooms created', function (hostRooms){
+      console.log(hostRooms)
+    })
+  },
+
   getDefaultProps: function() {
     return {
       items: ['rooma', 'roomb']
@@ -50,16 +58,39 @@ var RoomSelect = React.createClass({
   }
 });
 
-var GameDashboard = React.createClass({
+var EndGame = React.createClass({
   componentDidMount:function(){
-
+  socket.on('disconnect', function(){
+  console.log('someone has disconnected from the server')
+  
+  if(socket.disconnected===true){
+  alert(window.jeopardy.username+" your game session has ended");
+  } 
+  })   
   },
+  
+  clickHandler: function(){
+    socket.emit('end game', window.jeopardy.code);
+  },
+
+  render: function(){
+    return (
+    <div>
+      <button onClick={this.clickHandler}> End Game </button>
+    </div>
+    )
+  }
+})
+
+var Dashboard = React.createClass({
+
 
   render:function(){
     return (
     <div>
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
       <RoomSelect />
+      <EndGame />
       <QA />
       <NewQ deckID={this.props.deckID} />
       <BuzzedInList />
@@ -207,7 +238,7 @@ var NewQ = React.createClass({
 
 var Main = React.createClass({
   componentDidMount: function(){
-    socket.on('welcome message', function (code, deckID){
+    socket.on('room code', function (code){
       console.log('these are the rooms i am in', socket)
       console.log('this is the deck I am playing', deckID)
     window.jeopardy.code = code;

@@ -53,11 +53,21 @@ var Buzzer = React.createClass({
 
 var Main = React.createClass({
   componentDidMount: function(){
-    socket.on('student joined', function(){
-      console.log("you joined!");
-
+    socket.on('student joined', function (host){
+    console.log("you joined "+host+"'s room");
+    React.render( <div> <Waiting /> <Buzzer /> </div>, document.getElementById('main') )
     })
-    socket.on('error', function(){alert("No such game. Please try another game code.")})
+
+
+   socket.on('disconnect', function(){
+    if(socket.disconnected === true){
+      console.log(window.jeopardy.username+", you have been disconnected from the game session")
+    } 
+    if(socket.connected === true)
+    {
+      console.log('someone has disconnected from the server')
+    }
+   })
 
   },
 

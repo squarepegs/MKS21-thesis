@@ -51,6 +51,9 @@ module.exports = {
 
            }
         )
+    // TODO: I can remove the deck from the user's decks array but I'm having difficulty
+    // removing it completely from the db: The following line does not work 
+    // Deck.findbyIdAndRemove(req.body.deckID, function(){})
   },
   getDecks: function(req, res){
     // console.log("req.user.id", req.user.id)

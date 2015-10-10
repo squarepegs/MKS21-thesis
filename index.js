@@ -171,18 +171,15 @@ io.on('connection', function (socket) {
 
   //CHAMGE ROOMS LISTENER for stdnt and teacher
 
-  socket.on('change room', function (newRoom){
+  socket.on('join room', function (oldRoom){
     
     console.log('the client', socket.id,' should be in these rooms before change', socket.rooms)
     
-    //client leaves old room
-
-    socket.leave(socket.code);
     
     //client joins the new room
-    socket.join(newRoom);
+    socket.code = oldRoom;
     
-    socket.code = newRoom;
+    socket.join(oldRoom);
     
     //server sends room code back to client
     io.to(socket.id).emit('room code', socket.code)

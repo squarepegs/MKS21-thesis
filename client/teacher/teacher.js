@@ -32,6 +32,12 @@ var Room = React.createClass({
 
 var RoomSelect = React.createClass({
 
+  getInitialState: function(){
+    return {
+      value: "select"
+    }
+  },
+
   componentDidMount: function(){
     socket.on('rooms created', function (hostRooms){
       console.log(hostRooms)
@@ -40,8 +46,12 @@ var RoomSelect = React.createClass({
 
   getDefaultProps: function() {
     return {
-      items: ['rooma', 'roomb']
+      items: ['a', 'b']
     }
+  },
+
+  change: function(event){
+    this.setState({value: event.target.value})
   },
 
   render: function() {
@@ -50,7 +60,7 @@ var RoomSelect = React.createClass({
     }.bind(this))
     return (
       <div>
-      <select className="browser-default">
+      <select className="browser-default" onChange={this.change} value={this.state.value}>
         {items}
       </select>
       </div>
@@ -89,7 +99,6 @@ var Dashboard = React.createClass({
     return (
     <div>
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
-      <RoomSelect />
       <EndGame />
       <QA />
       <NewQ deckID={this.props.deckID} />
@@ -280,8 +289,11 @@ var Main = React.createClass({
       <div>
         <label>Username: </label>
         <input type="text" className="input" id="username" />
-        <button onClick={this.handleClick}>Start Game</button>
-        <div id="status"></div>
+        <button onClick={this.handleClick}>START NEW GAME</button>
+        <div id="Rooms">
+        These are the available rooms:
+        <RoomSelect />
+        </div>
       </div>
     )
   }

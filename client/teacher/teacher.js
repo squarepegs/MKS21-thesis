@@ -17,12 +17,47 @@ var sortByTime = function(a,b){
 //
 // REACT COMPONENTS:
 //
+var Room = React.createClass({
+
+  render: function() {
+    return (
+      <option className="dropdown-item">{this.props.name}</option>
+    );
+  }
+});
+
+var RoomSelect = React.createClass({
+
+  getDefaultProps: function() {
+    return {
+      items: ['rooma', 'roomb']
+    }
+  },
+
+  render: function() {
+    var items = this.props.items.map(function(item, i) {
+      return (<Room name={item} key={i} />);
+    }.bind(this))
+    return (
+      <div>
+      <select className="browser-default">
+        {items}
+      </select>
+      </div>
+    );
+  }
+});
 
 var Dashboard = React.createClass({
+  componentDidMount:function(){
+
+  },
+
   render:function(){
     return (
     <div>
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
+      <RoomSelect />
       <QA />
       <NewQ />
       <BuzzedInList />
@@ -31,6 +66,9 @@ var Dashboard = React.createClass({
     )
   }
 })
+
+
+
 
 var QA = React.createClass({
   componentDidMount: function(){
@@ -42,7 +80,7 @@ var QA = React.createClass({
           <h2>{data.question}</h2>
           <h3>Answer:</h3>
           <h2>{data.answer}</h2>
-        </div>,document.getElementById('question')
+        </div>, document.getElementById('question')
         )
     })
   },

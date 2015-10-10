@@ -54,6 +54,11 @@ input {
   font-family: "Kalam", "Sans";
 }
 
+.domain{
+  font-family: Roboto;
+  font-size: 10px;
+}
+
 .jumbotron{
   text-align:center;
 }

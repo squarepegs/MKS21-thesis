@@ -108,6 +108,127 @@ var Profile = React.createClass({
   }
 })
 
+//============================================================================================================
+//  Globals for DeckEditor
+//------------------------------------------------------------------------------------------------------------
+//  these global variables are used in order to pass items from one
+//  React component to another, even if they do not have a parent-child relationship.
+//  (otherwise we'd use props)
+//  globalActiveDeckEditorComponent (React Component) allows "AddQuestion" and "EditQuestion" to have access to DeckEditor's state. 
+//  globalActiveDeckQuestions (Array[{},{},...]) is a workaround for a peculiar React bug, where putting 
+//  an array of objects inside a state results in losing the values - but not the keys - of the objects in the array. 
+//============================================================================================================
+var globalActiveDeckEditorComponent = null; 
+var globalActiveDeckQuestions = [];
+var globalDecksLister = null;
+
+
+var ShowQuestion = React.createClass({
+    edit: function(){
+      isEdit = true;
+      React.render(
+        <EditQuestion edit={isEdit} index={this.props.index} deckID={this.props.deckID} category={this.props.category} value={this.props.value} question={this.props.question} answer={this.props.answer} />
+        , document.getElementById('editThisQ' + this.props.index)
+      )
+    },
+    delete:function(){
+      globalActiveDeckQuestions.splice(this.props.index, 1);
+      globalActiveDeckEditorComponent.showQs();
+      console.log("globalActiveDeckQuestions -after delete", globalActiveDeckQuestions)
+    },
+    render:function(){
+      return (
+        <div>
+           <div className="row"> 
+              <div className="col s1">
+                <button onClick={this.delete}>Delete</button>
+              </div>
+              <div className="col s1">
+                <button onClick={this.edit}>Edit</button>
+              </div>
+              <div className="col s2 category">
+                {this.props.category}
+              </div>
+              <div className="col s1 value">
+                {this.props.value}
+              </div>
+              <div className="col s5 question">
+                {this.props.question}
+              </div>
+              <div className="col s2 answer">
+                {this.props.answer}
+              </div>
+            </div>
+            <div id={'editThisQ'+this.props.index}></div>
+        </div>
+    )
+  }
+})
+
+
+
+var EditQuestion = React.createClass({
+  getInitialState: function(){
+    var newCat = this.props.category || '';
+    var newVal = this.props.value || '';
+    var newQues = this.props.question || '';
+    var newAns = this.props.answer || '';
+    return {
+      'newCat' : newCat, 
+      'newVal' : newVal,
+      'newQues' : newQues,
+      'newAns' : newAns
+    }
+  },
+  prepNextCat: function(event){
+    this.setState({'newCat': event.target.value})
+  },
+  prepNextVal: function(event){
+    this.setState({'newVal': event.target.value})
+  },
+  prepNextQues: function(event){
+    this.setState({'newQues': event.target.value})
+  },
+  prepNextAns: function(event){
+    this.setState({'newAns': event.target.value})
+  },
+  addQtoDeck: function(){
+    var amendedQ = {
+        'category': this.state.newCat, 
+        'value'   : this.state.newVal, 
+        'question': this.state.newQues, 
+        'answer'  : this.state.newAns
+    } 
+    if(this.props.edit){
+      globalActiveDeckQuestions[this.props.index] = amendedQ;
+    } else {
+      globalActiveDeckQuestions.push(amendedQ)
+      this.setState({'newCat' : ''})
+      this.setState({'newVal' : ''})
+      this.setState({'newQues' : ''})
+      this.setState({'newAns' : ''})
+    }
+    globalActiveDeckEditorComponent.showQs();
+    console.log("globalActiveDeckQuestions", globalActiveDeckQuestions)
+  },
+  render: function(){
+    return (
+      <div ref={this.props.edit ? 'editFields' : 'addFields'} className="addQues row"> 
+        <div className="col s1"><label>Category</label><input type="text" className="category" value={this.state.newCat} onChange={this.prepNextCat} />
+        </div>
+        <div className="col s2"><label>Value</label><input type="text" className="value" value={this.state.newVal} onChange={this.prepNextVal}  />
+        </div>
+        <div className="input-field col s6"><label>Question</label><textarea className="question materialize-textarea" value={this.state.newQues} onChange={this.prepNextQues} ></textarea>
+        </div>
+        <div className="col s2"><label>Answer</label><input type="text" className="answer" value={this.state.newAns} onChange={this.prepNextAns}  />
+        </div>
+        <div className="col s1"><button onClick={this.addQtoDeck}>{this.props.edit ? 'Edit Question' : 'Add Question'}</button>
+        </div>
+     </div>)
+  }
+})
+
+
 var DeckEditor = React.createClass({
   getInitialState: function(){
     return {
@@ -118,82 +239,64 @@ var DeckEditor = React.createClass({
       'nextVal'  : '',
       'nextQues' : '',
       'nextAns'  : '',
+      'headers'  : '',
       'quesElements': []
     }
+  },
+  getInitialQs: function(){
+    var context = this;
+      $.get('/api/decks/' + this.props.deckID, function(req, res){
+        console.log("req", req)
+        console.log("req.questions", req.questions);
+        context.setState({ 'title' : req.title })
+        context.setState({ 'notes' : req.notes })
+        console.log("context.state", context.state)
+        globalActiveDeckQuestions = req.questions
+        context.showQs();
+      })
+
   },
   saveChanges: function(){
     var context = this;
     var newInfo = { 
       'title'    : context.state.title,
       'notes'    : context.state.notes,
-      'questions': JSON.stringify(context.state.questions)
+      'questions': JSON.stringify(globalActiveDeckQuestions)
     }
     console.log("saving changes", newInfo)
-    $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res){})
-  },
-  addQ: function(){
-    var context = this;
-    question = {
-      category : this.state.nextCat,
-      value    : this.state.nextVal,
-      question : this.state.nextQues,
-      answer   : this.state.nextAns,
-    }
-    console.log("this.state", this.state)
-    var newQs = this.state.questions;
-    newQs.push(question)
-    this.setState({questions: newQs})
-    setTimeout(console.log(context.state.questions), 2000);
-    this.setState({nextCat: '', nextVal: '', nextQues: '', nextAns: ''})
-  },
-  editQuestion: function(index, property){
-    var amendments = this.state.questions;
-    amendments[index][property] = event.target.value;
-    this.setState({questions: amendments});
-  },
-  loadQs: function(qs){
-    this.setState({'questions': qs})
+    $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res){
+      context.render();
+    })
   },
   showQs: function(){
-    var context = this;
-        $.get('/api/decks/' + this.props.deckID, function(req, res){
-          console.log("req", req)
-            console.log("req.questions", req.questions);
-            var questions = req.questions.slice();
-            context.loadQs(questions);
-            context.setState({ 'title' : req.title })
-            context.setState({ 'notes' : req.notes })
-            console.log("context.state", context.state)
-            var quesElements = [];
-            for (var i = 0; i < questions.length; i++){
-              console.log("run")
-              quesElements.push(
-                <div key={i}>
-                  <fieldset>
-                     <div className="row"> 
-                        <div className="col s1"><button key={i} onClick={context.clearQ}>Clear</button>
-                        </div>
-                        <div className="col s1"><input type="text" className="category" name={'ques' + i + 'category'} onChange={context.editQuestion(i, 'category')} defaultValue={questions[i].category}/>
-                        </div>
-                        <div className="col s2"><input type="text" className="value" name={'ques' + i + 'value'} onChange={context.editQuestion(i, 'value')} defaultValue={questions[i].value}/>
-                        </div>
-                        <div className="input-field col s6"><textarea className="question" name={'ques' + i + 'question'}  onChange={context.editQuestion(i, 'question')}  defaultValue={questions[i].question}></textarea>
-                        </div>
-                        <div className="input-field col s2"><input type="text" className="answer" name={'ques' + i + 'answer'} onChange={context.editQuestion(i, 'answer')}  defaultValue={questions[i].answer}/>
-                        </div>
-                      </div>
-                    </fieldset>
-                  </div>
-                )
-          }
-context.setState({ 'quesElements' : quesElements })
+    var quesElements = [];
+    for (var i = 0; i < globalActiveDeckQuestions.length; i++){
+      quesElements.push(
+        <ShowQuestion index={i} key={'' + this.props.deckID + '|index:' + i} value={globalActiveDeckQuestions[i].value} question={globalActiveDeckQuestions[i].question} category={globalActiveDeckQuestions[i].category} answer={globalActiveDeckQuestions[i].answer} />
+        )
+    }
 
-context.render();
-        });
+    var headers = (
+      <div key='headers'>
+           <div className="row"> 
+              <div className="col s1">Delete
+              </div>
+              <div className="col s1">Edit
+              </div>
+              <div className="col s2">Category
+              </div>
+              <div className="col s1">Value
+              </div>
+              <div className="col s5">Question
+              </div>
+              <div className="col s2">Answer
+              </div>
+            </div><div name="addQ"></div>
+        </div>
+      );
+    this.setState({'headers': headers})
+    this.setState({ 'quesElements' : quesElements })
 
-  },
-  componentWillMount: function(){
-    this.showQs();
   },
   prepNextQues: function(){
     this.setState({'nextQues': event.target.value});
@@ -213,6 +316,12 @@ context.render();
   changeNotes: function(){
     this.setState({'notes': event.target.value});
   },
+  componentWillMount: function(){
+    this.getInitialQs();
+  },
+  componentDidMount: function(){
+    globalActiveDeckEditorComponent = this;
+  },
   render:function(){
     return(
       <div>
@@ -222,27 +331,18 @@ context.render();
           </div>
           <div className="col s8"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
           </div>
-          <hr/>{this.state.quesElements}
+          <hr/>{this.state.headers}{this.state.quesElements}
+          <div id="newQEditor"></div>
           <hr/>
         </div>
-            <div className="addQues row"> 
-              <div className="col s1"><label>Category</label><input type="text" className="category" value={this.state.nextCat} onChange={this.prepNextCat} />
-              </div>
-              <div className="col s2"><label>Value</label><input type="text" className="value" value={this.state.nextVal} onChange={this.prepNextVal}  />
-              </div>
-              <div className="input-field col s6"><label>Question</label><textarea className="question materialize-textarea" value={this.state.nextQues} onChange={this.prepNextQues} ></textarea>
-              </div>
-              <div className="col s2"><label>Answer</label><input type="text" className="answer" value={this.state.nextAns} onChange={this.prepNextAns}  />
-              </div>
-              <div className="col s1"><button onClick={this.addQ}>Add Question</button>
-              </div>
-           </div>
+        <EditQuestion deckID={this.props.deckID}/>
         <button onClick={this.saveChanges}>Save Changes</button>
-        <div name="newQ"></div>
       </div>
       )
   }
 })
+
+
 
 var MyDecks = React.createClass({
   killDeck: function(event){
@@ -250,10 +350,13 @@ var MyDecks = React.createClass({
     $.post('/api/killdeck', {'deckID':event.target.value}, function(req, res){
         console.log("callback");
         context.getDecks();
+        React.forceUpdate
       })
   },
-  editDeck: function(event){
-    var deckID = event.target.value;
+  editDeck: function(event, deckID){
+    if(event){
+      deckID = event.target.value;
+    }
 
     React.render(
       <div>
@@ -262,6 +365,7 @@ var MyDecks = React.createClass({
     )
   },
   getDecks: function(){
+    var context = this;
     React.render(
       <div>
       </div>
@@ -270,11 +374,11 @@ var MyDecks = React.createClass({
     var context = this;
     $.get('/api/decks', function(req, res){
       console.log('deck req', req, req.length) // req is an array of objects
-  
+      
       var elements = [];
       for(var i = 0; i < req.length; i++){
         elements.push(
-          <tr key={req[i]._id}>
+          <tr id={'thisRowID:' + req[i]._id} key={req[i]._id}>
             <td><button value={req[i]._id} onClick={context.editDeck}>Edit Deck</button>
             <button value={req[i]._id} onClick={context.killDeck}>DeleteDeck</button></td>
             <td>{req[i].title}</td>
@@ -324,7 +428,9 @@ var CreateDecks = React.createClass({
   createDeck: function(){
     var context = this;
     var query = context.state
-    $.post('/api/decks', query, function(req, res){})
+    $.post('/api/decks', query, function(req, res){
+      globalDecksList.getDecks();
+    })
     context.setState({'title': ''});
     context.setState({'notes': ''});
   },
@@ -348,62 +454,6 @@ var CreateDecks = React.createClass({
 })
 
 // needed for CreateQuestion's select tag
-
-var CreateQuestion = React.createClass({
-  componentDidMount: function(){
-        $('select').material_select();
-  },
-  render:function(){
-    return(
-      <div>
-        <div>
-          <div className="input-field col s12">
-          <select>
-            <option value="" disabled defaultValue>Choose QuestionType</option>
-            <option value="Jeopardy">Jeopardy</option>
-            <option value="Multiple Choice">Multiple Choice</option>
-            <option value="Hangman">Hangman</option>
-          </select>
-          <label>Question Type: </label> 
-        </div>
-          <label>Category: </label><input type="text" name="category" />
-          <label>Question: </label><input type="text" name="question" />
-          <label>Answer: </label><input type="text" name="answer" />
-          <label>Points: </label><input type="text" name="points" />
-
-          <button>Add Question To Deck</button>
-        </div>
-      </div>
-      )
-  }
-})
-
-
-var ListQuestions = React.createClass({
-  questions: [],
-  render:function(){
-    // socket.on('update-list', function(data){
-    //   this.activeList = data;
-    //   console.log("this.activeList, data: ", this.activeList, data)
-    //   var elements = [];
-    //   for(var i = 0; i < this.activeList.length; i++){
-    //     elements.push(<li>{this.activeList[i]}</li>);
-    //   }
-
-    //   React.render(
-    //     <div>
-    //       <ul>{elements}</ul>
-    //     </div>,document.getElementById('questionList')
-    //   )
-    // })
-    return (
-    <div>
-      <h2>Questions</h2>
-      <p id="questionList"></p>
-    </div>
-    )
-  },
-})
 
 
 var Dashboard = React.createClass({
@@ -556,26 +606,7 @@ React.render(
     <hr/><hr/>
     <CreateDecks />
     <hr/><hr/>
-    <CreateQuestion />
-    <hr/><hr/>
     <Main />
   </div>,
   document.getElementById('main')
 );
-
-
-// React.render(
-//   <div>
-//     <Tabs />
-//     <hr/><hr/>
-//     <Profile />
-//     <hr/><hr/>
-//     <CreateDecks />
-//     <hr/><hr/>
-//     <CreateQuestion />
-//     <hr/><hr/>
-//     <Main />
-//   </div>,
-//   document.getElementById('main')
-// );
-

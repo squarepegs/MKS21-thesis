@@ -370,7 +370,18 @@ var MyDecks = React.createClass({
     window.location.replace('/teacher')
 
      },
+  shareDeck: function(event){
+    var recipient = prompt('Who would you like to share this deck with?');
 
+    if (recipient != null) {
+      $.post('/api/shareDeck', {'recipient':recipient, 'deckID':event.target.value}, function(success){
+        if(success){console.log('shared with ' + recipient)}
+          else {console.log('Oops. Something went wrong')}
+      });
+    } else {
+      alert("Username can't be blank. Please try again.")
+    }
+  },
   getDecks: function(){
     var context = this;
     React.render(
@@ -392,6 +403,7 @@ var MyDecks = React.createClass({
             <td>{req[i].notes}</td>
             <td>{req[i].questions.length}</td>
             <td><button value={req[i]._id} onClick={context.playDeck}>Play this Deck</button></td>
+            <td><button value={req[i]._id} onClick={context.shareDeck}>Share this Deck</button></td>
           </tr>
           )
         }
@@ -404,6 +416,7 @@ var MyDecks = React.createClass({
             <th>Title</th>
             <th>Notes</th>
             <th># questions</th>
+            <th>&nbsp;</th>
             <th>&nbsp;</th>
           </tr>    
           {elements}

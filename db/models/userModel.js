@@ -30,6 +30,9 @@ var userSchema = mongoose.Schema({
   },
   decks: {
     type: Array  // stores _id s of decks
+  },
+  tests: {
+    type: Array // stores_ids of tests
   }
 
 });

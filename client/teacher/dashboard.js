@@ -374,6 +374,16 @@ var MyDecks = React.createClass({
   playDeck: function(event){
     sessionStorage.deckID = event.target.value
     console.log("deckID:", sessionStorage.deckID);
+
+    var newTest = { 
+      _owner: req.local.username, 
+      _deck: sessionStorage.deckID, 
+      time: new Date() }
+    $.post('/api/recordTest', newTest, function(req, res){
+      // TODO, add a reference to this test in the user's
+      // tests array on the DB. 
+
+    })
     window.location.replace('/teacher')
 
      },

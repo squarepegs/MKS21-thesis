@@ -51,12 +51,15 @@ module.exports = function(app,passport){
     DeckController.amendADeck(req, res)
   });
 
-
   app.post('/api/killdeck', function(req, res){
     console.log("route killdeck")
     DeckController.killDeck(req, res)
   });
 
+  app.post('/api/shareDeck', function(req,res){
+    console.log('route sharedeck');
+    DeckController.shareDeck(req, res);
+  })
 
   app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
 

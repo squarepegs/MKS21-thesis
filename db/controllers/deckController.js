@@ -101,6 +101,18 @@ module.exports = {
                
        })
   },
+  shareDeck: function(req, res){
+    console.log("req.body shareDeck", req.body)
+    User.findOneAndUpdate({ 'local.username': req.body.recipient }, {$push: {"decks": mongoose.Types.ObjectId(req.body.deckID)}}, function(err){
+      if (err){
+        console.log(err);
+        res.send(err);
+      } else {
+        console.log("Successfully added")
+        res.send("Success")
+      }
+    })
+  },
   amendADeck: function(req, res){
     console.log("req.body amendadeck", req.body)
     var newInfo = {

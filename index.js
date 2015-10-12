@@ -92,7 +92,7 @@ io.on('connection', function (socket) {
     var hostRooms = clients[socket.id].rooms;
 
     //userid added to the socket
-    socket.username = user.id;
+    socket.id = user.id;
     //user is marked as a HOST
 
     socket.teacher = true;
@@ -131,13 +131,15 @@ io.on('connection', function (socket) {
 
   socket.on('student join', function (user){
 
+    console.log('this is the user data', user);
+
   	console.log('this is the data from the student', user)
     //socket code assigned
     socket.code = user.code;
 
 
     //userid added to socket
-    socket.username = user.id
+    socket.id = user.id
 
     
     //student is not marked as a host;
@@ -150,10 +152,10 @@ io.on('connection', function (socket) {
 
     console.log('the student', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
 
-    console.log('this', socket.code,' will be the new room ', socket.username, 'will join')
+    console.log('this', socket.code,' will be the new room ', socket.id, 'will join')
     
     //if the room matches the teacher, then the student can join the room
-    console.log('this is the host', host.username)
+    console.log('this is the host', host.id)
     console.log('this is the host code', socket.code,'this is the socket code', socket.code)
     if(host.code === socket.code){
     //save room in student's socket
@@ -167,7 +169,7 @@ io.on('connection', function (socket) {
     //server sends hostname to socket
     io.to(socket.id).emit('student joined', host.username);
 
-    console.log('server sent student join to host socket', host.username)
+    console.log('server sent student join to host socket', host.id)
 
     //other wise, there is an error and the student may not join the room.
     } 
@@ -179,7 +181,9 @@ io.on('connection', function (socket) {
 
   socket.on('join room', function (oldRoom){
     
-    console.log('the client', socket.usename,' requested to join this room', oldRoom)
+    console.log(socket)
+
+    console.log('the client', socket.id,' requested to join this room', oldRoom)
     
     
     //client joins the old room
@@ -229,7 +233,7 @@ io.on('connection', function (socket) {
     //checks to see that the room exists
     if (socket.rooms.indexOf(room) !== -1){ 
       //callback to get question, not messing with this on change.
-       console.log(socket.username,'should have a room', socket.code, 'that should be ', room)
+       console.log(socket.id,'should have a room', socket.code, 'that should be ', room)
 
          jeopardy.getJService(deckID, function (ques){
           console.log("jeopardy.getJService runs", ques)
@@ -246,15 +250,15 @@ io.on('connection', function (socket) {
   //BUZZ LISTENR FOR STUDENT and TEACHER
   socket.on('buzz', function (data){
 
-    io.to(socket.code).emit('buzzed in', {'id': socket.username, time: data.time});
+    io.to(socket.code).emit('buzzed in', {'id': socket.id, time: data.time});
 
   });
 
   socket.on('disconnect', function (){
 
-    io.to(socket.code).emit('user disconnected', socket.username);
+    io.to(socket.code).emit('user disconnected', socket.id);
 
-    console.log(socket.username, ' has disconnected from the server')
+    console.log(socket.id, ' has disconnected from the server')
   });
 
   socket.on('error', function (err){

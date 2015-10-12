@@ -41,7 +41,7 @@ module.exports = {
         if(clients[client].rooms.indexOf(code) !== -1){
 
           host = clients[client];
-          console.log('in handler: this is a host', host.username, 'for this room ', host.code, 'which should match', code)
+          console.log('in handler: this is a host', host.id, 'for this room ', host.code, 'which should match', code)
           return host;
         } 
       } 

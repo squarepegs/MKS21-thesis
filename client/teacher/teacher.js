@@ -1,5 +1,5 @@
 //socket Emit functionality
-var socket = io();
+var socket = socket ? socket.socket.reconnect() : io();
 window.jeopardy = {};
 var activeList = [];
 var buzzedIn = [];
@@ -56,21 +56,21 @@ var RoomSelect = React.createClass({
   },
 
   clickHandler: function(event){
-    if(event.target.value !== null){
+    if(event.target.value){
       console.log('clicked this', event.target.value)
       this.setState({selected: event.target.value})
-      socket.emit('join room', this.state.selected);
+      socket.emit('join room', event.target.value);
     }
   },
 
   render: function() {
     console.log('this is the state', this.state)
     var items = this.state.items.map(function(item, i) {
-      return (<Room name={item} key={i} onChange={this.clickHandler}/>);
+      return (<Room name={item} key={i} />);
     }.bind(this))
     return (
       <div>
-      <select className="browser-default">
+      <select className="browser-default" onChange={this.clickHandler}>
         {items}
       </select>
       </div>
@@ -80,12 +80,12 @@ var RoomSelect = React.createClass({
 
 var EndGame = React.createClass({
   componentDidMount:function(){
-    socket.on('disconnect', function(){
+    socket.on('disconnect', function (user){
     console.log('someone has disconnected from the server')
-  
       if(socket.disconnected===true){
-      console.log(window.jeopardy.username+" your game session has ended");
+      React.unmountComponentAtNode(document.getElementById('main'));
       } 
+    console.log(user, " has left the game");
     })   
   },
   

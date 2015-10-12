@@ -14,6 +14,20 @@ module.exports = {
     return hosts;
   },
 
+  //need to find all unique rooms and send back to user
+
+  findAllRooms: function (clients){
+    console.log('in find all Rooms')
+    var rooms = [];
+    for (var client in clients){
+      if(rooms.indexOf(clients[client].code) === -1){
+        rooms.push(clients[client].code)
+      }
+    }
+    console.log('here are all created rooms: ', rooms)
+    return rooms;
+  },
+
   findHost: function(clients, code){
     var host = null;
     console.log('in handler: this is the student code', code);

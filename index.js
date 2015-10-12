@@ -9,7 +9,7 @@ var jeopardy     = require('./server/jService.js');
 var passport     = require('passport');
 var flash        = require('connect-flash');
 var helpers      = require('./config/helpers');
-var MongoStore   = require('connect-mongo')(session);
+var MongoStore = require('connect-mongo')(session);
 
 var app = express();
 var http         = require('http').Server(app);
@@ -74,7 +74,12 @@ var io = require('socket.io')(http);
 
 io.on('connection', function (socket) {
   //server connections object of total clients
+
   var clients = io.sockets.connected;
+  var rooms = handler.findAllRooms(clients);
+
+  io.to(socket.id).emit('rooms created', rooms);
+  
   console.log(socket.id, 'connected to the server')
 
   //TEACHER NEW GAME reated by server, only teachers can create new rooms: 
@@ -125,6 +130,7 @@ io.on('connection', function (socket) {
   //STUDENT JOIN ROOM LISTENER
 
   socket.on('student join', function (user){
+
   	console.log('this is the data from the student', user)
     //socket code assigned
     socket.code = user.code;
@@ -178,20 +184,11 @@ io.on('connection', function (socket) {
     
     //client joins the new room
     socket.code = oldRoom;
-    
+
     socket.join(oldRoom);
     
     //server sends room code back to client
     io.to(socket.id).emit('room code', socket.code)
-
-    
-    //logging the state of each client at room change
-
-    for(var client in clients){
-
-    console.log('when ', socket.id, 'changed rooms; this ', client, ' has these rooms ', clients[client].rooms)
-    
-    };
 
   });
 

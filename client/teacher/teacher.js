@@ -34,33 +34,33 @@ var RoomSelect = React.createClass({
 
   getInitialState: function(){
     return {
-      value: "select"
+      items: ['']
     }
   },
 
   componentDidMount: function(){
-    socket.on('rooms created', function (hostRooms){
-      console.log(hostRooms)
-    })
-  },
-
-  getDefaultProps: function() {
-    return {
-      items: ['a', 'b']
-    }
-  },
-
-  change: function(event){
-    this.setState({value: event.target.value})
+    socket.on('rooms created', function (allRooms){
+      console.log('these are all the rooms available ',allRooms)
+      if(this.isMounted()){
+        this.setState(function(){
+          var rooms = [];
+          for (var i = 0; i < allRooms.length; i++){
+          rooms.push(allRooms[i]);
+          }
+        console.log('this is the value of state.items after push', this.props.items)
+        return {items: rooms}
+        })
+      }
+    }.bind(this))
   },
 
   render: function() {
-    var items = this.props.items.map(function(item, i) {
+    var items = this.state.items.map(function(item, i) {
       return (<Room name={item} key={i} />);
     }.bind(this))
     return (
       <div>
-      <select className="browser-default" onChange={this.change} value={this.state.value}>
+      <select className="browser-default">
         {items}
       </select>
       </div>

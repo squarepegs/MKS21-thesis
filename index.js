@@ -79,7 +79,7 @@ io.on('connection', function (socket) {
   var rooms = handler.findAllRooms(clients);
 
   io.to(socket.id).emit('rooms created', rooms);
-  
+
   console.log(socket.id, 'connected to the server')
 
   //TEACHER NEW GAME reated by server, only teachers can create new rooms: 
@@ -175,14 +175,14 @@ io.on('connection', function (socket) {
   });
 
 
-  //CHAMGE ROOMS LISTENER for stdnt and teacher
+  //JOIN ROOMS LISTENER for stdnt and teacher in case of disconnect
 
   socket.on('join room', function (oldRoom){
     
-    console.log('the client', socket.id,' should be in these rooms before change', socket.rooms)
+    console.log('the client', socket.usename,' requested to join this room', oldRoom)
     
     
-    //client joins the new room
+    //client joins the old room
     socket.code = oldRoom;
 
     socket.join(oldRoom);
@@ -207,7 +207,7 @@ io.on('connection', function (socket) {
           console.log('this client', client, ' has these rooms before closing the room', hostRooms)
           
             
-            clients[client].disconnect();
+            clients[client].leave(room);
             handler.endGame(room);
         };
       } else {

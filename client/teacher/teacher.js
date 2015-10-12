@@ -34,7 +34,8 @@ var RoomSelect = React.createClass({
 
   getInitialState: function(){
     return {
-      items: ['']
+      items: [''],
+      selected: ''
     }
   },
 
@@ -47,16 +48,25 @@ var RoomSelect = React.createClass({
           for (var i = 0; i < allRooms.length; i++){
           rooms.push(allRooms[i]);
           }
-        console.log('this is the value of state.items after push', this.props.items)
+        console.log('this is the value of state.items after push', this.state.items)
         return {items: rooms}
         })
       }
     }.bind(this))
   },
 
+  clickHandler: function(event){
+    if(event.target.value !== null){
+      console.log('clicked this', event.target.value)
+      this.setState({selected: event.target.value})
+      socket.emit('join room', this.state.selected);
+    }
+  },
+
   render: function() {
+    console.log('this is the state', this.state)
     var items = this.state.items.map(function(item, i) {
-      return (<Room name={item} key={i} />);
+      return (<Room name={item} key={i} onChange={this.clickHandler}/>);
     }.bind(this))
     return (
       <div>

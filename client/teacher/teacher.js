@@ -1,6 +1,8 @@
 //socket Emit functionality
 var socket = io();
 window.jeopardy = {};
+var activeList = [];
+var buzzedIn = [];
 
 socket.on('error', function(){
   alert("there was a server error. Please try starting a new session.");
@@ -15,14 +17,49 @@ var sortByTime = function(a,b){
 //
 // REACT COMPONENTS:
 //
+var Room = React.createClass({
 
-var Dashboard = React.createClass({
+  render: function() {
+    return (
+      <option className="dropdown-item">{this.props.name}</option>
+    );
+  }
+});
+
+var RoomSelect = React.createClass({
+
+  getDefaultProps: function() {
+    return {
+      items: ['rooma', 'roomb']
+    }
+  },
+
+  render: function() {
+    var items = this.props.items.map(function(item, i) {
+      return (<Room name={item} key={i} />);
+    }.bind(this))
+    return (
+      <div>
+      <select className="browser-default">
+        {items}
+      </select>
+      </div>
+    );
+  }
+});
+
+var GameDashboard = React.createClass({
+  componentDidMount:function(){
+
+  },
+
   render:function(){
     return (
     <div>
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
+      <RoomSelect />
       <QA />
-      <NewQ />
+      <NewQ deckID={this.props.deckID} />
       <BuzzedInList />
       <ActiveList />
     </div>
@@ -30,9 +67,15 @@ var Dashboard = React.createClass({
   }
 })
 
+
+
+
 var QA = React.createClass({
-  render:function(){
-    socket.on('asked-question', function(data){
+  componentDidMount: function(){
+    socket.on('teacher question', function(data){
+      if (data.question === 'There are no more questions in this deck'){
+        sessionStorage.deckID = 'jService';
+      }
       React.render(
         <div>
           <h4>Category: {data.category} - ${data.value}</h4>
@@ -40,9 +83,12 @@ var QA = React.createClass({
           <h2>{data.question}</h2>
           <h3>Answer:</h3>
           <h2>{data.answer}</h2>
-        </div>,document.getElementById('question')
+        </div>, document.getElementById('question')
         )
     })
+  },
+
+  render:function(){
     return (
     <div>
       <h2 id="question"></h2>
@@ -52,26 +98,26 @@ var QA = React.createClass({
 })
 
 var BuzzedInList = React.createClass({
-  buzzedIn: [],
-  render:function(){
-    socket.on('asked-question', function(data){
-      this.buzzedIn = [];
+  componentDidMount: function(){
+    socket.on('teacher question', function (data){
+      buzzedIn = [];
       React.render(
         <div>
           Waiting for buzz...
         </div>,document.getElementById('buzzedIn')
         )
     })
-    socket.on('buzzed-in', function(data){
-      if (this.buzzedIn.indexOf(data.username) === -1){
-        this.buzzedIn.push(data.username);
-        this.buzzedIn.sort(sortByTime);
+    
+    socket.on('buzzed in', function(data){
+      if (buzzedIn.indexOf(data.id) === -1){
+        buzzedIn.push(data.id);
+        buzzedIn.sort(sortByTime);
       }
-      console.log('after this.buzzedIn', this.buzzedIn, "data", data)
+      console.log('after this.buzzedIn', buzzedIn, "data", data)
 
       var elements = [];
-      for(var i = 0; i < this.buzzedIn.length; i++){
-        elements.push(<li>{this.buzzedIn[i]}</li>);
+      for(var i = 0; i < buzzedIn.length; i++){
+        elements.push(<li>{buzzedIn[i]}</li>);
       }
 
       React.render(
@@ -80,6 +126,10 @@ var BuzzedInList = React.createClass({
         </div>,document.getElementById('buzzedIn')
         )
     })
+
+  },
+
+  render:function(){
     return (
     <div>
       <h2>Buzzed in:</h2>
@@ -90,22 +140,27 @@ var BuzzedInList = React.createClass({
 })
 
 var ActiveList = React.createClass({
-  activeList: [],
-  render:function(){
-    socket.on('update-list', function(data){
-      this.activeList = data;
-      console.log("this.activeList, data: ", this.activeList, data)
-      var elements = [];
-      for(var i = 0; i < this.activeList.length; i++){
-        elements.push(<li>{this.activeList[i]}</li>);
+
+  componentDidMount: function(){
+    socket.on('student joined', function (data){
+    
+    console.log("activeList, ", activeList);
+      activeList.push(data);
+
+    var elements = [];
+    for(var i = 0; i < activeList.length; i++){
+        elements.push(<li>{activeList[i]}</li>);
       }
 
-      React.render(
-        <div>
-          <ul>{elements}</ul>
-        </div>,document.getElementById('activeList')
+    React.render(
+      <div>
+        <ul>{elements}</ul>
+      </div>,document.getElementById('activeList')
       )
     })
+  },
+
+  render:function(){
     return (
     <div>
       <h2>Active Players:</h2>
@@ -117,42 +172,49 @@ var ActiveList = React.createClass({
 
 
 var NewQ = React.createClass({
+  clickHandler: function(){
+    console.log("NewQ clicked")
+    socket.emit('newQ', window.jeopardy.code, this.props.deckID);
+  },
+
   render:function(){
     return (
     <div>
       <button onClick={this.clickHandler}> new question </button>
     </div>
     )
-  },
-  clickHandler: function(){
-    socket.emit('newQ',{code: window.jeopardy.code});
   }
 })
 
 var Main = React.createClass({
+  componentDidMount: function(){
+    socket.on('welcome message', function (code, deckID){
+      console.log('these are the rooms i am in', socket)
+      console.log('this is the deck I am playing', deckID)
+    window.jeopardy.code = code;
+    React.render(<GameDashboard deckID={sessionStorage.deckID} />, document.getElementById('main'));
+    })
+  },
+
   handleClick: function(){
-    window.jeopardy.username = $('#username').val();
-    socket.emit('new-game',{username:window.jeopardy.username});
+    console.log("deckID:", sessionStorage.deckID)
+    socket.emit('new game', {id:window.jeopardy.username}, sessionStorage.deckID);
     React.render(
-      <Dashboard />
+      <GameDashboard deckID={sessionStorage.deckID} />
       ,document.getElementById('main'))
   },
+
   render: function(){
-    socket.on('made-game', function(data){
-      window.jeopardy.code = data.code;
-      React.render(<Dashboard />, document.getElementById('main'));
-    })
     return (
       <div>
         <label>Username: </label>
         <input type="text" className="input" id="username" />
-        <button onClick={this.handleClick}>START NEW GAME</button>
+        <button onClick={this.handleClick}>Start Game</button>
         <div id="status"></div>
       </div>
     )
   }
 })
-
 
 
 // initial page render

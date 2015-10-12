@@ -1,3 +1,5 @@
+// THIS HAS TO BE GIT IGNORED
+// AND CHANGED BEFORE DEPLOYMENT
 module.exports = {
 	'facebookAuth' : {
 		'clientID' : '1677512462535142',

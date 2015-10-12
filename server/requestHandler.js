@@ -4,18 +4,53 @@
 module.exports = {
   games: {"empty":"empty"}, //lets lines 20/21 be written very cleanly
 
-  gameMaker: function(data){
-    // to test type this in the terminal:
-    //// curl -X POST --header "username: billy" localhost:8000/newGame
-    // you will get get back a game code.
-    //// curl localhost:8000/game-dash/*insert game code here*
-    //// on the server, you will see an announcement of who the owner is.
+  findHosts: function(clients){
+    var hosts = [];
+    for (var client in clients){
+      if(clients[client].teacher===true){
+        host.push(clients[client]);
+      }
+    }
+    return hosts;
+  },
 
+  findHost: function(clients, code){
+    var host = null;
+    console.log('this is the student code', code);
+
+    for(var client in clients){
+
+    console.log('this client ', client, 'is a teacher', clients[client].teacher, 'and has a room', clients[client].code);
+    
+      if(clients[client].teacher === true){
+        if(clients[client].rooms.indexOf(code)){
+
+          host = clients[client];
+          return host;
+        } else {
+          continue;  
+        }
+      } else {
+        continue;
+      }
+    }
+    return host;
+  },
+
+  findStudents: function (clients, code){
+
+  
+  },
+  
+  gameMaker: function(data){
     // here we set that game's unique id and we verify that, by some
     // small chance, that number is actually unique.
+    // by removing the vowels, we eliminate most of the bad words that 
+    // can be created randomly.  
     var possible = "BCDFGHJKLMNPQRSTVWXZ";
     // For obvious reasons, these words should not be condoned.
     // If the random generator runs into one of thses, it'll just reroll.
+    // We apologise.
     var badWords = ['NGGR', 'NGRR', 'NNGR', 'CVNT', 'FVCK', 'SHJT'];
 
     var code;
@@ -25,18 +60,14 @@ module.exports = {
       code += possible.charAt(Math.floor(Math.random() * possible.length));
       }
     } while (this.games[code] || (badWords.indexOf(code) != -1)); // while game code is taken or it has created a bad word
-
-    var username = data.username;
-    this.games[code] = {owner:'', students:{}};
-    console.log("created gamecodes: " + code + ", " + username);
+    
+    console.log("created gamecodes: " + code);
     console.log("current gameCodes: ");
     console.log(Object.keys(this.games));
     return code;
   },
 
-  endGame: function(req, res){
-    // need to think about all the things to happen here.
-    // client side saving, or server side saving of stats?
-    delete games[req.headers.code];
+  endGame: function(code){
+    delete this.games[code];
    }
 };

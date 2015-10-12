@@ -15,22 +15,23 @@ var socketURL = 'http://0.0.0.0:8000';
 
 
 var options ={
-  transports: ['websocket'],
+  // transports: ['websocket'],
   'force new connection': true
 };
 
-var teacher1 = {'username':'Mrs. Landingham'};
-var teacher2 = {'username': 'Mr. Socket', 'code':'1234'}
-var student1 = {'username':'Bertie', 'code': '1234'};
-var student2 = {'username':'Charlie'};
-var student3 = {'username':'Danny'};
-var student4 = {'username':'Edward'};
+var teacher1 = {'id':'Mrs. Landingham'};
+var teacher2 = {'id': 'Mr. Socket'}
+var student1 = {'id':'Bertie', 'code': '1234'};
+var student2 = {'id':'Charlie'};
+var student3 = {'id':'Danny'};
+var student4 = {'id':'Edward'};
+
 
 
 describe('Basic server', function(){
 
 //test for server POST on /signup
-  it('/signup should accept POST requests', function (done){
+  xit('/signup should accept POST requests', function (done){
     request(server)
       .post('/signup')
       .expect(201, done)
@@ -38,7 +39,7 @@ describe('Basic server', function(){
 
 //test for server GET call from /data
 
-  it('/data should accept GET requests', function (done){
+  xit('/data should accept GET requests', function (done){
     request(server)
       .get('/data')
       .expect(200, done)
@@ -46,24 +47,95 @@ describe('Basic server', function(){
 
 //test for broadcast of creating a game: 
 
-  it('Should be able to create a game with an owner and emit a code' ,function (done){
+  it('Should be able to hear an event when it is in a room' ,function (done){
+    var teacher = io.connect(socketURL);
+    var student = io.connect(socketURL, options);
+    //client side: teacher listens to message only if she's in the room       
+    teacher.emit('new game', teacher1);
+
+      teacher.on('welcome message', function (room){
+        expect(room).to.equal(teacher.code);
+        teacher.disconnect();
+        student.disconnect();
+        done();
+      }); 
+  });
+
+  it('teacher should be able to change rooms users on ending a game', function (done){
+
     var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
 
-    teacher.emit('new-game', teacher1);
-    
-    teacher.on('made-game', function (game){
-      game.should.have.property('code').which.is.a.String();
-      handler.games.should.have.property(game.code);
+    teacher.emit('new game', teacher1);
+    teacher.emit('change room', '1234');
 
-      handler.games[game.code].owner.should.exist;
-
-      handler.games[game.code].owner.should.not.have.property('students');
-      
+    teacher.on('change message', function (msg){
+      student.emit('student join', {'id':'Billy', 'code': '1234'});
       teacher.disconnect();
+      student.disconnect();
       done();
     });
   });
 
+  it.only('teacher should be able to emit questions', function (done){
+
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+
+    teacher.emit('new game', teacher1);
+    teacher.emit('change room', '1234');
+
+    teacher.on('change message', function (msg){
+      student.emit('student join', {'id':'Billy', 'code': '1234'});
+      teacher.emit('newQ', '1234');
+      student.on('student question', function (ques){
+      teacher.disconnect();
+      student.disconnect();
+      done();
+      })
+    });
+  });
+
+
+  it('Student should be able to join a room', function (done){
+    var teacher = io.connect(socketURL);
+    var student = io.connect(socketURL, options);
+    var student2 = io.connect(socketURL, options);
+
+    teacher.emit('new game', teacher1)
+
+    teacher.on('welcome message', function (room){
+
+      student.emit('student join', room)
+      student2.emit('student join', '1234')
+
+    });
+    
+    student.on('welcome message', function (room){
+      teacher.disconnect();
+      student.disconnect();
+      student2.disconnect();
+      done();
+    })
+
+  });
+
+  it('Client should be able to change a room', function (done){
+    var teacher = io.connect(socketURL);
+    var student = io.connect(socketURL, options);
+
+    //TODO
+
+  })
+
+ it('Should be able to not an event when it is in a room' ,function (done){
+    var teacher = io.connect(socketURL);
+    //client side: teacher listens to message only if she's in the room       
+    teacher.on('message', function (msg){
+        expect(msg).to.equal('Joining room:1234')
+        done();
+      }); 
+  });
 
   it('Should allow students to join a created game', function (done){
     
@@ -157,24 +229,24 @@ describe('Basic server', function(){
 
     var teacher = io.connect(socketURL, options);
 
-    teacher.emit('new-game', teacher2);
-    
     teacher.on('made-game', function (game){
+      teacher.emit('newQ', {code: '1234'});
       var room = game.code;
       expect(room).to.not.equal('1234');        
       handler.games.should.have.property(room);
-      teacher.emit('newQ', {code: '1234'});
       expect(handler.games['1234']).to.not.exist;
       teacher.disconnect();
       done();
-    });  
+    });
+
+    teacher.emit('new-game', teacher2);
+     
   })
 
   it('Should broadcast questions ', function (done){
     var teacher = io.connect(socketURL, options);
     var student = io.connect(socketURL, options);
 
-    teacher.emit('new-game', teacher1);
     teacher.on('made-game', function (game){
       student2.code = game.code;
       student.emit('student-join', student2);
@@ -192,7 +264,17 @@ describe('Basic server', function(){
         done();
       })
     });    
+    teacher.emit('new-game', teacher1);
   });
+
+  it('Should listen to disconnects', function (done){
+    var teacher = io.connect(socketURL, options);
+    var student = io.connect(socketURL, options);
+    
+    teacher.disconnect();
+
+  })
+
 });
 
   // xit('Should allow multiple students to join a game', function (done){

@@ -131,9 +131,7 @@ io.on('connection', function (socket) {
 
   socket.on('student join', function (user){
 
-    console.log('this is the user data', user);
-
-  	console.log('this is the data from the student', user)
+  	console.log('this is the student', user)
     //socket code assigned
     socket.code = user.code;
 
@@ -150,13 +148,10 @@ io.on('connection', function (socket) {
     var host = handler.findHost(clients, socket.code);
 
 
-    console.log('the student', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
-
-    console.log('this', host.code,' will be the new room ', socket.id, 'will join')
+    console.log(socket.username, 'should now be going into ', host.username, ' room with the code', socket.code)
     
     //if the room matches the teacher, then the student can join the room
-    console.log('this is the host', host.id)
-    console.log('this is the host code', socket.code,'this is the socket code', socket.code)
+
     if(host.code === socket.code){
     //save room in student's socket
     socket.code = user.code;
@@ -164,13 +159,16 @@ io.on('connection', function (socket) {
     //student now joins room
     socket.join(socket.code);
 
+    var students = handler.findStudents(clients, socket.code);
+
+
+    console.log('in server if statement after students has been defined as', students)
     //server sends student id to host
-    io.to(host.id).emit('student joined', socket.username);
+    io.to(socket.code).emit('student joined', students);
     //server sends hostid to student
     io.to(socket.id).emit('student joined', host.id);
 
-    console.log('server sent student', socket.id, 'to host socket', host.id)
-
+    console.log('server sent student list', students, 'to host socket', host.username)
     //other wise, there is an error and the student may not join the room.
     } 
 
@@ -180,15 +178,22 @@ io.on('connection', function (socket) {
   //JOIN ROOMS LISTENER for stdnt and teacher in case of disconnect
 
   socket.on('join room', function (oldRoom){
-
-    console.log('the client', socket.id,' requested to join this room', oldRoom)
+    //this activates the listener in the client to populate student list
     
     socket.teacher = true;
     //client joins the old room
     socket.code = oldRoom;
 
-    socket.join(oldRoom);
+    socket.join(socket.code);
+
+    var students = handler.findStudents(client, oldRoom)
+
+    console.log('these are the students after handler.findStudents', students)
+
+    io.to(socket.id).emit('student joined', students);
     
+    console.log('the client', socket.id,' requested to join this room', socket.code)
+
     //server sends room code back to client
     io.to(socket.id).emit('room code', socket.code)
 
@@ -254,7 +259,7 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function (){
 
-    io.to(socket.code).emit('user disconnected', socket.id);
+    io.to(socket.code).emit('user disconnected', socket.username);
 
     console.log(socket.id, ' has disconnected from the server')
   });

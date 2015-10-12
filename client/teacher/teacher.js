@@ -1,7 +1,7 @@
 //socket Emit functionality
 var socket = socket ? socket.socket.reconnect() : io();
 window.jeopardy = {};
-var activeList = [];
+window.activeList = [];
 var buzzedIn = [];
 var testData = [];
 var questionData = {};
@@ -48,7 +48,6 @@ var RoomSelect = React.createClass({
           for (var i = 0; i < allRooms.length; i++){
           rooms.push(allRooms[i]);
           }
-        console.log('this is the value of state.items after push', this.state.items)
         return {items: rooms}
         })
       }
@@ -105,7 +104,7 @@ var Dashboard = React.createClass({
 
 
   render:function(){
-    console.log('this should be the code', window.jeopardy.code)
+
     return (
     <div>
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
@@ -207,9 +206,15 @@ var BuzzedInList = React.createClass({
 
 
 
+ //to be refactored: students stored in local storage and temporary variable used to reconstruct storage as an array localStorage only stores strings
+
 var ActiveList = React.createClass({
+  getInitialState: function(){
+    return null
+  },
 
   componentDidMount: function(){
+
     socket.on('student joined', function (data){
       console.log("student data on joined (data)", data)
     
@@ -221,26 +226,27 @@ var ActiveList = React.createClass({
     for(var i = 0; i < activeList.length; i++){
         elements.push(<li>{activeList[i]}</li>);
       }
-
+      console.log('this is the activeList when students join', window.activeList)
     React.render(
       <div>
         <ul>{elements}</ul>
       </div>,document.getElementById('activeList')
       )
     })
-    socket.on('user disconnected', function (student){
-      var index = activeList.indexOf(student);
-      if(index !== -1){
-        activeList.splice(index, 1);
-      var elements = [];
-        for(var i = 0; i < activeList.length; i++){
-          elements.push(<li>{activeList[i]}</li>);
-        }
-      React.render(
-        <div>
-          <ul>{elements}</ul>
-        </div>,document.getElementById('activeList')
-      )
+    socket.on('user disconnected', function (student){   
+      console.log('this is the activeList at disconnect', window.activeList, 'and the student that disconnected', student)
+        var index = activeList.indexOf(student)
+        if(index !== -1){
+          window.activeList.splice(index, 1);
+        var elements = [];
+          for(var i = 0; i < window.activeList.length; i++){
+            elements.push(<li>{window.activeList[i]}</li>);
+          }
+        React.render(
+          <div>
+            <ul>{elements}</ul>
+          </div>,document.getElementById('activeList')
+        )
       }
     })
   },
@@ -277,21 +283,16 @@ var NewQ = React.createClass({
 var Main = React.createClass({
   componentDidMount: function(){
     socket.on('room code', function (code){
-      console.log('these are the rooms i am in', socket)
-      console.log('this is the deck I am playing', deckID)
     window.jeopardy.code = code;
-    React.render(<GameDashboard deckID={deckID} />, document.getElementById('main'));
+    React.render(
+      <Dashboard />
+      ,document.getElementById('main'))
     })
   },
 
   handleClick: function(){
-    console.log("deckID:", sessionStorage.deckID)
-    testDataIndex = 0;
-    testData = [];
-    socket.emit('new game', {id:window.jeopardy.username}, sessionStorage.deckID);
-    React.render(
-      <GameDashboard deckID={sessionStorage.deckID} />
-      ,document.getElementById('main'))
+    window.jeopardy.username = $('#username').val();
+    socket.emit('new game',{id:window.jeopardy.username});
   },
 
   render: function(){

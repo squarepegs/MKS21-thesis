@@ -43,8 +43,11 @@ app.set('view engine', 'ejs');
 app.use('/client',express.static(__dirname + '/client'));
 
 app.use('/teacher', express.static(__dirname + '/client/teacher'));
+
+
+
+
 app.use('/student', express.static(__dirname + '/client/student'));
-app.use('/form', express.static(__dirname + '/client/teacher/form'));
 app.use('/modules', express.static(__dirname + '/node_modules'));
 app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css/'));
 
@@ -75,8 +78,10 @@ io.on('connection', function (socket) {
   console.log(socket.id, 'connected to the server')
 
   //TEACHER NEW GAME reated by server, only teachers can create new rooms: 
-  socket.on('new game', function (user){
+  socket.on('new game', function (user, deckID){
     //a teacher can host several rooms
+
+    deckID = deckID || 'jService' // if user does not provide a deck, use the jService. 
 
     var hostRooms = clients[socket.id].rooms;
 
@@ -110,8 +115,9 @@ io.on('connection', function (socket) {
     console.log('the teacher ', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
 
     console.log('this is the code sent to teacher', socket.code)
+    console.log('this is the deck the teacher is using', deckID)
     //server emits welcome message and room code
-    io.to(socket.id).emit('welcome message', socket.code);
+    io.to(socket.id).emit('welcome message', socket.code, deckID);
 
   });
 
@@ -219,10 +225,10 @@ io.on('connection', function (socket) {
 
   //NEW QUESTION LISTENER for teacher, functionality remains as before. Not sure how 'ques' is passed.
 
-  socket.on('newQ', function (room){
+  socket.on('newQ', function (room, deckID){
 
     console.log('in newQ these are the rooms', socket.rooms, 'that', socket.username, 'is in when sending the questions')
-
+    console.log('and the question comes from ', deckID);
     console.log('and ', socket.username, 'sent this room to the server', room)
     
     //checks to see that the room exists
@@ -230,18 +236,15 @@ io.on('connection', function (socket) {
       //callback to get question, not messing with this on change.
        console.log(socket.username,'should have a room', socket.code, 'that should be ', room)
 
-      jeopardy.getQ(function (ques){
+         jeopardy.getJService(deckID, function (ques){
+          console.log("jeopardy.getJService runs", ques)
+          io.to(socket.id).emit('teacher question', ques);
+          //delete ques.answer;
+          //goes through the clients in the server   
+          io.to(socket.code).emit('student question', ques)
+        });
 
-        
-        io.to(socket.id).emit('teacher question', ques);
 
-        delete ques.answer;
-       
-        //goes through the clients in the server   
-         
-         io.to(socket.code).emit('student question', ques)
-      });
-      
     }
   });
 

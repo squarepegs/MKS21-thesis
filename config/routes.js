@@ -6,7 +6,6 @@ var mongoose = require('mongoose');
 
 module.exports = function(app,passport){
 
-
   app.get('/', function(req, res){
     res.render('../client/landing_page/landingpage.ejs')//may need to be client/teacher/index
   });

@@ -43,17 +43,14 @@ module.exports = {
   },
   
   gameMaker: function(data){
-    // to test type this in the terminal:
-    //// curl -X POST --header "username: billy" localhost:8000/newGame
-    // you will get get back a game code.
-    //// curl localhost:8000/game-dash/*insert game code here*
-    //// on the server, you will see an announcement of who the owner is.
-
     // here we set that game's unique id and we verify that, by some
     // small chance, that number is actually unique.
+    // by removing the vowels, we eliminate most of the bad words that 
+    // can be created randomly.  
     var possible = "BCDFGHJKLMNPQRSTVWXZ";
     // For obvious reasons, these words should not be condoned.
     // If the random generator runs into one of thses, it'll just reroll.
+    // We apologise.
     var badWords = ['NGGR', 'NGRR', 'NNGR', 'CVNT', 'FVCK', 'SHJT'];
 
     var code;

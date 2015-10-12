@@ -48,7 +48,7 @@ var RoomSelect = React.createClass({
   }
 });
 
-var Dashboard = React.createClass({
+var GameDashboard = React.createClass({
   componentDidMount:function(){
 
   },
@@ -59,7 +59,7 @@ var Dashboard = React.createClass({
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
       <RoomSelect />
       <QA />
-      <NewQ />
+      <NewQ deckID={this.props.deckID} />
       <BuzzedInList />
       <ActiveList />
     </div>
@@ -73,6 +73,9 @@ var Dashboard = React.createClass({
 var QA = React.createClass({
   componentDidMount: function(){
     socket.on('teacher question', function(data){
+      if (data.question === 'There are no more questions in this deck'){
+        sessionStorage.deckID = 'jService';
+      }
       React.render(
         <div>
           <h4>Category: {data.category} - ${data.value}</h4>
@@ -170,7 +173,8 @@ var ActiveList = React.createClass({
 
 var NewQ = React.createClass({
   clickHandler: function(){
-    socket.emit('newQ', window.jeopardy.code);
+    console.log("NewQ clicked")
+    socket.emit('newQ', window.jeopardy.code, this.props.deckID);
   },
 
   render:function(){
@@ -184,18 +188,19 @@ var NewQ = React.createClass({
 
 var Main = React.createClass({
   componentDidMount: function(){
-    socket.on('welcome message', function (code){
+    socket.on('welcome message', function (code, deckID){
       console.log('these are the rooms i am in', socket)
+      console.log('this is the deck I am playing', deckID)
     window.jeopardy.code = code;
-    React.render(<Dashboard />, document.getElementById('main'));
+    React.render(<GameDashboard deckID={sessionStorage.deckID} />, document.getElementById('main'));
     })
   },
 
   handleClick: function(){
-    window.jeopardy.username = $('#username').val();
-    socket.emit('new game',{id:window.jeopardy.username});
+    console.log("deckID:", sessionStorage.deckID)
+    socket.emit('new game', {id:window.jeopardy.username}, sessionStorage.deckID);
     React.render(
-      <Dashboard />
+      <GameDashboard deckID={sessionStorage.deckID} />
       ,document.getElementById('main'))
   },
 
@@ -204,7 +209,7 @@ var Main = React.createClass({
       <div>
         <label>Username: </label>
         <input type="text" className="input" id="username" />
-        <button onClick={this.handleClick}>START NEW GAME</button>
+        <button onClick={this.handleClick}>Start Game</button>
         <div id="status"></div>
       </div>
     )

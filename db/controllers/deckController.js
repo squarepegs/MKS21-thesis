@@ -71,10 +71,19 @@ module.exports = {
         })
     })
   },
-  getADeck: function(req, res){
-    // console.log("req.user.id", req.user.id)
-    var lookup = mongoose.Types.ObjectId(req.params.id);
-    console.log(req.params.id)
+  getADeck: function(req, res, serverSideDeckID, serverSideCallback){
+    console.log("getADeck To Play:", serverSideDeckID); 
+    var deckID = ''
+    if (serverSideDeckID){
+      deckID = serverSideDeckID;
+    } else if (req){
+      deckID = req.params.id; 
+    }
+
+
+    var lookup = mongoose.Types.ObjectId(deckID);
+
+    console.log(deckID)
     Deck.findOne(
         {"_id" : lookup}, // selector
         function(err, deck){ //callback
@@ -84,8 +93,12 @@ module.exports = {
             'title': deck.title,
             'questions': deck.questions
           }
-          console.log("server-side sendDeck", sendDeck)
-         res.send(sendDeck)
+         if (req){
+            res.send(sendDeck)
+          } else {
+            serverSideCallback(sendDeck)
+          }
+               
        })
   },
   amendADeck: function(req, res){

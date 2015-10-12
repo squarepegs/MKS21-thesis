@@ -67,6 +67,12 @@ module.exports = function(app,passport){
   passport.authenticate('facebook', { successRedirect: '/teacher', 
                                       failureRedirect: '/' }));
   
+ //************logout*************//
+  app.get('/api/logout', function (req, res){
+    req.session.destroy(function (err) {
+      res.redirect('/'); //Inside a callback… bulletproof!
+    });
+  });
 
 
 

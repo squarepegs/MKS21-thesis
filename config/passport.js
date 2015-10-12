@@ -101,12 +101,7 @@ passport.use('local-signup', new LocalStrategy({
     });
   }
   ));
-    //************logout*************//
-    app.get('/logout', function (req, res){
-    req.session.destroy(function (err) {
-      res.redirect('/'); //Inside a callback… bulletproof!
-    });
-  });
+   
    
 
 };

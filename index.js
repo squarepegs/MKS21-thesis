@@ -43,8 +43,11 @@ app.set('view engine', 'ejs');
 app.use('/client',express.static(__dirname + '/client'));
 
 app.use('/teacher', express.static(__dirname + '/client/teacher'));
+
+
+
+
 app.use('/student', express.static(__dirname + '/client/student'));
-app.use('/form', express.static(__dirname + '/client/teacher/form'));
 app.use('/modules', express.static(__dirname + '/node_modules'));
 app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css/'));
 
@@ -225,7 +228,7 @@ io.on('connection', function (socket) {
   socket.on('newQ', function (room, deckID){
 
     console.log('in newQ these are the rooms', socket.rooms, 'that', socket.username, 'is in when sending the questions')
-
+    console.log('and the question comes from ', deckID);
     console.log('and ', socket.username, 'sent this room to the server', room)
     
     //checks to see that the room exists
@@ -234,9 +237,9 @@ io.on('connection', function (socket) {
        console.log(socket.username,'should have a room', socket.code, 'that should be ', room)
 
          jeopardy.getJService(deckID, function (ques){
-
+          console.log("jeopardy.getJService runs", ques)
           io.to(socket.id).emit('teacher question', ques);
-          delete ques.answer;
+          //delete ques.answer;
           //goes through the clients in the server   
           io.to(socket.code).emit('student question', ques)
         });

@@ -1,4 +1,4 @@
-var socket = socket.socket.reconnect() || io();
+var socket = io();
 window.jeopardy = {buzzed:false, question:{}};
 
 var QA = React.createClass({

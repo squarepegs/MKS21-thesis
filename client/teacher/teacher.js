@@ -64,7 +64,6 @@ var RoomSelect = React.createClass({
   },
 
   render: function() {
-    console.log('this is the state', this.state)
     var items = this.state.items.map(function(item, i) {
       return (<Room name={item} key={i} />);
     }.bind(this))
@@ -79,15 +78,15 @@ var RoomSelect = React.createClass({
 });
 
 var EndGame = React.createClass({
-  componentDidMount:function(){
-    socket.on('disconnect', function (user){
-    console.log('someone has disconnected from the server')
-      if(socket.disconnected===true){
-      React.unmountComponentAtNode(document.getElementById('main'));
-      } 
-    console.log(user, " has left the game");
-    })   
-  },
+  // componentDidMount:function(){
+  //   socket.on('disconnect', function (user){
+  //   console.log('someone has disconnected from the server')
+  //     if(socket.disconnected===true){
+  //     React.unmountComponentAtNode(document.getElementById('main'));
+  //     } 
+  //   console.log(user, " has left the game");
+  //   })   
+  // },
   
   clickHandler: function(){
     socket.emit('end game', window.jeopardy.code);
@@ -106,6 +105,7 @@ var Dashboard = React.createClass({
 
 
   render:function(){
+    console.log('this should be the code', window.jeopardy.code)
     return (
     <div>
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>

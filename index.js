@@ -92,7 +92,7 @@ io.on('connection', function (socket) {
     var hostRooms = clients[socket.id].rooms;
 
     //userid added to the socket
-    socket.id = user.id;
+    socket.username = user.id;
     //user is marked as a HOST
 
     socket.teacher = true;
@@ -100,7 +100,7 @@ io.on('connection', function (socket) {
     //request handler creates room code
     var room = handler.gameMaker(user);
 
-    console.log(socket.id, 'created a new game');
+    console.log(socket.username, 'created a new game');
 
     //checks if teacher is in room, if it is socket leaves saved room, and joins new room created by server
 
@@ -139,7 +139,7 @@ io.on('connection', function (socket) {
 
 
     //userid added to socket
-    socket.id = user.id
+    socket.username = user.id
 
     
     //student is not marked as a host;
@@ -152,7 +152,7 @@ io.on('connection', function (socket) {
 
     console.log('the student', user.id, 'with ', socket.id, ' should be in these rooms before a new game', socket.rooms)
 
-    console.log('this', socket.code,' will be the new room ', socket.id, 'will join')
+    console.log('this', host.code,' will be the new room ', socket.id, 'will join')
     
     //if the room matches the teacher, then the student can join the room
     console.log('this is the host', host.id)
@@ -164,12 +164,12 @@ io.on('connection', function (socket) {
     //student now joins room
     socket.join(socket.code);
 
-    //server sends username to host
+    //server sends student id to host
     io.to(host.id).emit('student joined', socket.username);
-    //server sends hostname to socket
-    io.to(socket.id).emit('student joined', host.username);
+    //server sends hostid to student
+    io.to(socket.id).emit('student joined', host.id);
 
-    console.log('server sent student join to host socket', host.id)
+    console.log('server sent student', socket.id, 'to host socket', host.id)
 
     //other wise, there is an error and the student may not join the room.
     } 
@@ -180,12 +180,10 @@ io.on('connection', function (socket) {
   //JOIN ROOMS LISTENER for stdnt and teacher in case of disconnect
 
   socket.on('join room', function (oldRoom){
-    
-    console.log(socket)
 
     console.log('the client', socket.id,' requested to join this room', oldRoom)
     
-    
+    socket.teacher = true;
     //client joins the old room
     socket.code = oldRoom;
 
@@ -250,7 +248,7 @@ io.on('connection', function (socket) {
   //BUZZ LISTENR FOR STUDENT and TEACHER
   socket.on('buzz', function (data){
 
-    io.to(socket.code).emit('buzzed in', {'id': socket.id, time: data.time});
+    io.to(socket.code).emit('buzzed in', {'id': socket.username, time: data.time});
 
   });
 

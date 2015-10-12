@@ -2,13 +2,16 @@
 // JSERVICE (Jeopardy API)
 //--------------------------------
 var request = require('request');
+var $ = require('jquery')
 // var auth  = require ('./auth.js');
+var globalDeckStorage = {}; 
 
 module.exports = {
 
-  getQ: function(socketCallback) {
-
-
+  getJService: function(deckID, socketCallback) {
+    
+    //grab question from the Jservice
+    if (deckID === jService){
     request('http://jservice.io/api/random', function(error, response, body) {
       
       console.log("getJeopardyQ being called");
@@ -29,8 +32,39 @@ module.exports = {
         console.log("formattedQues", JSON.stringify(formattedQues)); // DEBUG CODE, REMOVE BEFORE PRODUCTION
 
         socketCallback(formattedQues); // should we include bluebird?
+        }
+      }); 
+    } else {
+      // initialize deck if not already intialized
+      if(!globalDeckStorage[deckID]){
+        globalDeckStorage[deckID] = {
+          index: 0,
+          questions: []
+        }
+
+        $.get('/api/decks/' + deckID, function(req, res){
+          globalDeckStorage[deckID].questions = req.questions;
+          console.log("first question", globalDeckStorage[deckID].questions[0])
+          socketCallback(globalDeckStorage[deckID].questions.index);
+          globalDeckStorage[deckID].index++
+        })
+      } else {
+        if(globalDeckStorage[deckID].index >= globalDeckStorage[deckID].questions.length){
+          socketCallback({category: '', value: '', question:'There are no more questions in this deck', answer: ''})
+          delete globalDeckStorage[deckID]; 
+        } else {
+          socketCallback(globalDackStorage[deckID].questions.index);
+          globalDeckStorage[deckID].index++;
+        }
       }
-    });
+
+
+
+
+    }
+
+
+
 
   }
 };

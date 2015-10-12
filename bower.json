@@ -1,0 +1,25 @@
+{
+  "name": "thesis",
+  "main": "charts.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/squarepegs/MKS21-thesis",
+  "authors": [
+    "Pete Do"
+  ],
+  "description": "bower for chartsjs",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Chart.js": "~1.0.2"
+  }
+}

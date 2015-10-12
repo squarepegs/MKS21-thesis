@@ -66,6 +66,7 @@ module.exports = function(app,passport){
   app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect: '/teacher', 
                                       failureRedirect: '/' }));
+  
   //************logout*************//
   app.get('/logout', function (req, res){
     req.session.destroy(function (err) {

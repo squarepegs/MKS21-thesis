@@ -35,6 +35,9 @@ var Tabs = React.createClass({
    myProfile:function(){
     console.log('myProfile')
   },
+  Logout:function(){
+    console.log('Logout')
+  },
   render:function(){
     return (
     <div>
@@ -44,6 +47,7 @@ var Tabs = React.createClass({
       <button onClick={this.classData}>Class Data</button>
       <button onClick={this.studentData}>Student Data</button>
       <button onClick={this.myProfile}>My Profile</button>
+      <button onClick={this.myProfile}>Logout</button>
     </div>
     )
   }

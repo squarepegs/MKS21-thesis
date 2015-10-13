@@ -123,7 +123,7 @@ io.on('connection', function (socket) {
     console.log('this is the code sent to teacher', socket.code)
     console.log('this is the deck the teacher is using', deckID)
     //server emits welcome message and room code
-    io.to(socket.id).emit('welcome message', socket.code, deckID);
+    io.to(socket.id).emit('room code', socket.code, deckID);
 
   });
 

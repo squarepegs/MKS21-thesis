@@ -374,6 +374,7 @@ var MyDecks = React.createClass({
   playDeck: function(event){
     sessionStorage.deckID = event.target.value
     console.log("deckID:", sessionStorage.deckID);
+  
     window.location.replace('/teacher')
 
      },

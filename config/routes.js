@@ -1,6 +1,7 @@
 var User    = require('../db/models/userModel');
 var UserController    = require('../db/controllers/userController');
 var DeckController    = require('../db/controllers/deckController');
+var TestController    = require('../db/controllers/testController');
 
 var mongoose = require('mongoose');
 
@@ -67,14 +68,17 @@ module.exports = function(app,passport){
   passport.authenticate('facebook', { successRedirect: '/teacher', 
                                       failureRedirect: '/' }));
   
- //************logout*************//
+
   app.get('/api/logout', function (req, res){
     req.session.destroy(function (err) {
-      res.redirect('/'); //Inside a callback… bulletproof!
+      res.redirect('/'); 
     });
   });
 
-
+  app.post('/api/recordTest', function(req, res){
+    console.log('route recordtest');
+    TestController.recordTest(req, res)
+  })
 
 };
 

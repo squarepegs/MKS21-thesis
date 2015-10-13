@@ -38,6 +38,7 @@ module.exports = {
           console.log("questions loaded:", globalDeckStorage[deckID].questions.length)
           globalDeckStorage[deckID].questions = deck.questions;
           console.log("first question", globalDeckStorage[deckID].questions[0])
+
           socketCallback(globalDeckStorage[deckID].questions[globalDeckStorage[deckID].index]);
           globalDeckStorage[deckID].index++
         })
@@ -46,10 +47,13 @@ module.exports = {
           category: '',
           value: '',
           question: 'There are no more questions in this deck',
-          answer: ''
+          answer: '',
         })
         delete globalDeckStorage[deckID];
       } else {
+        
+        // Yes, this is a prime candidate for refactoring during refactoring time.
+
         socketCallback(globalDeckStorage[deckID].questions[globalDeckStorage[deckID].index]);
         globalDeckStorage[deckID].index++;
       }

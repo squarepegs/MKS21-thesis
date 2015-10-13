@@ -3,6 +3,8 @@ var socket = io();
 window.jeopardy = {};
 var activeList = [];
 var buzzedIn = [];
+var testData = [];
+var questionData = {};
 
 socket.on('error', function(){
   alert("there was a server error. Please try starting a new session.");
@@ -74,8 +76,17 @@ var QA = React.createClass({
   componentDidMount: function(){
     socket.on('teacher question', function(data){
       if (data.question === 'There are no more questions in this deck'){
-        sessionStorage.deckID = 'jService';
-      }
+        console.log("testData", testData)
+        testDataString = JSON.stringify(testData)
+        $.post('/api/recordTest', {'testData':testDataString}, function(req, res){
+          // ???
+        })
+      } 
+      questionData.category = data.category;
+      questionData.question = data.question;
+      questionData.pointValue = data.value;
+      questionData.answer = data.answer;
+
       React.render(
         <div>
           <h4>Category: {data.category} - ${data.value}</h4>
@@ -100,6 +111,7 @@ var QA = React.createClass({
 var BuzzedInList = React.createClass({
   componentDidMount: function(){
     socket.on('teacher question', function (data){
+
       buzzedIn = [];
       React.render(
         <div>
@@ -109,15 +121,17 @@ var BuzzedInList = React.createClass({
     })
     
     socket.on('buzzed in', function(data){
-      if (buzzedIn.indexOf(data.id) === -1){
-        buzzedIn.push(data.id);
+      if (buzzedIn.indexOf(data) === -1){
+        console.log("buzzed in data", data)
+        buzzedIn.push(data);
         buzzedIn.sort(sortByTime);
+        questionData.buzzes = buzzedIn;
       }
       console.log('after this.buzzedIn', buzzedIn, "data", data)
 
       var elements = [];
       for(var i = 0; i < buzzedIn.length; i++){
-        elements.push(<li>{buzzedIn[i]}</li>);
+        elements.push(<li>{buzzedIn[i].id}</li>);
       }
 
       React.render(
@@ -143,9 +157,11 @@ var ActiveList = React.createClass({
 
   componentDidMount: function(){
     socket.on('student joined', function (data){
+      console.log("student data on joined (data)", data)
     
     console.log("activeList, ", activeList);
       activeList.push(data);
+      questionData.activeList = activeList;
 
     var elements = [];
     for(var i = 0; i < activeList.length; i++){
@@ -174,6 +190,9 @@ var ActiveList = React.createClass({
 var NewQ = React.createClass({
   clickHandler: function(){
     console.log("NewQ clicked")
+    testData.push(questionData);
+    questionData = {};
+    questionData.buzzes = {};
     socket.emit('newQ', window.jeopardy.code, this.props.deckID);
   },
 
@@ -192,12 +211,14 @@ var Main = React.createClass({
       console.log('these are the rooms i am in', socket)
       console.log('this is the deck I am playing', deckID)
     window.jeopardy.code = code;
-    React.render(<GameDashboard deckID={sessionStorage.deckID} />, document.getElementById('main'));
+    React.render(<GameDashboard deckID={deckID} />, document.getElementById('main'));
     })
   },
 
   handleClick: function(){
     console.log("deckID:", sessionStorage.deckID)
+    testDataIndex = 0;
+    testData = [];
     socket.emit('new game', {id:window.jeopardy.username}, sessionStorage.deckID);
     React.render(
       <GameDashboard deckID={sessionStorage.deckID} />

@@ -59,9 +59,14 @@ var Main = React.createClass({
     })
 
 
-   socket.on('disconnect', function(){
+   socket.on('end game', function(){
     if(socket.disconnected === true){
-      console.log(window.jeopardy.username+", you have been disconnected from the game session")
+      React.render(
+        <div className="container">
+          <Main />
+        </div>,
+        document.getElementById('main')
+      )
     } 
     if(socket.connected === true)
     {

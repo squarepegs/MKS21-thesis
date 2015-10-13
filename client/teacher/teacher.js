@@ -13,7 +13,7 @@ socket.on('error', function (err){
 });
 
 var sortByTime = function(a,b){
-  if (a.time < b.time) return 1;
+  if (a.time > b.time) return 1;
   else if (a.time > b.time) return -1;
   else return 0;
 };
@@ -77,18 +77,14 @@ var RoomSelect = React.createClass({
 });
 
 var EndGame = React.createClass({
-  // componentDidMount:function(){
-  //   socket.on('disconnect', function (user){
-  //   console.log('someone has disconnected from the server')
-  //     if(socket.disconnected===true){
-  //     React.unmountComponentAtNode(document.getElementById('main'));
-  //     } 
-  //   console.log(user, " has left the game");
-  //   })   
-  // },
-  
+
   clickHandler: function(){
     socket.emit('end game', window.jeopardy.code);
+    React.render(
+      <div>
+        <Main />
+        </div>,
+      document.getElementById('main'))
   },
 
   render: function(){
@@ -106,7 +102,7 @@ var GameDashboard = React.createClass({
   render:function(){
 
     return (
-    <div>
+    <div id='gameDashboard'>
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
       <EndGame />
       <QA />

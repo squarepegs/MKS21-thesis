@@ -89,7 +89,6 @@ io.on('connection', function (socket) {
 
     deckID = deckID || 'jService' // if user does not provide a deck, use the jService. 
 
-    var hostRooms = clients[socket.id].rooms;
 
     //userid added to the socket
     socket.username = user.id;
@@ -205,25 +204,16 @@ io.on('connection', function (socket) {
 
   socket.on('end game', function (room){  
     //server checks to see that socket is a teacher
-    var hostRooms = clients[socket.id].rooms;
+    var students = handler.findStudentSockets(clients, room);
+    console.log('in server this is the array of students', students)
     if(socket.teacher === true){     
-      if(hostRooms.indexOf(room) !== -1){
 
-        for(var client in clients){
-
-          console.log('this host ', socket.id, 'has these rooms before closing the room', hostRooms)
-
-          console.log('this client', client, ' has these rooms before closing the room', hostRooms)
-          
-            
-            clients[client].leave(room);
-            handler.endGame(room);
-        };
-      } else {
-        io.emit('error');
+      for(var i = 0; i<students.length; i++){         students[i].leave(room);
       }
+      socket.leave(room);
+      handler.endGame(room); 
     } else {
-      io.emit('error');
+        io.emit('error');
     }
   });
 

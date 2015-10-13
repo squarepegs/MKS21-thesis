@@ -33,6 +33,23 @@ module.exports = {
   },
   //need to find all unique rooms and send back to user
 
+  findStudentSockets: function(clients, code){
+    var students = [];
+    console.log('in findStudentSockets, this is the students array at start', students)
+
+    for (var client in clients){
+
+      if((clients[client].code === code) && clients[client].username){
+
+          if(clients[client].teacher === false){
+            students.push(clients[client]);
+          }
+      }      
+    }
+    console.log('in findStudentSockets, this is the students array at finish', students)
+    return students
+  },
+
   findAllRooms: function (clients){
     var rooms = [];
     for (var client in clients){

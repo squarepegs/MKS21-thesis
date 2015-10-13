@@ -135,6 +135,7 @@ var QA = React.createClass({
       questionData.question = data.question;
       questionData.pointValue = data.value;
       questionData.answer = data.answer;
+      questionData.askTime = Date.now(); 
 
       React.render(
         <div>

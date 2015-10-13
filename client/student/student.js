@@ -47,7 +47,7 @@ var Buzzer = React.createClass({
   clickHandler: function(){
     $('#buzzer').addClass("red darken-3");
     $('#buzzer').text('BUZZ!');
-    socket.emit('buzz',{code:window.jeopardy.code, time:new Date(), id:window.jeopardy.username});
+    socket.emit('buzz',{code:window.jeopardy.code, time:Date.now(), id:window.jeopardy.username});
   }
 })
 
@@ -55,7 +55,7 @@ var Main = React.createClass({
   componentDidMount: function(){
     socket.on('student joined', function (host){
     console.log("you joined "+host+"'s room");
-    React.render( <div> <Waiting /> <Buzzer /> </div>, document.getElementById('main') )
+    React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
     })
 
 

@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var testSchema = mongoose.Schema({
   _owner   : {type: String},
   _deck    : {type: String},
-  time     : {type: Date}, 
+  time     : {type: Number}, 
   testData : {
     type: Array
   }

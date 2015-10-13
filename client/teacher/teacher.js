@@ -135,6 +135,11 @@ var QA = React.createClass({
       questionData.question = data.question;
       questionData.pointValue = data.value;
       questionData.answer = data.answer;
+      // Technically speaking, we should be tracking
+      // the time the question appears on the students'
+      // devices, rather than when the teacher gets
+      // the question, as we do here.
+      questionData.askTime = Date.now(); 
 
       React.render(
         <div>

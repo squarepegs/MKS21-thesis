@@ -191,11 +191,14 @@ io.on('connection', function (socket) {
 
     io.to(socket.code).emit('student joined', students);
     
-    console.log('the client', socket.id,' requested to join this room', socket.code, 'and the list', students, 'was sent')
+    console.log('the client', socket.id,' requested to join this room', socket.code, 'and the list', 
+      students, 'was sent')
 
+    var students = handler.findStudents(clients, socket.code);
     //server sends room code back to client
     io.to(socket.id).emit('room code', socket.code)
-
+    //server emits list of students to teacher
+    io.to(socket.code).emit('student joined', students);
   });
 
   //END GAME for teacher, teacher leaves room and students leave room.

@@ -209,57 +209,67 @@ var BuzzedInList = React.createClass({
  //to be refactored: students stored in local storage and temporary variable used to reconstruct storage as an array localStorage only stores strings
 
 var ActiveList = React.createClass({
+
   getInitialState: function(){
-    return null
+    return {
+      items : ['']
+    }
   },
 
   componentDidMount: function(){
 
     socket.on('student joined', function (data){
-      console.log("student data on joined (data)", data)
-    
-    console.log("activeList, ", activeList);
-      activeList.push(data);
-      questionData.activeList = activeList;
-
-    var elements = [];
-    for(var i = 0; i < activeList.length; i++){
-        elements.push(<li>{activeList[i]}</li>);
+      window.activeList = data;
+      console.log('this is the data from students', data)
+      console.log('this is the activeList when students join', window.activeList)  
+      if(this.isMounted()){
+          this.setState(function(){
+          var list = []
+          for (var i = 0; i < data.length; i++){
+          list.push(data[i]);
+          }
+          return({items: list})
+        })
       }
-      console.log('this is the activeList when students join', window.activeList)
-    React.render(
-      <div>
-        <ul>{elements}</ul>
-      </div>,document.getElementById('activeList')
-      )
-    })
+    }.bind(this))
+
     socket.on('user disconnected', function (student){   
-      console.log('this is the activeList at disconnect', window.activeList, 'and the student that disconnected', student)
-        var index = activeList.indexOf(student)
+      console.log('this is the list of students at disconnect', window.activeList)
+      if(this.isMounted()){
+      this.setState(function(){
+        var index = window.activeList.indexOf(student)
         if(index !== -1){
           window.activeList.splice(index, 1);
-        var elements = [];
-          for(var i = 0; i < window.activeList.length; i++){
-            elements.push(<li>{window.activeList[i]}</li>);
-          }
-        React.render(
-          <div>
-            <ul>{elements}</ul>
-          </div>,document.getElementById('activeList')
-        )
+        }
+        return({items: window.activeList})
+      })
       }
-    })
+    }.bind(this));
   },
 
-  render:function(){
+  render:function(){ 
+    var items = this.state.items.map(function(item, i) {
+      return (<Student name={item} key={i} />);
+      }.bind(this))
     return (
     <div>
       <h2>Active Players:</h2>
-      <p id="activeList"></p>
+      <ul id="activeList">{items}</ul>
     </div>
     )
   },
 })
+
+
+var Student = React.createClass({
+
+  render: function() {
+    return (
+      <li className="student">{this.props.name}</li>
+    );
+  }
+});
+
 
 
 var NewQ = React.createClass({

@@ -4,7 +4,7 @@ var testSchema = mongoose.Schema({
   _owner   : {type: String},
   _deck    : {type: String},
   time     : {type: Date}, 
-  questions: {
+  testData : {
     type: Array
   }
 });

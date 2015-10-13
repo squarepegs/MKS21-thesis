@@ -5,14 +5,17 @@ var mongoose = require('mongoose');
 var _        = require('underscore');
 
 module.exports = {
-  startTest: function(req, res) {
+  recordTest: function(req, res) {
+    console.log("This is req.body in controller", req.body);
+    testDataObj = JSON.parse(req.body.testData);
+    console.log("this is parsed", testDataObj)
+
     var lookup = mongoose.Types.ObjectId(req.user.id);
     var newTest = new Test();
     newTest._owner = req.user.id;
     newTest._deck = req.body._deck;
-    newTest.time = req.body.time;
-    newTest.questions = [];
-    
+    newTest.time = new Date();
+    newTest.testData = testDataObj;
     newTest.save(function(err, data) {
       if (err) {
         throw err;
@@ -30,7 +33,7 @@ module.exports = {
           console.log(err);
         });
     });
-  },
+  }
 
 }
 

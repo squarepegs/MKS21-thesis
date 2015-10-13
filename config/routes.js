@@ -75,9 +75,9 @@ module.exports = function(app,passport){
     });
   });
 
-  app.post('/api/startTest', function(req, res){
+  app.post('/api/recordTest', function(req, res){
     console.log('route recordtest');
-    TestController.startTest(req, res)
+    TestController.recordTest(req, res)
   })
 
 };

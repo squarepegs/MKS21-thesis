@@ -19,21 +19,31 @@ var sortByTime = function(a,b){
 var Tabs = React.createClass({
   launch:function(){
     console.log('launch')
+    React.render(
+      <ShowQuestion />, document.getElementById('view'))
   },
    decks:function(){
     console.log('decks')
+    React.render(
+      <DeckEditor />, document.getElementById('view'))
   },
    createDecks:function(){
     console.log('createDecks')
+    React.render(
+      <CreateDecks />, document.getElementById('view'))
   },
    classData:function(){
     console.log('classData')
+    React.render(
+    <Charts />, document.getElementById('view'))
   },
    studentData:function(){
     console.log('studentData')
+
   },
    myProfile:function(){
-    console.log('myProfile')
+    React.render(
+      <Profile />, document.getElementById('view'))
   },
   logout:function(){
     console.log('logout')
@@ -53,6 +63,22 @@ var Tabs = React.createClass({
       <button onClick={this.logout}>Logout</button>
     </div>
     )
+  }
+})
+
+var ViewArea = React.createClass({
+
+  render: function(){
+    return (<div id='view'></div>)
+  }
+})
+
+var Charts = React.createClass({
+  render: function(){
+    return (<div id="charts">
+      <canvas id="lineChart" width="600" height="400"></canvas>
+      <canvas id="barChart" width="600" height="400"></canvas>
+      </div>)
   }
 })
 
@@ -489,11 +515,7 @@ React.render(
   <div>
     <Tabs />
     <hr/><hr/>
-    <Profile />
-    <hr/><hr/>
-    <MyDecks />
-    <hr/><hr/>
-    <CreateDecks />
+    <ViewArea />
 
   </div>,
   document.getElementById('main')

@@ -131,7 +131,7 @@ var BuzzedInList = React.createClass({
 
       var elements = [];
       for(var i = 0; i < buzzedIn.length; i++){
-        elements.push(<li>{buzzedIn[i]}</li>);
+        elements.push(<li>{buzzedIn[i].id}</li>);
       }
 
       React.render(

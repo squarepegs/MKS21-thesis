@@ -68,7 +68,6 @@ var Profile = React.createClass({
   componentDidMount: function(){
     var context = this;
     $.get('/api/profile', function(req, res){
-     sessionStorage.myID = req._id;
      if (req.local){
       context.setState({'username': req.local.username});
      }
@@ -375,17 +374,7 @@ var MyDecks = React.createClass({
   playDeck: function(event){
     sessionStorage.deckID = event.target.value
     console.log("deckID:", sessionStorage.deckID);
-    sessionStorage.playerData = {}; 
-
-    var newTest = { 
-      _owner: sessionStorage.myID, 
-      _deck: sessionStorage.deckID, 
-      time: new Date() }
-    $.post('/api/startTest', newTest, function(req, res){
-      // TODO, add a reference to this test in the user's
-      // tests array on the DB. 
-
-    })
+  
     window.location.replace('/teacher')
 
      },

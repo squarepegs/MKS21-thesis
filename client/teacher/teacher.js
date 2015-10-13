@@ -100,7 +100,7 @@ var EndGame = React.createClass({
   }
 })
 
-var Dashboard = React.createClass({
+var GameDashboard = React.createClass({
 
 
   render:function(){
@@ -292,17 +292,18 @@ var NewQ = React.createClass({
 
 var Main = React.createClass({
   componentDidMount: function(){
-    socket.on('room code', function (code){
+    socket.on('room code', function (code, deckID){
     window.jeopardy.code = code;
+    sessionStorage.deckID = deckID
     React.render(
-      <Dashboard />
+      <GameDashboard deckID={deckID} />
       ,document.getElementById('main'))
     })
   },
 
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
-    socket.emit('new game',{id:window.jeopardy.username});
+    socket.emit('new game',{id:window.jeopardy.username}, sessionStorage.deckID);
   },
 
   render: function(){

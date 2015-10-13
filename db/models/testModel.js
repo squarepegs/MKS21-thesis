@@ -9,4 +9,4 @@ var testSchema = mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('deck', deckSchema);
+module.exports = mongoose.model('test', testSchema);

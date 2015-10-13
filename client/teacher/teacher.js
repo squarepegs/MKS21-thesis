@@ -76,6 +76,7 @@ var QA = React.createClass({
       if (data.question === 'There are no more questions in this deck'){
         sessionStorage.deckID = 'jService';
       }
+      sessionStorage.questionIndex = data.questionIndex;
       React.render(
         <div>
           <h4>Category: {data.category} - ${data.value}</h4>
@@ -100,6 +101,7 @@ var QA = React.createClass({
 var BuzzedInList = React.createClass({
   componentDidMount: function(){
     socket.on('teacher question', function (data){
+      sessionStorage.questionIndex = data.questionIndex;
       buzzedIn = [];
       React.render(
         <div>
@@ -109,11 +111,17 @@ var BuzzedInList = React.createClass({
     })
     
     socket.on('buzzed in', function(data){
-      if (buzzedIn.indexOf(data.id) === -1){
-        buzzedIn.push(data.id);
+      if (buzzedIn.indexOf(data) === -1){
+        console.log("buzzed in data", data)
+        console.log("sessionStorage", JSON.stringify(sessionStorage))
+        console.log("sessionStorage.playerData", sessionStorage.playerData)
+        sessionStorage.playerData[data.id][sessionStorage.questionIndex] = data.time;
+
+        buzzedIn.push(data);
         buzzedIn.sort(sortByTime);
       }
       console.log('after this.buzzedIn', buzzedIn, "data", data)
+      console.log("sessionStorage:", JSON.stringify(sessionStorage));
 
       var elements = [];
       for(var i = 0; i < buzzedIn.length; i++){
@@ -143,6 +151,8 @@ var ActiveList = React.createClass({
 
   componentDidMount: function(){
     socket.on('student joined', function (data){
+      console.log("student data on joined (data)", data)
+      sessionStorage.playerData[data] = [];
     
     console.log("activeList, ", activeList);
       activeList.push(data);

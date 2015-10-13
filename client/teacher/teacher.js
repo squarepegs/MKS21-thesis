@@ -1,13 +1,15 @@
 //socket Emit functionality
-var socket = io();
+var socket = socket ? socket.socket.reconnect() : io();
 window.jeopardy = {};
-var activeList = [];
+window.activeList = [];
 var buzzedIn = [];
 var testData = [];
 var questionData = {};
 
-socket.on('error', function(){
-  alert("there was a server error. Please try starting a new session.");
+console.log('teacher socket: ', socket)
+
+socket.on('error', function (err){
+  console.log('this is the error', err);
 });
 
 var sortByTime = function(a,b){
@@ -30,19 +32,43 @@ var Room = React.createClass({
 
 var RoomSelect = React.createClass({
 
-  getDefaultProps: function() {
+  getInitialState: function(){
     return {
-      items: ['rooma', 'roomb']
+      items: [''],
+      selected: ''
+    }
+  },
+
+  componentDidMount: function(){
+    socket.on('rooms created', function (allRooms){
+      console.log('these are all the rooms available ',allRooms)
+      if(this.isMounted()){
+        this.setState(function(){
+          var rooms = [];
+          for (var i = 0; i < allRooms.length; i++){
+          rooms.push(allRooms[i]);
+          }
+        return {items: rooms}
+        })
+      }
+    }.bind(this))
+  },
+
+  clickHandler: function(event){
+    if(event.target.value){
+      console.log('clicked this', event.target.value)
+      this.setState({selected: event.target.value})
+      socket.emit('join room', event.target.value);
     }
   },
 
   render: function() {
-    var items = this.props.items.map(function(item, i) {
+    var items = this.state.items.map(function(item, i) {
       return (<Room name={item} key={i} />);
     }.bind(this))
     return (
       <div>
-      <select className="browser-default">
+      <select className="browser-default" onChange={this.clickHandler}>
         {items}
       </select>
       </div>
@@ -50,16 +76,39 @@ var RoomSelect = React.createClass({
   }
 });
 
-var GameDashboard = React.createClass({
-  componentDidMount:function(){
-
+var EndGame = React.createClass({
+  // componentDidMount:function(){
+  //   socket.on('disconnect', function (user){
+  //   console.log('someone has disconnected from the server')
+  //     if(socket.disconnected===true){
+  //     React.unmountComponentAtNode(document.getElementById('main'));
+  //     } 
+  //   console.log(user, " has left the game");
+  //   })   
+  // },
+  
+  clickHandler: function(){
+    socket.emit('end game', window.jeopardy.code);
   },
 
+  render: function(){
+    return (
+    <div>
+      <button onClick={this.clickHandler}> End Game </button>
+    </div>
+    )
+  }
+})
+
+var Dashboard = React.createClass({
+
+
   render:function(){
+
     return (
     <div>
       <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
-      <RoomSelect />
+      <EndGame />
       <QA />
       <NewQ deckID={this.props.deckID} />
       <BuzzedInList />
@@ -108,6 +157,8 @@ var QA = React.createClass({
   },
 })
 
+
+
 var BuzzedInList = React.createClass({
   componentDidMount: function(){
     socket.on('teacher question', function (data){
@@ -153,38 +204,72 @@ var BuzzedInList = React.createClass({
   },
 })
 
+
+
+ //to be refactored: students stored in local storage and temporary variable used to reconstruct storage as an array localStorage only stores strings
+
 var ActiveList = React.createClass({
 
-  componentDidMount: function(){
-    socket.on('student joined', function (data){
-      console.log("student data on joined (data)", data)
-    
-    console.log("activeList, ", activeList);
-      activeList.push(data);
-      questionData.activeList = activeList;
-
-    var elements = [];
-    for(var i = 0; i < activeList.length; i++){
-        elements.push(<li>{activeList[i]}</li>);
-      }
-
-    React.render(
-      <div>
-        <ul>{elements}</ul>
-      </div>,document.getElementById('activeList')
-      )
-    })
+  getInitialState: function(){
+    return {
+      items : ['']
+    }
   },
 
-  render:function(){
+  componentDidMount: function(){
+
+    socket.on('student joined', function (data){
+      window.activeList = data;
+      console.log('this is the data from students', data)
+      console.log('this is the activeList when students join', window.activeList)  
+      if(this.isMounted()){
+          this.setState(function(){
+          var list = []
+          for (var i = 0; i < data.length; i++){
+          list.push(data[i]);
+          }
+          return({items: list})
+        })
+      }
+    }.bind(this))
+
+    socket.on('user disconnected', function (student){   
+      console.log('this is the list of students at disconnect', window.activeList)
+      if(this.isMounted()){
+      this.setState(function(){
+        var index = window.activeList.indexOf(student)
+        if(index !== -1){
+          window.activeList.splice(index, 1);
+        }
+        return({items: window.activeList})
+      })
+      }
+    }.bind(this));
+  },
+
+  render:function(){ 
+    var items = this.state.items.map(function(item, i) {
+      return (<Student name={item} key={i} />);
+      }.bind(this))
     return (
     <div>
       <h2>Active Players:</h2>
-      <p id="activeList"></p>
+      <ul id="activeList">{items}</ul>
     </div>
     )
   },
 })
+
+
+var Student = React.createClass({
+
+  render: function() {
+    return (
+      <li className="student">{this.props.name}</li>
+    );
+  }
+});
+
 
 
 var NewQ = React.createClass({
@@ -207,22 +292,17 @@ var NewQ = React.createClass({
 
 var Main = React.createClass({
   componentDidMount: function(){
-    socket.on('welcome message', function (code, deckID){
-      console.log('these are the rooms i am in', socket)
-      console.log('this is the deck I am playing', deckID)
+    socket.on('room code', function (code){
     window.jeopardy.code = code;
-    React.render(<GameDashboard deckID={deckID} />, document.getElementById('main'));
+    React.render(
+      <Dashboard />
+      ,document.getElementById('main'))
     })
   },
 
   handleClick: function(){
-    console.log("deckID:", sessionStorage.deckID)
-    testDataIndex = 0;
-    testData = [];
-    socket.emit('new game', {id:window.jeopardy.username}, sessionStorage.deckID);
-    React.render(
-      <GameDashboard deckID={sessionStorage.deckID} />
-      ,document.getElementById('main'))
+    window.jeopardy.username = $('#username').val();
+    socket.emit('new game',{id:window.jeopardy.username});
   },
 
   render: function(){
@@ -230,8 +310,11 @@ var Main = React.createClass({
       <div>
         <label>Username: </label>
         <input type="text" className="input" id="username" />
-        <button onClick={this.handleClick}>Start Game</button>
-        <div id="status"></div>
+        <button onClick={this.handleClick}>START NEW GAME</button>
+        <div id="Rooms">
+        These are the available rooms:
+        <RoomSelect />
+        </div>
       </div>
     )
   }

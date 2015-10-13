@@ -159,16 +159,15 @@ io.on('connection', function (socket) {
     //student now joins room
     socket.join(socket.code);
 
-    var students = handler.findStudents(clients, socket.code);
+    console.log('this is the username of the student before we search for students', socket.username)
 
+    var students = handler.findStudents(clients, socket.code);
 
     console.log('in server if statement after students has been defined as', students)
     //server sends student id to host
     io.to(socket.code).emit('student joined', students);
-    //server sends hostid to student
-    io.to(socket.id).emit('student joined', host.id);
 
-    console.log('server sent student list', students, 'to host socket', host.username)
+    console.log('server sent student list', students, 'to host socket', host.username, 'in the room', socket.code)
     //other wise, there is an error and the student may not join the room.
     } 
 
@@ -186,13 +185,13 @@ io.on('connection', function (socket) {
 
     socket.join(socket.code);
 
-    var students = handler.findStudents(client, oldRoom)
+    var students = handler.findStudents(clients, oldRoom)
 
     console.log('these are the students after handler.findStudents', students)
 
-    io.to(socket.id).emit('student joined', students);
+    io.to(socket.code).emit('student joined', students);
     
-    console.log('the client', socket.id,' requested to join this room', socket.code)
+    console.log('the client', socket.id,' requested to join this room', socket.code, 'and the list', students, 'was sent')
 
     //server sends room code back to client
     io.to(socket.id).emit('room code', socket.code)

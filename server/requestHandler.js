@@ -3,7 +3,6 @@
 
 module.exports = {
   games: {"empty":"empty"}, //lets lines 20/21 be written very cleanly
-  students: [],
 
   findHosts: function(clients){
     var hosts = [];
@@ -17,16 +16,20 @@ module.exports = {
     return hosts;
   },
 
-  findStudents: function(clients, code, students){
-    console.log('in find students this is the code', code)
+  findStudents: function(clients, code){
+    var students = [];
+
     for (var client in clients){
 
-      if(clients[client].rooms.indexOf(code) !== 1 && clients[client].username){
-      this.students.push(clients[client].username);
+      if((clients[client].code === code) && clients[client].username){
+
+          if(clients[client].teacher === false){
+            students.push(clients[client].username);
+          }
       }
     }
     console.log('in findStudents: these are the clients in this room', students)
-    return this.students
+    return students
   },
   //need to find all unique rooms and send back to user
 

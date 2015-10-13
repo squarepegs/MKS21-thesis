@@ -55,7 +55,7 @@ var Main = React.createClass({
   componentDidMount: function(){
     socket.on('student joined', function (host){
     console.log("you joined "+host+"'s room");
-    React.render( <div> <Waiting /> <Buzzer /> </div>, document.getElementById('main') )
+    React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
     })
 
 

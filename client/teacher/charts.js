@@ -1,5 +1,5 @@
 $( document ).ready(function() {
-	var ctx = document.getElementById("lineChart").getContext("2d");
+	
   var text = document.getElementById("barChart").getContext("2d");
   
 
@@ -40,11 +40,7 @@ $( document ).ready(function() {
 	        }
 	    ]
 	};
-
-	
-
-
-	var myLineChart = new Chart(ctx).Line(time);
+		
 	var mybarChart = new Chart(text).Bar(data);
 	
 });

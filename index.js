@@ -54,6 +54,7 @@ app.use('/student', express.static(__dirname + '/client/student'));
 app.use('/modules', express.static(__dirname + '/node_modules'));
 app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css/'));
 
+app.use('/bower', express.static(__dirname + '/bower_components'));
 app.use('/', express.static(__dirname + '/client/landing_page'));
 
 require('./config/routes.js')(app, passport);

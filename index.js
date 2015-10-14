@@ -203,18 +203,11 @@ io.on('connection', function (socket) {
   //END GAME for teacher, teacher leaves room and students leave room.
 
   socket.on('end game', function (room){  
-    //server checks to see that socket is a teacher
-    var students = handler.findStudentSockets(clients, room);
-    console.log('in server this is the array of students', students)
-    if(socket.teacher === true){     
+    // server checks to see that socket is a teacher
+    console.log('on end game i heard end game for this room', room)
 
-      for(var i = 0; i<students.length; i++){         students[i].leave(room);
-      }
-      socket.leave(room);
-      handler.endGame(room); 
-    } else {
-        io.emit('error');
-    }
+    io.to(room).emit('end game')
+    handler.endGame(room);
   });
 
   //NEW QUESTION LISTENER for teacher, functionality remains as before. Not sure how 'ques' is passed.

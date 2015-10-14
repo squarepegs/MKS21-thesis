@@ -2,6 +2,8 @@ var socket = io();
 window.jeopardy = {buzzed:false, question:{}};
 
 var QA = React.createClass({
+
+
   getInitialState: function(){
     return {
     category: '',
@@ -11,7 +13,9 @@ var QA = React.createClass({
     }
   },
   componentDidMount: function(){
+
     var context = this;
+
     socket.on('student question', function(data){
       $('#buzzer').removeClass("red darken-3");
       $('#buzzer').text('Buzz in!');
@@ -36,6 +40,20 @@ var QA = React.createClass({
 });
 
 var Buzzer = React.createClass({
+
+  componentDidMount: function(){
+    socket.on('end game', function (room){
+      console.log('heard end game for this room', room)
+      React.render(
+          <div className="container">
+            <Main />
+          </div>,
+          document.getElementById('main')
+        ) 
+    })
+  
+  },
+  
   render:function(){
     return (
     <div className="buzzer center-align valign-wrapper">
@@ -53,35 +71,22 @@ var Buzzer = React.createClass({
 
 var Main = React.createClass({
   componentDidMount: function(){
-    socket.on('student joined', function (host){
-    console.log("you joined "+host+"'s room");
-    React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
-    })
-
-
-   socket.on('end game', function(){
-    if(socket.disconnected === true){
-      React.render(
-        <div className="container">
-          <Main />
-        </div>,
-        document.getElementById('main')
-      )
-    } 
-    if(socket.connected === true)
-    {
-      console.log('someone has disconnected from the server')
-    }
-   })
+    // socket.on('student joined', function (host){
+    // console.log("you joined "+host+"'s room");
+    // React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
+    // // })
 
   },
 
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
     window.jeopardy.code     = $('#code').val().toUpperCase();
-    if (window.jeopardy.username.length < 1) alert("Please enter a username.");
-    else socket.emit('student join',{id:window.jeopardy.username, code:window.jeopardy.code});
-    React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
+    if (window.jeopardy.username.length < 1){ 
+      alert("Please enter a username.");
+    } else { 
+      socket.emit('student join',{id:window.jeopardy.username, code:window.jeopardy.code});
+      React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
+    }
   },
   render: function(){
 

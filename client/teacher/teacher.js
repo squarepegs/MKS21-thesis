@@ -48,6 +48,7 @@ var RoomSelect = React.createClass({
           for (var i = 0; i < allRooms.length; i++){
           rooms.push(allRooms[i]);
           }
+          rooms.sort().reverse();
         return {items: rooms}
         })
       }
@@ -80,6 +81,7 @@ var EndGame = React.createClass({
 
   clickHandler: function(){
     socket.emit('end game', window.jeopardy.code);
+    socket.disconnect();
     React.render(
       <div>
         <Main />

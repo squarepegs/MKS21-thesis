@@ -216,6 +216,7 @@ var EditQuestion = React.createClass({
     this.setState({'newAns': event.target.value})
   },
   addQtoDeck: function(){
+    var context = this;
     var amendedQ = {
         'category': this.state.newCat, 
         'value'   : this.state.newVal, 
@@ -233,6 +234,11 @@ var EditQuestion = React.createClass({
     }
     globalActiveDeckEditorComponent.showQs();
     console.log("globalActiveDeckQuestions", globalActiveDeckQuestions)
+    React.render(
+      <div id={'editThisQ'+this.props.index}><div id={"saved"+this.props.index}>Question added</div></div>
+      , document.getElementById('editThisQ'+this.props.index)
+    )
+    setTimeout(function(){$('#saved'+context.props.index).fadeOut()}, 3000)
   },
   render: function(){
     return (
@@ -365,15 +371,56 @@ var DeckEditor = React.createClass({
   }
 })
 
-
+var SingleDeck = React.createClass({
+  render: function(){
+    return (
+        <tr id={'thisRowID:' + this.props.deck._id} key={this.props.deck._id}>
+            <td><button value={this.props.deck._id} onClick={this.props.edit}>Edit Deck</button>
+            <button value={this.props.deck._id} onClick={this.props.kill}>Delete Deck</button></td>
+            <td>{this.props.deck.title}</td>
+            <td>{this.props.deck.notes}</td>
+            <td>{this.props.deck.questions.length}</td>
+            <td><button value={this.props.deck._id} onClick={this.props.play}>Play this Deck</button></td>
+            <td><button value={this.props.deck._id} onClick={this.props.share}>Share this Deck</button></td>
+          </tr>
+      )
+  }
+})
 
 var MyDecks = React.createClass({
+  getInitialState: function(){
+    return {
+      decks: [],
+      deckElements: []
+    }
+  },
   killDeck: function(event){
+    console.log("killdeck()")
     var context = this;
+    var mutatedDecks = [];
+    for (var i = 0; i < this.state.decks.length; i++){
+      if (this.state.decks[i]._id !== event.target.value){
+        mutatedDecks.push(this.state.decks[i])
+      }
+    }
+
+    // ANTIPATTERN! 
+    // You're supposed to use: 
+    // this.setState({decks: mutatedDecks})
+    this.state.decks = mutatedDecks;
+    // but for some reason the page will not rerender unless the 
+    // state is muated directly. In short, setState merely prepares
+    // the state for a change, it doesn't actually change it. 
+    // Refactoring this so that it works would probably take as long
+    // as switching to another framework. 
+    // We decided on React for a number of reasons, but we're not sure
+    // that the two-way data binding of Angular wouldn't have been
+    // extremely useful here.  C'est la vie. 
+    this.buildElements()
+
+
     $.post('/api/killdeck', {'deckID':event.target.value}, function(req, res){
-        console.log("callback");
-        context.getDecks();
-        React.forceUpdate
+        console.log("Deck Killed")
       })
   },
   editDeck: function(event, deckID){
@@ -406,48 +453,25 @@ var MyDecks = React.createClass({
       alert("Username can't be blank. Please try again.")
     }
   },
-  getDecks: function(){
+  buildElements: function(){
+    console.log('buildElements()')
+    console.log(this.state.decks, "after")
     var context = this;
-    React.render(
-      <div>
-      </div>
-    ,document.getElementById('listOfDecks')
-    ) // clear fields
+    var elements = [];
+      for(var i = 0; i < this.state.decks.length; i++){
+        elements.push(
+          <SingleDeck deck={this.state.decks[i]} kill={this.killDeck} play={this.playDeck} edit={this.editDeck} share={this.shareDeck} />
+          )
+        }
+    context.setState({deckElements:elements});
+    this.render();
+  },
+  getDecks: function(){
     var context = this;
     $.get('/api/decks', function(req, res){
       console.log('deck req', req, req.length, 'get called') // req is an array of objects
-      
-      var elements = [];
-      for(var i = 0; i < req.length; i++){
-        elements.push(
-          <tr id={'thisRowID:' + req[i]._id} key={req[i]._id}>
-            <td><button value={req[i]._id} onClick={context.editDeck}>Edit Deck</button>
-            <button value={req[i]._id} onClick={context.killDeck}>DeleteDeck</button></td>
-            <td>{req[i].title}</td>
-            <td>{req[i].notes}</td>
-            <td>{req[i].questions.length}</td>
-            <td><button value={req[i]._id} onClick={context.playDeck}>Play this Deck</button></td>
-            <td><button value={req[i]._id} onClick={context.shareDeck}>Share this Deck</button></td>
-          </tr>
-          )
-        }
-      console.log('elements', elements)
-      React.render(
-      <div>
-        <table>
-          <tr>
-            <th>&nbsp;</th>
-            <th>Title</th>
-            <th>Notes</th>
-            <th># questions</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-          </tr>    
-          {elements}
-        </table>
-      </div>
-      ,document.getElementById('listOfDecks')
-      )
+      context.setState({decks:req})
+      context.buildElements();
     });
   },
   componentDidMount: function(){
@@ -457,7 +481,17 @@ var MyDecks = React.createClass({
     return(
       <div>
         <h3>Decks</h3>
-        <div id="listOfDecks"></div>
+        <table>
+          <tr>
+            <th>&nbsp;</th>
+            <th>Title</th>
+            <th>Notes</th>
+            <th># questions</th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+          </tr>    
+          {this.state.deckElements}
+        </table>
         <div id="deckEditor"></div>
       </div>
       )

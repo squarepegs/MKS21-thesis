@@ -80,24 +80,27 @@ var Feedback = React.createClass({
   componentDidMount: function(){
     var context = this;
      socket.on('student question', function(data){
-      socket.emit('send feedback', {feedback: context.state.feedback, id:window.jeopardy.username})
-      context.setState({feedback: 0})
+      context.setState({'feedback': 0})
     }) 
   },
+  setFeedback: function(feedback){
+    this.setState({'feedback': feedback})
+    socket.emit('send feedback', {'feedback': feedback, id:window.jeopardy.username})
+  },
   oneStar: function(){
-    this.setState({feedback: 1})
+    this.setFeedback(1)
   },
   twoStar: function(){
-    this.setState({feedback: 2})
+    this.setFeedback(2)
   },
   threeStar: function(){
-    this.setState({feedback: 3})
+    this.setFeedback(3)
   },
   fourStar: function(){
-    this.setState({feedback: 4})
+    this.setFeedback(4)
   },
   fiveStar: function(){
-    this.setState({feedback: 5})
+    this.setFeedback(5)
   },
   render: function(){
     return (

@@ -5,13 +5,20 @@ window.activeList = [];
 var buzzedIn = [];
 var testData = [];
 var questionData = {};
-questionData.feedbacks = []; 
 
 console.log('teacher socket: ', socket)
 
 socket.on('error', function (err){
   console.log('this is the error', err);
 });
+// HELPER FUNCTIONS
+
+var weAlreadyHaveOneOfThese = function(object, key, value){
+  for(var ref in object){
+    if(object[ref][key] === value){ return true }
+  }
+  return false
+}
 
 var sortByTime = function(a,b){
   if (a.time > b.time) return 1;
@@ -111,6 +118,7 @@ var GameDashboard = React.createClass({
       <QA />
       <NewQ deckID={this.props.deckID} />
       <BuzzedInList />
+      <Feedback />
       <ActiveList />
     </div>
     )
@@ -134,7 +142,7 @@ var QA = React.createClass({
       questionData.question = data.question;
       questionData.pointValue = data.value;
       questionData.answer = data.answer;
-      questionData.feedbacks = [];
+      questionData.feedbacks = {};
 
       React.render(
         <div>
@@ -146,6 +154,8 @@ var QA = React.createClass({
         </div>, document.getElementById('question')
         )
     })
+
+
   },
 
   render:function(){
@@ -158,11 +168,62 @@ var QA = React.createClass({
 })
 
 
+      socket.on('feedback incoming', function(data, deckID){
+        console.log("feedback", data)
+        if (questionData.feedbacks === undefined){
+          questionData.feedbacks = {};
+        }
+        questionData.feedbacks[data.id] = data.feedback;
+      })
+
+
+
+var Feedback = React.createClass({
+  componentDidMount: function(){
+    socket.on('teacher question', function (data){
+      feedback = {};
+      React.render(
+        <div>
+          Waiting for feedback
+        </div>,document.getElementById('feedback')
+        )
+    })
+    
+      socket.on('feedback incoming', function(data, deckID){
+        console.log("feedback", data)
+        if (questionData.feedbacks === undefined){
+          questionData.feedbacks = {};
+        }
+        questionData.feedbacks[data.id] = data.feedback;
+        console.log('after this.feedbacks', questionData.feedbacks, "data", data)
+
+      var elements = [];
+      for(var key in questionData.feedbacks){
+        elements.push(<li>{key} : {questionData.feedbacks[key]}</li>);
+      }
+
+      React.render(
+        <div>
+          <ol>{elements}</ol>
+        </div>,document.getElementById('feedback')
+        )
+
+      })
+  },
+
+  render:function(){
+    return (
+    <div>
+      <h2>Feedback:</h2>
+      <p id="feedback"></p>
+    </div>
+    )
+  },
+})
 
 var BuzzedInList = React.createClass({
   componentDidMount: function(){
     socket.on('teacher question', function (data){
-
       buzzedIn = [];
       React.render(
         <div>
@@ -172,13 +233,13 @@ var BuzzedInList = React.createClass({
     })
     
     socket.on('buzzed in', function(data){
-      if (buzzedIn.indexOf(data) === -1){
+      if (!weAlreadyHaveOneOfThese(questionData.buzzes, 'id', data.id)){
         console.log("buzzed in data", data)
         buzzedIn.push(data);
         buzzedIn.sort(sortByTime);
         questionData.buzzes = buzzedIn;
+        console.log('after this.buzzedIn', buzzedIn, "data", data)
       }
-      console.log('after this.buzzedIn', buzzedIn, "data", data)
 
       var elements = [];
       for(var i = 0; i < buzzedIn.length; i++){
@@ -191,7 +252,6 @@ var BuzzedInList = React.createClass({
         </div>,document.getElementById('buzzedIn')
         )
     })
-
   },
 
   render:function(){
@@ -298,9 +358,6 @@ var Main = React.createClass({
     React.render(
       <GameDashboard deckID={deckID} />
       ,document.getElementById('main'))
-    })
-    socket.on('feedback incoming', function(data, deckID){
-      questionData.feedbacks.push(data);
     })
   },
 

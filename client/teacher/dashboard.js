@@ -22,8 +22,7 @@ var sortByTime = function(a,b){
 var Tabs = React.createClass({
   launch:function(){
     console.log('launch')
-    React.render(
-      <ShowQuestion />, document.getElementById('view'))
+    window.location.assign('/teacher')
   },
    decks:function(){
     console.log('decks')

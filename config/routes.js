@@ -74,6 +74,8 @@ module.exports = function(app,passport){
       res.redirect('/'); 
     });
   });
+  
+  
 
   app.post('/api/recordTest', function(req, res){
     console.log('route recordtest');

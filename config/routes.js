@@ -16,13 +16,13 @@ module.exports = function(app,passport){
 
   app.post('/signup', passport.authenticate('local-signup', {
     successRedirect: '/dashboard',
-    failureRedirect: '/fail',
+    failureRedirect: '/',
     failureFlash: true
   }));
 
   app.post('/login', passport.authenticate('local-signin', {
     successRedirect: '/dashboard',
-    failureRedirect: '/fail',
+    failureRedirect: '/',
     failureFlash: true
   }), function(user){
     console.log(user);

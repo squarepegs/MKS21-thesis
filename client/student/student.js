@@ -24,7 +24,7 @@ var QA = React.createClass({
       context.setState({question: data.question.toUpperCase()})
       context.setState({buzzed:false})
     }) 
-    socket.on('buzz', this.setState({buzzed:true}))
+  
   },
   
   render:function(){
@@ -40,10 +40,12 @@ var QA = React.createClass({
 });
 
 var Buzzer = React.createClass({
+  getInitialState: function(){
+    return {clicked: false}
+  },
 
   componentDidMount: function(){
     socket.on('end game', function (room){
-      console.log('heard end game for this room', room)
       socket.disconnect();
       React.render(
           <div className="container">
@@ -54,30 +56,27 @@ var Buzzer = React.createClass({
     })
   
   },
-  
+
+  clickHandler: function(){
+    if(this.state.clicked === false){
+      $('#buzzer').addClass("red darken-3");
+      $('#buzzer').text('BUZZ!');
+      socket.emit('buzz',{code:window.jeopardy.code, time:new Date(), id:window.jeopardy.username});
+    }
+    // this.setState({clicked: true})
+  },
+
   render:function(){
     return (
     <div className="buzzer center-align valign-wrapper">
       <a className="waves-effect center-align valign waves-light btn-large" id="buzzer" onClick={this.clickHandler}>Buzz in!</a>
     </div>
     )
-  },
-
-  clickHandler: function(){
-    $('#buzzer').addClass("red darken-3");
-    $('#buzzer').text('BUZZ!');
-    socket.emit('buzz',{code:window.jeopardy.code, time:new Date(), id:window.jeopardy.username});
   }
 })
 
 var Main = React.createClass({
-  componentDidMount: function(){
-    // socket.on('student joined', function (host){
-    // console.log("you joined "+host+"'s room");
-    // React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
-    // // })
 
-  },
 
   handleClick: function(){
     window.jeopardy.username = $('#username').val();

@@ -205,9 +205,12 @@ io.on('connection', function (socket) {
   socket.on('end game', function (room){  
     // server checks to see that socket is a teacher
     console.log('on end game i heard end game for this room', room)
-
+    
+    if(socket.code === room){
+    
     io.to(room).emit('end game')
-    handler.endGame(room);
+  } 
+    
   });
 
   //NEW QUESTION LISTENER for teacher, functionality remains as before. Not sure how 'ques' is passed.

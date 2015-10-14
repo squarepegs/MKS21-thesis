@@ -44,6 +44,7 @@ var Buzzer = React.createClass({
   componentDidMount: function(){
     socket.on('end game', function (room){
       console.log('heard end game for this room', room)
+      socket.disconnect();
       React.render(
           <div className="container">
             <Main />

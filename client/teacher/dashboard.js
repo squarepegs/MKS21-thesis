@@ -2,13 +2,6 @@
 
 window.jeopardy = {};
 
-
-   
-    
-   
-
-
-
 var sortByTime = function(a,b){
   if (a.time < b.time) return 1;
   else if (a.time > b.time) return -1;
@@ -36,8 +29,7 @@ var Tabs = React.createClass({
   },
    classData:function(){
     console.log('classData')
-    React.render(
-    <Graph />, document.getElementById('view'))
+    window.location.assign('/charts')
   },
    studentData:function(){
     console.log('studentData')

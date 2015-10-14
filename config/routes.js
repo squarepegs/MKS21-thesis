@@ -16,13 +16,13 @@ module.exports = function(app,passport){
 
   app.post('/signup', passport.authenticate('local-signup', {
     successRedirect: '/dashboard',
-    failureRedirect: '/fail',
+    failureRedirect: '/',
     failureFlash: true
   }));
 
   app.post('/login', passport.authenticate('local-signin', {
     successRedirect: '/dashboard',
-    failureRedirect: '/fail',
+    failureRedirect: '/',
     failureFlash: true
   }), function(user){
     console.log(user);
@@ -75,7 +75,9 @@ module.exports = function(app,passport){
     });
   });
   
-  
+  app.get('/charts', function(req, res){
+    res.render('../client/teacher/charts.html')
+  });
 
   app.post('/api/recordTest', function(req, res){
     console.log('route recordtest');

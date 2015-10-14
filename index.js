@@ -1,3 +1,4 @@
+
 var bodyParser   = require('body-parser');
 var express      = require('express');
 var morgan       = require('morgan');
@@ -9,7 +10,8 @@ var jeopardy     = require('./server/jService.js');
 var passport     = require('passport');
 var flash        = require('connect-flash');
 var helpers      = require('./config/helpers');
-var MongoStore = require('connect-mongo')(session);
+var MongoStore   = require('connect-mongo')(session);
+var browserify = require('browserify-middleware');
 
 var app = express();
 var http         = require('http').Server(app);
@@ -55,6 +57,11 @@ app.use('/materialize', express.static(__dirname+ '/node_modules/materialize-css
 app.use('/', express.static(__dirname + '/client/landing_page'));
 
 require('./config/routes.js')(app, passport);
+
+app.get('/client/js/dashboardbundle.js',
+  browserify('./client/teacher/dashboard.js', {
+    transform: ['reactify']
+  }))
 
 
 http.listen(PORT, function (){

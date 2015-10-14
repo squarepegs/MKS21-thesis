@@ -1,10 +1,13 @@
 //socket Emit functionality
-var socket = io();
+
 window.jeopardy = {};
 
-socket.on('error', function(){
-  alert("there was a server error. Please try starting a new session.");
-});
+
+   
+    
+   
+
+
 
 var sortByTime = function(a,b){
   if (a.time < b.time) return 1;
@@ -19,21 +22,31 @@ var sortByTime = function(a,b){
 var Tabs = React.createClass({
   launch:function(){
     console.log('launch')
+    React.render(
+      <ShowQuestion />, document.getElementById('view'))
   },
    decks:function(){
     console.log('decks')
+    React.render(
+      <DeckEditor />, document.getElementById('view'))
   },
    createDecks:function(){
     console.log('createDecks')
+    React.render(
+      <CreateDecks />, document.getElementById('view'))
   },
    classData:function(){
     console.log('classData')
+    React.render(
+    <Graph />, document.getElementById('view'))
   },
    studentData:function(){
     console.log('studentData')
+
   },
    myProfile:function(){
-    console.log('myProfile')
+    React.render(
+      <Profile />, document.getElementById('view'))
   },
   logout:function(){
     console.log('logout')
@@ -55,6 +68,18 @@ var Tabs = React.createClass({
     )
   }
 })
+
+
+
+
+var ViewArea = React.createClass({
+
+  render: function(){
+    return (<div id='view'></div>)
+  }
+})
+
+
 
 var Profile = React.createClass({
   getInitialState: function(){
@@ -489,11 +514,7 @@ React.render(
   <div>
     <Tabs />
     <hr/><hr/>
-    <Profile />
-    <hr/><hr/>
-    <MyDecks />
-    <hr/><hr/>
-    <CreateDecks />
+    <ViewArea />
 
   </div>,
   document.getElementById('main')

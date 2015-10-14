@@ -5,6 +5,7 @@ window.activeList = [];
 var buzzedIn = [];
 var testData = [];
 var questionData = {};
+questionData.feedbacks = []; 
 
 console.log('teacher socket: ', socket)
 
@@ -133,6 +134,7 @@ var QA = React.createClass({
       questionData.question = data.question;
       questionData.pointValue = data.value;
       questionData.answer = data.answer;
+      questionData.feedbacks = [];
 
       React.render(
         <div>
@@ -296,6 +298,9 @@ var Main = React.createClass({
     React.render(
       <GameDashboard deckID={deckID} />
       ,document.getElementById('main'))
+    })
+    socket.on('feedback incoming', function(data, deckID){
+      questionData.feedbacks.push(data);
     })
   },
 

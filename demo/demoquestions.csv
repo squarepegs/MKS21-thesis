@@ -1,0 +1,31 @@
+"question","answer","category","value"
+"There are 10 types of people in the world: those who understand this, and those who don't","What is Binary?","By The Numbers",200
+"It belongs to the sequence where you add the previous two numbers to get the next number","What is a Fibonnaci Number?","By The Numbers",400
+"It is the largest number in Javascript, or a luxury automobile.","What is Infinity?","By The Numbers",600
+"It's what a computer uses as shorthand for a byte – or what a witch casts.","What is Hex?/Hexadecimal?","By The Numbers",800
+"Javascript says it's of the number type, but it's clearly not. ","What is NaN/Not-A-Number?","By The Numbers",1000
+"Instead of storing plaintext passwords, you should think like a potato and use this.","What is a hash?","Hacking",200
+"It adds characters to a password string before encryption, Veruca. ","What is a salt?","Hacking",400
+"It is the current standard encryption library for web apps – or where you bury a stinging insect.","What is bCrypt/Bee Crypt?","Hacking",600
+"This 1995 American science fiction thriller about high school computer criminals was one of Angelina Jolie's first major roles.","What is Hackers?","Hacking",800
+"When this site was hacked, it was found out that there were almost no women on the site, contrary to what was promoted.","What is Ashley Madison?","Hacking",1000
+"A dollar sign, when used in jQuery or Angular, is often called this “jewel” of a nickname.","What is Bling?","Frameworks",200
+"Before it was bought by Google, this framework was developed by Brat Tech. ","What is Angular.JS/Angular?","Frameworks",400
+"Think fast! This framework, developed by Jordan Walke, handles only the view in the Model-View-Controller pattern","What is React.JS/React?","Frameworks",600
+"This framework, written in Python, is maintained by a non-profit foundation whose initials are DSF","What is Django?","Frameworks",800
+"It's what ORM stands for, when talking about Knex, Mongoose, or Bookshelf connecting to a database.","What is Object Relational Mapping?","Frameworks",1000
+"A number that never changes – like, for example, 42","What is a Constant?","“Pro”s and “Con”s",200
+"Combining a string, text, or other data data together or into one string or one file. In Javascript, it's denoted with the '+' operator. ","What is Concatinate?","“Pro”s and “Con”s",400
+"A standard used to define a method of exchanging data over a computer network – Vint Cerf and Bob Kahn came up with one in the 70s. ","What is a Protocol?","“Pro”s and “Con”s",600
+"An instance of a computer program that is being executed, which contains the program code and it's current activity","What is a Process?","“Pro”s and “Con”s",800
+"When referring to a computer monitor, non-interlaced images are referred to as this: ","What is a Progressive Scan?/Progressive? ","“Pro”s and “Con”s",1000
+"Author of “You Don't Know Javascript” - his name rhymes with “Lyle Kimpson”","Who is Kyle Simpson?","The Pen Is Mightier",200
+"Books in this series have a distinctive cover—usually yellow and black with a triangular-headed cartoon figure known as the ""Dummies Man"", ","What is “for Dummies?”","The Pen Is Mightier",400
+"The company that publishes both the 1,096 page “Javascript: The Definitive Guide” and the 172 page “Javascript: The Good Parts”","What is O'Reilly, O'Reilly Media?","The Pen Is Mightier",600
+"The first line of this Cyberpunk classic reads: “The sky above the port was the color of television, tuned to a dead channel.” ","What is Neuromancer?","The Pen Is Mightier",800
+"Because of the picture on it's cover, this book is referred to by MIT students as “The Wizard Book”","What is Structure and Interpretation of Computer Programs?","The Pen Is Mightier",1000
+"Don't say his name, or this Freakazoid character will come and grab you mid-post.","What is Candlejack?","Thanks for the Memeories",200
+"ALL GLORY TO… this. ","What is the Hypnotoad?","Thanks for the Memeories",400
+"The breed of doge that is such wow, many awesome, much cool.","What is Shiba Inu?","Thanks for the Memeories",600
+"This pet's real name is Tardar Sauce – though most of the Internet knows him by this…","What is Grumpy Cat?","Thanks for the Memeories",800
+"All your base are belong to us was an early meme that launched from the bad English translation of this game.","What is Zero Wing? ","Thanks for the Memeories",1000

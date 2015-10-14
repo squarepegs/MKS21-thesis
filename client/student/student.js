@@ -2,8 +2,6 @@ var socket = io();
 window.jeopardy = {buzzed:false, question:{}};
 
 var QA = React.createClass({
-
-
   getInitialState: function(){
     return {
     category: '',
@@ -13,9 +11,7 @@ var QA = React.createClass({
     }
   },
   componentDidMount: function(){
-
     var context = this;
-
     socket.on('student question', function(data){
       $('#buzzer').removeClass("red darken-3");
       $('#buzzer').text('Buzz in!');
@@ -24,7 +20,7 @@ var QA = React.createClass({
       context.setState({question: data.question.toUpperCase()})
       context.setState({buzzed:false})
     }) 
-  
+    socket.on('buzz', this.setState({buzzed:true}))
   },
   
   render:function(){
@@ -58,14 +54,10 @@ var Buzzer = React.createClass({
   },
 
   clickHandler: function(){
-    if(this.state.clicked === false){
-      $('#buzzer').addClass("red darken-3");
-      $('#buzzer').text('BUZZ!');
-      socket.emit('buzz',{code:window.jeopardy.code, time:new Date(), id:window.jeopardy.username});
-    }
-    // this.setState({clicked: true})
+    $('#buzzer').addClass("red darken-3");
+    $('#buzzer').text('BUZZ!');
+    socket.emit('buzz',{code:window.jeopardy.code, time:Date.now(), id:window.jeopardy.username});
   },
-
   render:function(){
     return (
     <div className="buzzer center-align valign-wrapper">
@@ -73,20 +65,84 @@ var Buzzer = React.createClass({
     </div>
     )
   }
+
+
+})
+
+var Feedback = React.createClass({
+  getInitialState: function(){
+    return {
+      feedback: 0,
+      on: '/client/images/star_on.png',
+      off: '/client/images/star_off.png'
+    }
+  },
+  componentDidMount: function(){
+    var context = this;
+     socket.on('student question', function(data){
+      socket.emit('send feedback', {feedback: context.state.feedback, id:window.jeopardy.username})
+      context.setState({feedback: 0})
+    }) 
+  },
+  oneStar: function(){
+    this.setState({feedback: 1})
+  },
+  twoStar: function(){
+    this.setState({feedback: 2})
+  },
+  threeStar: function(){
+    this.setState({feedback: 3})
+  },
+  fourStar: function(){
+    this.setState({feedback: 4})
+  },
+  fiveStar: function(){
+    this.setState({feedback: 5})
+  },
+  render: function(){
+    return (
+      <div className="container">
+        <h4>How difficult was this question?</h4>
+        <div className="starBox row">
+          <div className="col s1">Less Difficult</div>
+          <div className="col s2"><img name="star1" className="star" onClick={this.oneStar} src={this.state.feedback >= 1 ? this.state.on : this.state.off}></img></div>
+          <div className="col s2"><img name="star2" className="star" onClick={this.twoStar} src={this.state.feedback >= 2 ? this.state.on : this.state.off}></img></div>
+          <div className="col s2"><img name="star3" className="star" onClick={this.threeStar} src={this.state.feedback >= 3 ? this.state.on : this.state.off}></img></div>
+          <div className="col s2"><img name="star4" className="star" onClick={this.fourStar} src={this.state.feedback >= 4 ? this.state.on : this.state.off}></img></div>
+          <div className="col s2"><img name="star5" className="star" onClick={this.fiveStar} src={this.state.feedback >= 5 ? this.state.on : this.state.off}></img></div>
+          <div className="col s1">More Difficult</div>
+        </div>
+      </div>
+      )
+  }
 })
 
 var Main = React.createClass({
+  componentDidMount: function(){
+    socket.on('student joined', function (host){
+    console.log("you joined "+host+"'s room");
+    React.render( <div> <QA /> <Buzzer /> <Feedback /></div>, document.getElementById('main') )
+    })
 
+
+   socket.on('disconnect', function(){
+    if(socket.disconnected === true){
+      console.log(window.jeopardy.username+", you have been disconnected from the game session")
+    } 
+    if(socket.connected === true)
+    {
+      console.log('someone has disconnected from the server')
+    }
+   })
+
+  },
 
   handleClick: function(){
     window.jeopardy.username = $('#username').val();
     window.jeopardy.code     = $('#code').val().toUpperCase();
-    if (window.jeopardy.username.length < 1){ 
-      alert("Please enter a username.");
-    } else { 
-      socket.emit('student join',{id:window.jeopardy.username, code:window.jeopardy.code});
-      React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
-    }
+    if (window.jeopardy.username.length < 1) alert("Please enter a username.");
+    else socket.emit('student join',{id:window.jeopardy.username, code:window.jeopardy.code});
+    React.render( <div> <QA /> <Buzzer /> </div>, document.getElementById('main') )
   },
   render: function(){
 

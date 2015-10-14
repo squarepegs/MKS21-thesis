@@ -28,7 +28,7 @@ var Tabs = React.createClass({
    decks:function(){
     console.log('decks')
     React.render(
-      <DeckEditor />, document.getElementById('view'))
+      <MyDecks />, document.getElementById('view'))
   },
    createDecks:function(){
     console.log('createDecks')
@@ -424,7 +424,7 @@ var MyDecks = React.createClass({
     ) // clear fields
     var context = this;
     $.get('/api/decks', function(req, res){
-      console.log('deck req', req, req.length) // req is an array of objects
+      console.log('deck req', req, req.length, 'get called') // req is an array of objects
       
       var elements = [];
       for(var i = 0; i < req.length; i++){

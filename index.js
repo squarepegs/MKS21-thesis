@@ -252,6 +252,11 @@ io.on('connection', function (socket) {
 
   });
 
+  socket.on('send feedback', function(data){
+    io.to(socket.code).emit('feedback incoming', {'id': socket.username, 'feedback': data.feedback})
+  });
+  
+
   socket.on('disconnect', function (){
 
     io.to(socket.code).emit('user disconnected', socket.username);

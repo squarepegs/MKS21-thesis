@@ -21,7 +21,7 @@
     "bcrypt-nodejs": "0.0.3",
     "bluebird": "^2.10.2",
     "body-parser": "^1.14.1",
-    "browserify": "~11.2.0",
+    "browserify": "^11.2.0",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^0.8.2",
     "cookie-parser": "~1.4.0",

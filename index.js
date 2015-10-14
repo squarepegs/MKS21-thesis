@@ -89,7 +89,6 @@ io.on('connection', function (socket) {
 
     deckID = deckID || 'jService' // if user does not provide a deck, use the jService. 
 
-    var hostRooms = clients[socket.id].rooms;
 
     //userid added to the socket
     socket.username = user.id;
@@ -204,27 +203,14 @@ io.on('connection', function (socket) {
   //END GAME for teacher, teacher leaves room and students leave room.
 
   socket.on('end game', function (room){  
-    //server checks to see that socket is a teacher
-    var hostRooms = clients[socket.id].rooms;
-    if(socket.teacher === true){     
-      if(hostRooms.indexOf(room) !== -1){
-
-        for(var client in clients){
-
-          console.log('this host ', socket.id, 'has these rooms before closing the room', hostRooms)
-
-          console.log('this client', client, ' has these rooms before closing the room', hostRooms)
-          
-            
-            clients[client].leave(room);
-            handler.endGame(room);
-        };
-      } else {
-        io.emit('error');
-      }
-    } else {
-      io.emit('error');
-    }
+    // server checks to see that socket is a teacher
+    console.log('on end game i heard end game for this room', room)
+    
+    if(socket.code === room){
+    
+    io.to(room).emit('end game')
+  } 
+    
   });
 
   //NEW QUESTION LISTENER for teacher, functionality remains as before. Not sure how 'ques' is passed.

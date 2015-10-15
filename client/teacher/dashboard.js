@@ -48,13 +48,14 @@ var Tabs = React.createClass({
   render:function(){
     return (
     <div>
-      <button onClick={this.launch}>Launch Game</button>
-      <button onClick={this.decks}>My Decks</button>
-      <button onClick={this.createDecks}>Create Decks</button> 
-      <button onClick={this.classData}>Class Data</button>
-      <button onClick={this.studentData}>Student Data</button>
-      <button onClick={this.myProfile}>My Profile</button>
-      <button onClick={this.logout}>Logout</button>
+      
+      <li><a href="/teacher" target="_blank">Launch Game</a></li>
+      <li><a href="#" onClick={this.decks}>My Decks</a></li>
+      <li><a href="#" onClick={this.createDecks}>Create Decks</a></li>
+      <li><a href="#" onClick={this.classData}>Class Data</a></li> 
+      <li><a href="#" onClick={this.myProfile}>My Profile</a></li>
+      <li><a href="#" onClick={this.logout}>Logout</a></li>
+      
     </div>
     )
   }

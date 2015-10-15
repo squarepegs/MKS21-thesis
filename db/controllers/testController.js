@@ -5,6 +5,22 @@ var mongoose = require('mongoose');
 var _        = require('underscore');
 
 module.exports = {
+  getTestData: function(req, res){
+    // console.log("req.user.id", req.user.id)
+    var lookup = mongoose.Types.ObjectId(req.user.id);
+    User.findOne({"_id" : lookup}, function(err, user){
+      if (err){
+        throw err;
+      }
+      Test.find()
+        .where('_id').in(user.tests)
+        .select()
+        .exec()
+        .then(function(tests){
+          res.send(tests)
+        })
+    })
+  },
   recordTest: function(req, res) {
     console.log("This is req.body in controller", req.body);
     testDataObj = JSON.parse(req.body.testData);

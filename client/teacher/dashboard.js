@@ -150,7 +150,7 @@ var ShowQuestion = React.createClass({
     edit: function(){
       isEdit = true;
       React.render(
-        <EditQuestion edit={isEdit} index={this.props.index} deckID={this.props.deckID} category={this.props.category} value={this.props.value} question={this.props.question} answer={this.props.answer} />
+        <EditQuestion save={this.props.save} edit={isEdit} index={this.props.index} deckID={this.props.deckID} category={this.props.category} value={this.props.value} question={this.props.question} answer={this.props.answer} />
         , document.getElementById('editThisQ' + this.props.index)
       )
     },
@@ -216,6 +216,7 @@ var EditQuestion = React.createClass({
     this.setState({'newAns': event.target.value})
   },
   addQtoDeck: function(){
+    var context = this;
     var amendedQ = {
         'category': this.state.newCat, 
         'value'   : this.state.newVal, 
@@ -233,6 +234,22 @@ var EditQuestion = React.createClass({
     }
     globalActiveDeckEditorComponent.showQs();
     console.log("globalActiveDeckQuestions", globalActiveDeckQuestions)
+    this.props.save();
+    if (this.props.edit){
+      React.render(
+        <div id={'editThisQ'+this.props.index}><div id={"saved"+this.props.index}>Question edited. Click "Save Changes" to save changes.</div></div>
+        , document.getElementById('editThisQ'+this.props.index)
+      )
+    } else {
+      React.render(
+        <div id={'addThisQ'+this.props.index}><div id={"saved"+this.props.index}>Question added. Click "Save Changes" to save changes.</div></div>
+        , document.getElementById('editAddStatus')
+      )
+
+
+    
+    }
+    setTimeout(function(){$('#saved'+context.props.index).fadeOut()}, 3000)
   },
   render: function(){
     return (
@@ -245,7 +262,7 @@ var EditQuestion = React.createClass({
         </div>
         <div className="col s2"><label>Answer</label><input type="text" className="answer" value={this.state.newAns} onChange={this.prepNextAns}  />
         </div>
-        <div className="col s1"><button onClick={this.addQtoDeck}>{this.props.edit ? 'Edit Question' : 'Add Question'}</button>
+        <div className="col s1"><button onClick={this.addQtoDeck}>{this.props.edit ? 'Save This Question' : 'Add A New Question'}</button>
         </div>
      </div>)
   }
@@ -289,13 +306,14 @@ var DeckEditor = React.createClass({
     console.log("saving changes", newInfo)
     $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res){
       context.render();
+      Materialize.toast('Changes have been saved!', 4000) // 4000 is the duration of the toast
     })
   },
   showQs: function(){
     var quesElements = [];
     for (var i = 0; i < globalActiveDeckQuestions.length; i++){
       quesElements.push(
-        <ShowQuestion index={i} key={'' + this.props.deckID + '|index:' + i} value={globalActiveDeckQuestions[i].value} question={globalActiveDeckQuestions[i].question} category={globalActiveDeckQuestions[i].category} answer={globalActiveDeckQuestions[i].answer} />
+        <ShowQuestion save={this.saveChanges} index={i} key={'' + this.props.deckID + '|index:' + i} value={globalActiveDeckQuestions[i].value} question={globalActiveDeckQuestions[i].question} category={globalActiveDeckQuestions[i].category} answer={globalActiveDeckQuestions[i].answer} />
         )
     }
 
@@ -348,37 +366,83 @@ var DeckEditor = React.createClass({
   render:function(){
     return(
       <div>
-        <h3>DeckEditor {this.props.deckID}</h3>
+        <h3>DeckEditor {this.state.title}</h3>
+        
         <div className="row">
           <div className="col s4"><label>Title</label><input type="text" className="title" value={this.state.title} onChange={this.changeTitle}/>
           </div>
-          <div className="col s8"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
+          <div className="col s6"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
           </div>
+          <div className="col s2"><button id="saveButton" onClick={this.saveChanges}>Save Title and Notes</button></div>
+        </div>
           <hr/>{this.state.headers}{this.state.quesElements}
           <div id="newQEditor"></div>
           <hr/>
-        </div>
-        <EditQuestion deckID={this.props.deckID}/>
-        <button onClick={this.saveChanges}>Save Changes</button>
+        <div id="editAddStatus"></div>
+        <EditQuestion save={this.saveChanges} deckID={this.props.deckID}/>
       </div>
       )
   }
 })
 
-
+var SingleDeck = React.createClass({
+  render: function(){
+    return (
+        <tr id={'thisRowID:' + this.props.deck._id} key={this.props.deck._id}>
+            <td><button value={this.props.deck._id} onClick={this.props.edit}>Edit Deck</button>
+            <button value={this.props.deck._id} onClick={this.props.kill}>Delete Deck</button></td>
+            <td>{this.props.deck.title}</td>
+            <td>{this.props.deck.notes}</td>
+            <td>{this.props.deck.questions.length}</td>
+            <td><button value={this.props.deck._id} onClick={this.props.play}>Play this Deck</button></td>
+            <td><button value={this.props.deck._id} onClick={this.props.share}>Share this Deck</button></td>
+          </tr>
+      )
+  }
+})
 
 var MyDecks = React.createClass({
+  getInitialState: function(){
+    return {
+      decks: [],
+      deckElements: []
+    }
+  },
   killDeck: function(event){
+    console.log("killdeck()")
     var context = this;
+    var mutatedDecks = [];
+    for (var i = 0; i < this.state.decks.length; i++){
+      if (this.state.decks[i]._id !== event.target.value){
+        mutatedDecks.push(this.state.decks[i])
+      }
+    }
+
+    // ANTIPATTERN! 
+    // You're supposed to use: 
+    // this.setState({decks: mutatedDecks})
+    this.state.decks = mutatedDecks;
+    // but for some reason the page will not rerender unless the 
+    // state is muated directly. In short, setState merely prepares
+    // the state for a change, it doesn't actually change it. 
+    // Refactoring this so that it works would probably take as long
+    // as switching to another framework. 
+    // We decided on React for a number of reasons, but we're not sure
+    // that the two-way data binding of Angular wouldn't have been
+    // extremely useful here.  C'est la vie. 
+    this.buildElements()
+
+
     $.post('/api/killdeck', {'deckID':event.target.value}, function(req, res){
-        console.log("callback");
-        context.getDecks();
-        React.forceUpdate
+        console.log("Deck Killed")
       })
   },
   editDeck: function(event, deckID){
     if(event){
       deckID = event.target.value;
+      // .unmountComponentAtNode will no longer work in React 0.15 - in 0.14 (which we are using)
+      // it works with a warning.  For that reason, our react version needs to be frozen at 0.14.
+      React.unmountComponentAtNode(document.getElementById('deckEditor'));
     }
 
     React.render(
@@ -406,34 +470,37 @@ var MyDecks = React.createClass({
       alert("Username can't be blank. Please try again.")
     }
   },
-  getDecks: function(){
+  buildElements: function(){
+    console.log('buildElements()')
+    console.log(this.state.decks, "after")
     var context = this;
-    React.render(
-      <div>
-      </div>
-    ,document.getElementById('listOfDecks')
-    ) // clear fields
+    var elements = [];
+      for(var i = 0; i < this.state.decks.length; i++){
+        elements.push(
+          <SingleDeck deck={this.state.decks[i]} kill={this.killDeck} play={this.playDeck} edit={this.editDeck} share={this.shareDeck} />
+          )
+        }
+    context.setState({deckElements:elements});
+    this.render();
+  },
+  getDecks: function(){
     var context = this;
     $.get('/api/decks', function(req, res){
       console.log('deck req', req, req.length, 'get called') // req is an array of objects
-      
-      var elements = [];
-      for(var i = 0; i < req.length; i++){
-        elements.push(
-          <tr id={'thisRowID:' + req[i]._id} key={req[i]._id}>
-            <td><button value={req[i]._id} onClick={context.editDeck}>Edit Deck</button>
-            <button value={req[i]._id} onClick={context.killDeck}>DeleteDeck</button></td>
-            <td>{req[i].title}</td>
-            <td>{req[i].notes}</td>
-            <td>{req[i].questions.length}</td>
-            <td><button value={req[i]._id} onClick={context.playDeck}>Play this Deck</button></td>
-            <td><button value={req[i]._id} onClick={context.shareDeck}>Share this Deck</button></td>
-          </tr>
-          )
-        }
-      console.log('elements', elements)
-      React.render(
+      context.setState({decks:req})
+      context.buildElements();
+    });
+  },
+  componentDidMount: function(){
+    this.getDecks();
+    if(this.props.deckToEdit){
+      this.editDeck(null, this.props.deckToEdit);
+    }
+  },
+  render:function(){
+    return(
       <div>
+        <h3>Decks</h3>
         <table>
           <tr>
             <th>&nbsp;</th>
@@ -443,21 +510,8 @@ var MyDecks = React.createClass({
             <th>&nbsp;</th>
             <th>&nbsp;</th>
           </tr>    
-          {elements}
+          {this.state.deckElements}
         </table>
-      </div>
-      ,document.getElementById('listOfDecks')
-      )
-    });
-  },
-  componentDidMount: function(){
-    this.getDecks();
-  },
-  render:function(){
-    return(
-      <div>
-        <h3>Decks</h3>
-        <div id="listOfDecks"></div>
         <div id="deckEditor"></div>
       </div>
       )
@@ -475,10 +529,16 @@ var CreateDecks = React.createClass({
     var context = this;
     var query = context.state
     $.post('/api/decks', query, function(req, res){
-      globalDecksList.getDecks();
+      newDeckID = req; 
+      console.log("create deck callback req", req);
+      React.unmountComponentAtNode(document.getElementById('view'));
+      React.render(
+        <MyDecks deckToEdit={newDeckID} />, document.getElementById('view')
+      )
     })
     context.setState({'title': ''});
     context.setState({'notes': ''});
+
   },
   prepTitle: function(event){
     this.setState({'title': event.target.value});

@@ -21,6 +21,8 @@
   ],
   "dependencies": {
     "Chart.js": "~1.0.2",
-    "react": "0.14.0"
+    "react": "0.14.0",
+    "Materialize": "materialize#~0.97.1",
+    "jquery": "~2.1.4"
   }
 }

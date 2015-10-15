@@ -234,10 +234,17 @@ var EditQuestion = React.createClass({
     }
     globalActiveDeckEditorComponent.showQs();
     console.log("globalActiveDeckQuestions", globalActiveDeckQuestions)
-    React.render(
-      <div id={'editThisQ'+this.props.index}><div id={"saved"+this.props.index}>Question added</div></div>
-      , document.getElementById('editThisQ'+this.props.index)
-    )
+    if (this.props.edit){
+      React.render(
+        <div id={'editThisQ'+this.props.index}><div id={"saved"+this.props.index}>Question edited. Click "Save Changes" to save changes.</div></div>
+        , document.getElementById('editThisQ'+this.props.index)
+      )
+    } else {
+      React.render(
+        <div id={'addThisQ'+this.props.index}><div id={"saved"+this.props.index}>Question added. Click "Save Changes" to save changes.</div></div>
+        , document.getElementById('editAddStatus')
+      )
+    }
     setTimeout(function(){$('#saved'+context.props.index).fadeOut()}, 3000)
   },
   render: function(){
@@ -365,6 +372,7 @@ var DeckEditor = React.createClass({
           <hr/>
         </div>
         <EditQuestion deckID={this.props.deckID}/>
+        <div id="editAddStatus"></div>
         <button onClick={this.saveChanges}>Save Changes</button>
       </div>
       )
@@ -426,6 +434,7 @@ var MyDecks = React.createClass({
   editDeck: function(event, deckID){
     if(event){
       deckID = event.target.value;
+      React.unmountComponentAtNode(document.getElementById('deckEditor'));
     }
 
     React.render(

@@ -434,6 +434,8 @@ var MyDecks = React.createClass({
   editDeck: function(event, deckID){
     if(event){
       deckID = event.target.value;
+      // .unmountComponentAtNode will no longer work in React 0.15 - in 0.14 (which we are using)
+      // it works with a warning.  For that reason, our react version needs to be frozen at 0.14.
       React.unmountComponentAtNode(document.getElementById('deckEditor'));
     }
 
@@ -518,10 +520,14 @@ var CreateDecks = React.createClass({
     var context = this;
     var query = context.state
     $.post('/api/decks', query, function(req, res){
-      globalDecksList.getDecks();
+      React.unmountComponentAtNode(document.getElementById('view'));
+      React.render(
+        <MyDecks />, document.getElementById('view')
+      )
     })
     context.setState({'title': ''});
     context.setState({'notes': ''});
+
   },
   prepTitle: function(event){
     this.setState({'title': event.target.value});

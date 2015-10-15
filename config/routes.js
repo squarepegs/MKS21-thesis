@@ -62,6 +62,11 @@ module.exports = function(app,passport){
     DeckController.shareDeck(req, res);
   })
 
+  app.get('/api/getTestData', function(req,res){
+    console.log('getTestData');
+    TestController.getTestData(req, res);
+  })
+
   app.get('/auth/facebook', passport.authenticate('facebook'));//can add ('facebook', {scope: ['email']}) for email permissions
 
   app.get('/auth/facebook/callback',

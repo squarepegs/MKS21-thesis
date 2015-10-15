@@ -306,6 +306,7 @@ var DeckEditor = React.createClass({
     console.log("saving changes", newInfo)
     $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res){
       context.render();
+      Materialize.toast('Changes have been saved!', 4000) // 4000 is the duration of the toast
     })
   },
   showQs: function(){

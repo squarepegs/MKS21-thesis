@@ -22,11 +22,6 @@ var Tabs = React.createClass({
     React.render(
       <MyDecks />, document.getElementById('view'))
   },
-   createDecks:function(){
-    console.log('createDecks')
-    React.render(
-      <CreateDecks />, document.getElementById('view'))
-  },
    classData:function(){
     console.log('classData')
     window.location.assign('/charts')
@@ -50,7 +45,6 @@ var Tabs = React.createClass({
     <div>
       <button onClick={this.launch}>Launch Game</button>
       <button onClick={this.decks}>My Decks</button>
-      <button onClick={this.createDecks}>Create Decks</button> 
       <button onClick={this.classData}>Class Data</button>
       <button onClick={this.studentData}>Student Data</button>
       <button onClick={this.myProfile}>My Profile</button>
@@ -107,10 +101,12 @@ var Profile = React.createClass({
   updateProfile: function(){
     var context = this;
     var query = context.state
-    $.post('/api/profile', query, function(req, res){})
-    context.setState({'firstName': ''});
-    context.setState({'lastName': ''});
-    context.setState({'email': ''});
+    $.post('/api/profile', query, function(req, res){
+
+
+      Materialize.toast('Profile Saved!', 4000)
+    })
+
   },
   render:function(){
     return(
@@ -119,10 +115,10 @@ var Profile = React.createClass({
           <fieldset>
             <ul>
               <li>Username: { this.state.username }</li>
-              <li>First Name:  <input type="text" value={this.state.firstName} onChange={this.prepFirstName} name="firstName"/>{this.state.firstName}</li>
-              <li>Last Name: <input type="text" value={this.state.lastName} onChange={this.prepLastName} name="lastName"/>{this.state.lastName}</li>
-              <li>E&ndash;mail: <input type="text" value={this.state.email} onChange={this.prepEmail} name="email"/>{this.state.email}</li>
-              <li><p>{this.status}</p><a className="btn" onClick={this.updateProfile}>Update Profile</a></li>
+              <li>First Name:  <input type="text" value={this.state.firstName} onChange={this.prepFirstName} name="firstName"/></li>
+              <li>Last Name: <input type="text" value={this.state.lastName} onChange={this.prepLastName} name="lastName"/></li>
+              <li>E&ndash;mail: <input type="text" value={this.state.email} onChange={this.prepEmail} name="email"/></li>
+              <li><a className="btn" onClick={this.updateProfile}>Update Profile</a></li>
             </ul>
           </fieldset>
         </form>
@@ -395,7 +391,7 @@ var SingleDeck = React.createClass({
             <td>{this.props.deck.notes}</td>
             <td>{this.props.deck.questions.length}</td>
             <td><button value={this.props.deck._id} onClick={this.props.play}>Play this Deck</button></td>
-            <td><button value={this.props.deck._id} onClick={this.props.share}>Share this Deck</button></td>
+            <td><button value={this.props.deck._id} id={'share'+this.props.deck._id} onClick={this.props.share}>Share this Deck</button></td>
           </tr>
       )
   }
@@ -465,7 +461,7 @@ var MyDecks = React.createClass({
       $.post('/api/shareDeck', {'recipient':recipient, 'deckID':event.target.value}, function(success){
         if(success){console.log('shared with ' + recipient)}
           else {console.log('Oops. Something went wrong')}
-      });
+      })
     } else {
       alert("Username can't be blank. Please try again.")
     }
@@ -513,6 +509,7 @@ var MyDecks = React.createClass({
           {this.state.deckElements}
         </table>
         <div id="deckEditor"></div>
+        <CreateDecks />
       </div>
       )
   }
@@ -530,6 +527,7 @@ var CreateDecks = React.createClass({
     var query = context.state
     $.post('/api/decks', query, function(req, res){
       newDeckID = req; 
+      Materialize.toast('Deck has been added!', 4000)
       console.log("create deck callback req", req);
       React.unmountComponentAtNode(document.getElementById('view'));
       React.render(
@@ -549,10 +547,11 @@ var CreateDecks = React.createClass({
   render:function(){
     return(
       <div>
-        <div>
-          <label>Deck Name:</label><input type="text" value={this.state.title} onChange={this.prepTitle} name="deckName" />
-          <label>Notes:</label><input type="textarea" value={this.state.notes} onChange={this.prepNotes} name="deckNotes" />
-          <a className="btn" onClick={this.createDeck}>Create New Deck</a>
+      <h4>Create a new deck</h4>
+        <div className="row">
+          <div className="col s4"><label>Deck Name:</label><input type="text" value={this.state.title} onChange={this.prepTitle} name="deckName" /></div>
+          <div className="col s6 input-field"><label>Notes:</label><textarea className="materialize-textarea" value={this.state.notes} onChange={this.prepNotes} name="deckNotes" /></div>
+          <div className="col s2"><a className="btn" onClick={this.createDeck}>Save New Deck</a></div>
         </div>
       </div>
       )

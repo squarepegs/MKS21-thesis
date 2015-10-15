@@ -570,12 +570,13 @@ var CreateDecks = React.createClass({
   }
 })
 
-
+React.render(
+  <Tabs />,document.getElementById('navbar')
+);
 // initial page render
 React.render(
   <div>
-    <Tabs />
-    <hr/><hr/>
+    
     <ViewArea />
 
   </div>,

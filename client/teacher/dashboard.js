@@ -150,7 +150,7 @@ var ShowQuestion = React.createClass({
     edit: function(){
       isEdit = true;
       React.render(
-        <EditQuestion edit={isEdit} index={this.props.index} deckID={this.props.deckID} category={this.props.category} value={this.props.value} question={this.props.question} answer={this.props.answer} />
+        <EditQuestion save={this.props.save} edit={isEdit} index={this.props.index} deckID={this.props.deckID} category={this.props.category} value={this.props.value} question={this.props.question} answer={this.props.answer} />
         , document.getElementById('editThisQ' + this.props.index)
       )
     },
@@ -234,6 +234,7 @@ var EditQuestion = React.createClass({
     }
     globalActiveDeckEditorComponent.showQs();
     console.log("globalActiveDeckQuestions", globalActiveDeckQuestions)
+    this.props.save();
     if (this.props.edit){
       React.render(
         <div id={'editThisQ'+this.props.index}><div id={"saved"+this.props.index}>Question edited. Click "Save Changes" to save changes.</div></div>
@@ -244,6 +245,9 @@ var EditQuestion = React.createClass({
         <div id={'addThisQ'+this.props.index}><div id={"saved"+this.props.index}>Question added. Click "Save Changes" to save changes.</div></div>
         , document.getElementById('editAddStatus')
       )
+
+
+    
     }
     setTimeout(function(){$('#saved'+context.props.index).fadeOut()}, 3000)
   },
@@ -258,7 +262,7 @@ var EditQuestion = React.createClass({
         </div>
         <div className="col s2"><label>Answer</label><input type="text" className="answer" value={this.state.newAns} onChange={this.prepNextAns}  />
         </div>
-        <div className="col s1"><button onClick={this.addQtoDeck}>{this.props.edit ? 'Edit Question' : 'Add Question'}</button>
+        <div className="col s1"><button onClick={this.addQtoDeck}>{this.props.edit ? 'Save This Question' : 'Add A New Question'}</button>
         </div>
      </div>)
   }
@@ -276,7 +280,8 @@ var DeckEditor = React.createClass({
       'nextQues' : '',
       'nextAns'  : '',
       'headers'  : '',
-      'quesElements': []
+      'quesElements': [],
+      'saveButtonText': 'Save Title/Notes'
     }
   },
   getInitialQs: function(){
@@ -302,13 +307,15 @@ var DeckEditor = React.createClass({
     console.log("saving changes", newInfo)
     $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res){
       context.render();
+      context.setState({'saveButtonText': 'Changes Saved'})
     })
+    this.setState({'saveButtonText': 'Saving'})
   },
   showQs: function(){
     var quesElements = [];
     for (var i = 0; i < globalActiveDeckQuestions.length; i++){
       quesElements.push(
-        <ShowQuestion index={i} key={'' + this.props.deckID + '|index:' + i} value={globalActiveDeckQuestions[i].value} question={globalActiveDeckQuestions[i].question} category={globalActiveDeckQuestions[i].category} answer={globalActiveDeckQuestions[i].answer} />
+        <ShowQuestion save={this.saveChanges} index={i} key={'' + this.props.deckID + '|index:' + i} value={globalActiveDeckQuestions[i].value} question={globalActiveDeckQuestions[i].question} category={globalActiveDeckQuestions[i].category} answer={globalActiveDeckQuestions[i].answer} />
         )
     }
 
@@ -361,19 +368,20 @@ var DeckEditor = React.createClass({
   render:function(){
     return(
       <div>
-        <h3>DeckEditor {this.props.deckID}</h3>
+        <h3>DeckEditor {this.state.title}</h3>
+        
         <div className="row">
           <div className="col s4"><label>Title</label><input type="text" className="title" value={this.state.title} onChange={this.changeTitle}/>
           </div>
-          <div className="col s8"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
+          <div className="col s6"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
           </div>
+          <div className="col s2"><button id="saveButton" onClick={this.saveChanges}>{this.state.saveButtonText}</button></div>
+        </div>
           <hr/>{this.state.headers}{this.state.quesElements}
           <div id="newQEditor"></div>
           <hr/>
-        </div>
-        <EditQuestion deckID={this.props.deckID}/>
         <div id="editAddStatus"></div>
-        <button onClick={this.saveChanges}>Save Changes</button>
+        <EditQuestion save={this.saveChanges} deckID={this.props.deckID}/>
       </div>
       )
   }

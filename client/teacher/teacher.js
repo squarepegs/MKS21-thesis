@@ -117,9 +117,11 @@ var GameDashboard = React.createClass({
       <EndGame />
       <QA />
       <NewQ deckID={this.props.deckID} />
-      <BuzzedInList />
-      <Feedback />
-      <ActiveList />
+      <div className="row">
+          <BuzzedInList />
+          <ActiveList />  
+          <Feedback />
+      </div>
     </div>
     )
   }
@@ -147,10 +149,13 @@ var QA = React.createClass({
       React.render(
         <div>
           <h4>Category: {data.category} - ${data.value}</h4>
-          <h3>Question:</h3>
-          <h2>{data.question}</h2>
-          <h3>Answer:</h3>
-          <h2>{data.answer}</h2>
+          <div className="card blue-grey darken-1">  
+            <div className="card-content white-text">
+              <span className="card-title">Question:</span> {data.question}
+              <h3>Answer:</h3>
+              <h2>{data.answer}</h2>
+            </div>
+          </div>
         </div>, document.getElementById('question')
         )
     })
@@ -213,9 +218,9 @@ var Feedback = React.createClass({
 
   render:function(){
     return (
-    <div>
+    <div className="col s4">
       <h2>Feedback:</h2>
-      <p id="feedback"></p>
+      <div id="feedback"></div>
     </div>
     )
   },
@@ -256,9 +261,9 @@ var BuzzedInList = React.createClass({
 
   render:function(){
     return (
-    <div>
+    <div className="col s4">
       <h2>Buzzed in:</h2>
-      <p id="buzzedIn"></p>
+      <div id="buzzedIn"></div>
     </div>
     )
   },
@@ -312,7 +317,7 @@ var ActiveList = React.createClass({
       return (<Student name={item} key={i} />);
       }.bind(this))
     return (
-    <div>
+    <div className="col s4">
       <h2>Active Players:</h2>
       <ul id="activeList">{items}</ul>
     </div>

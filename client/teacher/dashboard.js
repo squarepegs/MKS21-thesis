@@ -280,8 +280,7 @@ var DeckEditor = React.createClass({
       'nextQues' : '',
       'nextAns'  : '',
       'headers'  : '',
-      'quesElements': [],
-      'saveButtonText': 'Save Title/Notes'
+      'quesElements': []
     }
   },
   getInitialQs: function(){
@@ -307,9 +306,7 @@ var DeckEditor = React.createClass({
     console.log("saving changes", newInfo)
     $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res){
       context.render();
-      context.setState({'saveButtonText': 'Changes Saved'})
     })
-    this.setState({'saveButtonText': 'Saving'})
   },
   showQs: function(){
     var quesElements = [];
@@ -375,7 +372,7 @@ var DeckEditor = React.createClass({
           </div>
           <div className="col s6"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
           </div>
-          <div className="col s2"><button id="saveButton" onClick={this.saveChanges}>{this.state.saveButtonText}</button></div>
+          <div className="col s2"><button id="saveButton" onClick={this.saveChanges}>Save Title and Notes</button></div>
         </div>
           <hr/>{this.state.headers}{this.state.quesElements}
           <div id="newQEditor"></div>
@@ -495,6 +492,9 @@ var MyDecks = React.createClass({
   },
   componentDidMount: function(){
     this.getDecks();
+    if(this.props.deckToEdit){
+      this.editDeck(null, this.props.deckToEdit);
+    }
   },
   render:function(){
     return(
@@ -528,9 +528,11 @@ var CreateDecks = React.createClass({
     var context = this;
     var query = context.state
     $.post('/api/decks', query, function(req, res){
+      newDeckID = req; 
+      console.log("create deck callback req", req);
       React.unmountComponentAtNode(document.getElementById('view'));
       React.render(
-        <MyDecks />, document.getElementById('view')
+        <MyDecks deckToEdit={newDeckID} />, document.getElementById('view')
       )
     })
     context.setState({'title': ''});

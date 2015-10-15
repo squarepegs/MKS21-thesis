@@ -28,7 +28,7 @@ module.exports = {
         }, //options
         function(err, data) { //callback
           console.log(err);
-          res.send('success')
+          res.send(newDeck._id)
         });
     });
   },

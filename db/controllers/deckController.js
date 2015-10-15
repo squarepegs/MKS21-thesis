@@ -28,6 +28,7 @@ module.exports = {
         }, //options
         function(err, data) { //callback
           console.log(err);
+          res.send('success')
         });
     });
   },

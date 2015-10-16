@@ -13,10 +13,6 @@ var sortByTime = function(a,b){
 //
 
 var Tabs = React.createClass({
-  launch:function(){
-    console.log('launch')
-    window.location.assign('/teacher')
-  },
    decks:function(){
     console.log('decks')
     React.render(
@@ -25,10 +21,6 @@ var Tabs = React.createClass({
    classData:function(){
     console.log('classData')
     window.location.assign('/charts')
-  },
-   studentData:function(){
-    console.log('studentData')
-
   },
    myProfile:function(){
     React.render(
@@ -41,15 +33,15 @@ var Tabs = React.createClass({
     })
   },
   render:function(){
+    var context = this;
     return (
-    <div>
-      <button onClick={this.launch}>Launch Game</button>
-      <button onClick={this.decks}>My Decks</button>
-      <button onClick={this.classData}>Class Data</button>
-      <button onClick={this.studentData}>Student Data</button>
-      <button onClick={this.myProfile}>My Profile</button>
-      <button onClick={this.logout}>Logout</button>
-    </div>
+    <ul className={context.props.nav === 'nav-mobile' ? 'side-nav' : 'right hide-on-med-and-down'}>
+      <li><a href="/teacher" target="_blank">Launch Game</a></li>
+      <li><a href="#" onClick={this.decks}>My Decks</a></li>
+      <li><a href="#" onClick={this.myProfile}>My Profile</a></li>
+      <li><a href="/charts" onClick={this.classData}>Data Charts</a></li>
+      <li><a href="#" onClick={this.logout}>Logout</a></li>
+    </ul>
     )
   }
 })
@@ -160,10 +152,10 @@ var ShowQuestion = React.createClass({
         <div>
            <div className="row"> 
               <div className="col s1">
-                <button onClick={this.delete}>Delete</button>
+                <a className="btn" onClick={this.delete}>Delete</a>
               </div>
               <div className="col s1">
-                <button onClick={this.edit}>Edit</button>
+                <a className="btn" onClick={this.edit}>Edit</a>
               </div>
               <div className="col s2 category">
                 {this.props.category}
@@ -252,13 +244,13 @@ var EditQuestion = React.createClass({
       <div ref={this.props.edit ? 'editFields' : 'addFields'} className="addQues row"> 
         <div className="col s1"><label>Category</label><input type="text" className="category" value={this.state.newCat} onChange={this.prepNextCat} />
         </div>
-        <div className="col s2"><label>Value</label><input type="text" className="value" value={this.state.newVal} onChange={this.prepNextVal}  />
+        <div className="col s1"><label>Value</label><input type="text" className="value" value={this.state.newVal} onChange={this.prepNextVal}  />
         </div>
-        <div className="input-field col s6"><label>Question</label><textarea className="question materialize-textarea" value={this.state.newQues} onChange={this.prepNextQues} ></textarea>
+        <div className="col s6"><label>Question</label><input type="text" className="question" value={this.state.newQues} onChange={this.prepNextQues} />
         </div>
         <div className="col s2"><label>Answer</label><input type="text" className="answer" value={this.state.newAns} onChange={this.prepNextAns}  />
         </div>
-        <div className="col s1"><button onClick={this.addQtoDeck}>{this.props.edit ? 'Save This Question' : 'Add A New Question'}</button>
+        <div className="col s2"><a className="btn" onClick={this.addQtoDeck}>{this.props.edit ? 'Save' : 'Add'}</a>
         </div>
      </div>)
   }
@@ -365,11 +357,11 @@ var DeckEditor = React.createClass({
         <h3>DeckEditor {this.state.title}</h3>
         
         <div className="row">
-          <div className="col s4"><label>Title</label><input type="text" className="title" value={this.state.title} onChange={this.changeTitle}/>
+          <div className="col s4"><label>Title</label><input type="text" className="title" value={this.state.title} onChange={this.changeTitle} />
           </div>
-          <div className="col s6"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
+          <div className="col s6"><label>Notes</label><input type="text" className="notes" value={this.state.notes} onChange={this.changeNotes} />
           </div>
-          <div className="col s2"><button id="saveButton" onClick={this.saveChanges}>Save Title and Notes</button></div>
+          <div className="col s2"><a className="btn" id="saveButton" onClick={this.saveChanges}>Save Title and Notes</a></div>
         </div>
           <hr/>{this.state.headers}{this.state.quesElements}
           <div id="newQEditor"></div>
@@ -385,13 +377,13 @@ var SingleDeck = React.createClass({
   render: function(){
     return (
         <tr id={'thisRowID:' + this.props.deck._id} key={this.props.deck._id}>
-            <td><button value={this.props.deck._id} onClick={this.props.edit}>Edit Deck</button>
-            <button value={this.props.deck._id} onClick={this.props.kill}>Delete Deck</button></td>
+            <td><a className="btn" value={this.props.deck._id} onClick={this.props.edit}>Edit</a></td>
+            <td><a className="btn" value={this.props.deck._id} onClick={this.props.kill}>Delete</a></td>
             <td>{this.props.deck.title}</td>
             <td>{this.props.deck.notes}</td>
             <td>{this.props.deck.questions.length}</td>
-            <td><button value={this.props.deck._id} onClick={this.props.play}>Play this Deck</button></td>
-            <td><button value={this.props.deck._id} id={'share'+this.props.deck._id} onClick={this.props.share}>Share this Deck</button></td>
+            <td><a className="btn" value={this.props.deck._id} onClick={this.props.play}>Play this Deck</a></td>
+            <td><a className="btn" value={this.props.deck._id} id={'share'+this.props.deck._id} onClick={this.props.share}>Share this Deck</a></td>
           </tr>
       )
   }
@@ -497,12 +489,13 @@ var MyDecks = React.createClass({
     return(
       <div>
         <h3>Decks</h3>
-        <table>
+        <table className="responsive-table">
           <tr>
+            <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>Title</th>
             <th>Notes</th>
-            <th># questions</th>
+            <th>#Qs</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
           </tr>    
@@ -550,18 +543,23 @@ var CreateDecks = React.createClass({
       <h4>Create a new deck</h4>
         <div className="row">
           <div className="col s4"><label>Deck Name:</label><input type="text" value={this.state.title} onChange={this.prepTitle} name="deckName" /></div>
-          <div className="col s6 input-field"><label>Notes:</label><textarea className="materialize-textarea" value={this.state.notes} onChange={this.prepNotes} name="deckNotes" /></div>
+          <div className="col s6"><label>Notes:</label><input type="text" value={this.state.notes} onChange={this.prepNotes} name="deckNotes" /></div>
           <div className="col s2"><a className="btn" onClick={this.createDeck}>Save New Deck</a></div>
         </div>
       </div>
       )
   }
 })
+// initial page render
 
 React.render(
-  <Tabs />,document.getElementById('navbar')
+  <Tabs nav={"main"} />,document.getElementById('navbar')
 );
-// initial page render
+
+React.render(
+  <Tabs nav={"nav-mobile"} />,document.getElementById('nav-mobile')
+);
+
 React.render(
   <div>
     

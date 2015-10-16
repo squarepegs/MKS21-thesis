@@ -5,6 +5,7 @@ window.activeList = [];
 var buzzedIn = [];
 var testData = [];
 var questionData = {};
+var decks = JSON.parse(sessionStorage.decks);
 
 console.log('teacher socket: ', socket)
 
@@ -48,36 +49,56 @@ var RoomSelect = React.createClass({
   },
 
   componentDidMount: function(){
-    socket.on('rooms created', function (allRooms){
-      console.log('these are all the rooms available ',allRooms)
+    //here we get the deck data back or if there is no deck data we get the data back of all the rooms
+
+    socket.on('rooms created', function (data){
+      console.log('these are all the decks available ',data)
       if(this.isMounted()){
         this.setState(function(){
           var rooms = [];
-          for (var i = 0; i < allRooms.length; i++){
-          rooms.push(allRooms[i]);
+          for (var i = 0; i < data.length; i++){
+            if(typeof data[i] === 'object'){
+              var bucket = [];
+              bucket.push(data[i].title);
+              bucket.push(data[i].code);
+              bucket.push(data[i].deckID);
+              rooms.push(bucket);
+            } 
           }
-          rooms.sort().reverse();
-        return {items: rooms}
+        return {
+          items: rooms
+        }
         })
-      }
+      }  
     }.bind(this))
+  
   },
 
   clickHandler: function(event){
     if(event.target.value){
-      console.log('clicked this', event.target.value)
+    var selected;
+
+    console.log('this is the state', this.state.items)
       this.setState({selected: event.target.value})
-      socket.emit('join room', event.target.value);
+      for(var i = 0; i<this.state.items.length; i++){
+        if(this.state.items[i].indexOf(event.target.value) !== -1){
+          selected = this.state.items[i]
+        }
+      }
+      console.log('these are the selected values', selected[0], selected[1], selected[2])    
+      socket.emit('join room', selected[1], selected[2])
     }
   },
 
   render: function() {
-    var items = this.state.items.map(function(item, i) {
-      return (<Room name={item} key={i} />);
-    }.bind(this))
+
+    var items = this.state.items.map(function (element, i) {
+      return (<Room name={element[0]} code={element[1]} deckID={element[2]} key={i} />)}.bind(this));
+    
     return (
       <div>
       <select className="browser-default" onChange={this.clickHandler}>
+        <option className="dropdown-item" value="" disable selected></option>
         {items}
       </select>
       </div>
@@ -352,6 +373,10 @@ var NewQ = React.createClass({
 
 var Main = React.createClass({
   componentDidMount: function(){
+    if(decks !== undefined){
+      socket.emit('decks', decks);
+    }
+
     socket.on('room code', function (code, deckID){
     window.jeopardy.code = code;
     sessionStorage.deckID = deckID

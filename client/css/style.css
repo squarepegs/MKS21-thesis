@@ -6,7 +6,7 @@
  * Made By MaterializeCSS.com
  */
 
-@import url(https://fonts.googleapis.com/css?family=Racing+Sans+One|Indie+Flower|Patrick+Hand|Delius|Walter+Turncoat|Kalam:400,700);
+@import url(https://fonts.googleapis.com/css?family=Kalam:400,700);
 
 
 nav ul a,
@@ -78,6 +78,10 @@ input {
 }
 .wide-btn{
   width:100%;
+}
+
+.inline{
+  display:inline;
 }
 
 @media only screen and (max-width : 992px) {

@@ -81,7 +81,7 @@ module.exports = function(app,passport){
   });
   
   app.get('/charts', function(req, res){
-    res.render('../client/teacher/charts.html')
+    res.render('../client/teacher/charts.ejs')
   });
 
   app.post('/api/recordTest', function(req, res){

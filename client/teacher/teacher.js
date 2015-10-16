@@ -34,7 +34,7 @@ var Room = React.createClass({
 
   render: function() {
     return (
-      <option className="dropdown-item">Deck Title: {this.props.name} Code: {this.props.code}</option>
+      <option className="dropdown-item">{this.props.name}</option>
     );
   }
 });
@@ -53,6 +53,7 @@ var RoomSelect = React.createClass({
 
     socket.on('rooms created', function (data){
       console.log('these are all the decks available ',data)
+      if(this.isMounted()){
         this.setState(function(){
           var rooms = [];
           for (var i = 0; i < data.length; i++){
@@ -68,14 +69,24 @@ var RoomSelect = React.createClass({
           items: rooms
         }
         })
-        
+      }  
     }.bind(this))
+  
   },
 
   clickHandler: function(event){
     if(event.target.value){
+    var selected;
+
+    console.log('this is the state', this.state.items)
       this.setState({selected: event.target.value})
-      socket.emit('join room', this.props.code, this.props.deckID);
+      for(var i = 0; i<this.state.items.length; i++){
+        if(this.state.items[i].indexOf(event.target.value) !== -1){
+          selected = this.state.items[i]
+        }
+      }
+      console.log('these are the selected values', selected[0], selected[1], selected[2])    
+      socket.emit('join room', selected[1], selected[2])
     }
   },
 
@@ -87,6 +98,7 @@ var RoomSelect = React.createClass({
     return (
       <div>
       <select className="browser-default" onChange={this.clickHandler}>
+        <option className="dropdown-item" value="" disable selected></option>
         {items}
       </select>
       </div>

@@ -28,7 +28,6 @@ var getChartData = function(dataID) {
         // if players(player name)(category name) doesn't exist, initialize it
         if (players[testData[q].buzzes[p].id][testData[q].category] === undefined) {
           players[testData[q].buzzes[p].id][testData[q].category] = [];
-          console.log("initiation", players[testData[q].buzzes[p].id][testData[q].category], testData[q].buzzes[p].id, testData[q].category)
         }
         // push the difference between the time player buzzes and the question was asked
         // for each player for each category into the object
@@ -53,15 +52,16 @@ var getChartData = function(dataID) {
           players[player].displayArray = []
         }
         players[player].displayArray.push(players[player][category])
-        console.log(players[player].displayArray)
       }
     }
     var count = 0;
     for (var player in players) {
-      var color = 220 - (count * 20);
+      var red = 100 - (count * 20);
+      var green = 255 - (count * 30);
+      var blue = 200 - (count * 65); 
       displayData.datasets[count] = {
         label: player,
-        fillColor: "rgba(" + color + ",220,220,0.6)",
+        fillColor: "rgba(" + red + "," + green + "," + blue + ",0.6)",
         strokeColor: "rgba(220,220,220,1)",
         pointColor: "rgba(220,220,220,1)",
         pointStrokeColor: "#fff",

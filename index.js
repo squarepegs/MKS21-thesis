@@ -82,11 +82,19 @@ var io = require('socket.io')(http);
 
 io.on('connection', function (socket) {
   //server connections object of total clients
-
   var clients = io.sockets.connected;
   var rooms = handler.findAllRooms(clients);
+  
+//checks to see that user has deck; adds code to decks object
 
-  io.to(socket.id).emit('rooms created', rooms);
+  socket.on('decks', function (decks){
+    for(var i = 0; i < decks.length; i++){
+      decks[i].code = handler.gameMaker();
+    }
+    io.to(socket.id).emit('rooms created', decks);
+  })
+
+  
 
   console.log(socket.id, 'connected to the server')
 
@@ -105,7 +113,7 @@ io.on('connection', function (socket) {
     socket.teacher = true;
 
     //request handler creates room code
-    var room = handler.gameMaker(user);
+    var room = handler.gameMaker();
 
     console.log(socket.username, 'created a new game');
 
@@ -183,8 +191,10 @@ io.on('connection', function (socket) {
 
   //JOIN ROOMS LISTENER for stdnt and teacher in case of disconnect
 
-  socket.on('join room', function (oldRoom){
+  socket.on('join room', function (oldRoom, deckID){
     //this activates the listener in the client to populate student list
+
+    deckID = deckID || 'jService' ;
     
     socket.teacher = true;
     //client joins the old room
@@ -196,6 +206,8 @@ io.on('connection', function (socket) {
 
     console.log('these are the students after handler.findStudents', students)
 
+    //fix for on disconnect allows user to have student lists for active list on coming back
+
     io.to(socket.code).emit('student joined', students);
     
     console.log('the client', socket.id,' requested to join this room', socket.code, 'and the list', 
@@ -203,7 +215,7 @@ io.on('connection', function (socket) {
 
     var students = handler.findStudents(clients, socket.code);
     //server sends room code back to client
-    io.to(socket.id).emit('room code', socket.code)
+    io.to(socket.id).emit('room code', socket.code, deckID)
     //server emits list of students to teacher
     io.to(socket.code).emit('student joined', students);
   });

@@ -285,7 +285,7 @@ var DeckEditor = React.createClass({
   },
   getInitialQs: function(){
     var context = this;
-      $.get('/api/decks/' + this.props.deckID, function(req, res){
+      $.get('/api/decks/' + context.props.deckID, function(req, res){
         console.log("req", req)
         console.log("req.questions", req.questions);
         context.setState({ 'title' : req.title })
@@ -473,6 +473,17 @@ var MyDecks = React.createClass({
   buildElements: function(){
     console.log('buildElements()')
     console.log(this.state.decks, "after")
+     var decksArr = [];
+     for(var i = 0; i < this.state.decks.length; i++){
+       var decksObj = {};
+       decksObj.deckID = this.state.decks[i]._id;
+       decksObj.title = this.state.decks[i].title;
+       decksArr.push(decksObj)
+     }
+     console.log('this is the decks state', this.state.decks)
+     console.log('this is the decksArray', decksArr)
+     sessionStorage.decks = JSON.stringify(decksArr);
+
     var context = this;
     var elements = [];
       for(var i = 0; i < this.state.decks.length; i++){
@@ -495,9 +506,10 @@ var MyDecks = React.createClass({
     this.getDecks();
     if(this.props.deckToEdit){
       this.editDeck(null, this.props.deckToEdit);
-    }
+       }
   },
   render:function(){
+
     return(
       <div>
         <h3>Decks</h3>

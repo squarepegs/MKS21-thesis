@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	getChartData();
+  getChartData();
   var text = document.getElementById("barChart").getContext("2d");
   var data = {
     labels: ["John", "Fred", "Mary", "April", "David", "Jack", "Tomas"],
@@ -41,7 +41,7 @@ $(document).ready(function() {
   // var mybarChart = new Chart(text).Bar(data);
 });
 var getParticipants = function(test) {
-	console.log(test);
+  console.log(test);
   output = {};
   retOutput = [];
   for (var i = 0; i < test.length; i++) {
@@ -56,7 +56,7 @@ var getParticipants = function(test) {
 }
 var getChartData = function() {
   $.get('/api/getTestData', function(req, res) {
-  	var text = document.getElementById("barChart").getContext("2d");
+    var text = document.getElementById("barChart").getContext("2d");
     console.log("tests req", req);
     testData = req[0].testData.slice(1);
 

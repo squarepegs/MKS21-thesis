@@ -77,7 +77,7 @@ var RoomSelect = React.createClass({
     }.bind(this))
     return (
       <div>
-      <select className="browser-default" onChange={this.clickHandler}>
+      <select className="browser-default inline" onChange={this.clickHandler}>
         {items}
       </select>
       </div>
@@ -100,7 +100,7 @@ var EndGame = React.createClass({
   render: function(){
     return (
     <div>
-      <button onClick={this.clickHandler}> End Game </button>
+      <a href="#" className="btn red darken-2 wide-btn" onClick={this.clickHandler}>End Game</a>
     </div>
     )
   }
@@ -113,13 +113,26 @@ var GameDashboard = React.createClass({
 
     return (
     <div id='gameDashboard'>
-      <h2 id="roomcode">Your code is: {window.jeopardy.code}</h2>
-      <EndGame />
-      <QA />
-      <NewQ deckID={this.props.deckID} />
-      <BuzzedInList />
-      <Feedback />
-      <ActiveList />
+      <div className="row headroom-whitespace">
+        <div className="col s6 flow-text center" id="roomcode">
+        <span className="brand-logo">Digi<span className="orange-text">Quiz</span></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          Your code is: {window.jeopardy.code}
+        </div>
+        <div className="col s4">
+          <NewQ deckID={this.props.deckID} />
+          </div>
+      </div>
+      <div className="row">
+          <div className="col s4">
+            <ActiveList />  
+            <BuzzedInList />
+            <Feedback />
+            <EndGame />
+          </div>
+          <QA />
+
+      </div>
     </div>
     )
   }
@@ -145,12 +158,23 @@ var QA = React.createClass({
       questionData.feedbacks = {};
 
       React.render(
-        <div>
-          <h4>Category: {data.category} - ${data.value}</h4>
-          <h3>Question:</h3>
-          <h2>{data.question}</h2>
-          <h3>Answer:</h3>
-          <h2>{data.answer}</h2>
+        <div className="col s8">
+          <div className="card blue-grey flow-text lighten-1">
+          <div className="card-content white-text">
+          <div className="card-title">Category:</div>{data.category.toUpperCase()} - ${data.value}</div></div>
+          <div className="card blue-grey flow-text darken-1">  
+            <div className="card-content white-text">
+              <div className="card-title">Question:</div>{data.question.toUpperCase()}
+              </div>
+              </div>
+
+            <div className="card blue-grey flow-text darken-2">  
+            <div className="card-content white-text">
+              <div className="card-title">Answer:</div>{data.answer.toUpperCase()}
+      
+
+           </div>
+          </div>
         </div>, document.getElementById('question')
         )
     })
@@ -213,11 +237,13 @@ var Feedback = React.createClass({
 
   render:function(){
     return (
-    <div>
-      <h2>Feedback:</h2>
-      <p id="feedback"></p>
-    </div>
-    )
+
+    <div className="row card teal darken-2">
+      <div className="card-content flow-text white-text">
+        <div className="card-title">Live Feedback:</div>
+        <div id="feedback"></div>
+      </div>
+    </div>    )
   },
 })
 
@@ -256,10 +282,12 @@ var BuzzedInList = React.createClass({
 
   render:function(){
     return (
-    <div>
-      <h2>Buzzed in:</h2>
-      <p id="buzzedIn"></p>
-    </div>
+    <div className="row card teal darken-1">
+      <div className="card-content flow-text white-text">
+        <div className="card-title">Buzzed in:</div>
+        <div id="buzzedIn"></div>
+      </div>
+    </div>  
     )
   },
 })
@@ -311,11 +339,14 @@ var ActiveList = React.createClass({
     var items = this.state.items.map(function(item, i) {
       return (<Student name={item} key={i} />);
       }.bind(this))
-    return (
-    <div>
-      <h2>Active Players:</h2>
-      <ul id="activeList">{items}</ul>
-    </div>
+    return (    
+
+    <div className="row card teal">
+      <div className="card-content flow-text white-text">
+        <div className="card-title">Active Players:</div>
+        <ul id="activeList">{items}</ul>
+      </div>
+    </div>  
     )
   },
 })
@@ -344,7 +375,7 @@ var NewQ = React.createClass({
   render:function(){
     return (
     <div>
-      <button onClick={this.clickHandler}> new question </button>
+      <a href="#" className="btn wide-btn" onClick={this.clickHandler}>Next Question</a>
     </div>
     )
   }
@@ -368,14 +399,28 @@ var Main = React.createClass({
 
   render: function(){
     return (
-      <div>
-        <label>Username: </label>
-        <input type="text" className="input" id="username" />
-        <button onClick={this.handleClick}>START NEW GAME</button>
-        <div id="Rooms">
-        These are the available rooms:
-        <RoomSelect />
-        </div>
+      <div className='container'>
+
+          <div className="row">
+            <div className="col s3 flow-text">
+            <span className="brand-logo">
+              Digi
+              <span className="orange-text">
+                Quiz
+              </span>
+            </span>
+            </div>
+            <div className="col s9 align-center">
+              <a href="#" className="btn" onClick={this.handleClick}>START NEW GAME</a>
+            </div>
+          </div>
+          <div ClassName="row">
+            Existing rooms:
+          </div>
+          <div id="Rooms" ClassName="row">
+            <RoomSelect />
+          </div>
+
       </div>
     )
   }
@@ -384,7 +429,7 @@ var Main = React.createClass({
 
 // initial page render
 React.render(
-  <div>
+  <div className="headroom-whitespace">
     <Main />
   </div>,
   document.getElementById('main')

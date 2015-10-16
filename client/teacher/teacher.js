@@ -420,8 +420,8 @@ var Main = React.createClass({
   },
 
   handleClick: function(){
-    window.jeopardy.username = $('#username').val();
-    socket.emit('new game',{id:window.jeopardy.username}, sessionStorage.deckID);
+    window.jeopardy.username = 'depreciated';
+    socket.emit('new game',{id:'depreciated'}, sessionStorage.deckID);
   },
 
   render: function(){

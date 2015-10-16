@@ -77,7 +77,7 @@ var RoomSelect = React.createClass({
     }.bind(this))
     return (
       <div>
-      <select className="browser-default" onChange={this.clickHandler}>
+      <select className="browser-default inline" onChange={this.clickHandler}>
         {items}
       </select>
       </div>
@@ -115,6 +115,8 @@ var GameDashboard = React.createClass({
     <div id='gameDashboard'>
       <div className="row headroom-whitespace">
         <div className="col s6 flow-text center" id="roomcode">
+        <span className="brand-logo">Digi<span className="orange-text">Quiz</span></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           Your code is: {window.jeopardy.code}
         </div>
         <div className="col s4">
@@ -398,11 +400,27 @@ var Main = React.createClass({
   render: function(){
     return (
       <div className='container'>
-        <a href="#" className="btn" onClick={this.handleClick}>START NEW GAME</a>
-        <div id="Rooms">
-        These are the available rooms:
-        <RoomSelect />
-        </div>
+
+          <div className="row">
+            <div className="col s3 flow-text">
+            <span className="brand-logo">
+              Digi
+              <span className="orange-text">
+                Quiz
+              </span>
+            </span>
+            </div>
+            <div className="col s9 align-center">
+              <a href="#" className="btn" onClick={this.handleClick}>START NEW GAME</a>
+            </div>
+          </div>
+          <div ClassName="row">
+            Existing rooms:
+          </div>
+          <div id="Rooms" ClassName="row">
+            <RoomSelect />
+          </div>
+
       </div>
     )
   }

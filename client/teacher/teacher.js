@@ -5,7 +5,7 @@ window.activeList = [];
 var buzzedIn = [];
 var testData = [];
 var questionData = {};
-var decks = JSON.parse(sessionStorage.decks);
+var decks = sessionStorage.decks;
 
 console.log('teacher socket: ', socket)
 
@@ -77,16 +77,20 @@ var RoomSelect = React.createClass({
   clickHandler: function(event){
     if(event.target.value){
     var selected;
-
-    console.log('this is the state', this.state.items)
+      if(event.target.value !== 'jService'){
+      console.log('this is the state', this.state.items)
       this.setState({selected: event.target.value})
-      for(var i = 0; i<this.state.items.length; i++){
-        if(this.state.items[i].indexOf(event.target.value) !== -1){
-          selected = this.state.items[i]
+
+        for(var i = 0; i<this.state.items.length; i++){
+          if(this.state.items[i].indexOf(event.target.value) !== -1){
+            selected = this.state.items[i]
+          }
         }
+        console.log('these are the selected values', selected[0], selected[1], selected[2])    
+        socket.emit('join room', selected[1], selected[2])
+      }  else {
+        socket.emit('join room', null, 'jService');
       }
-      console.log('these are the selected values', selected[0], selected[1], selected[2])    
-      socket.emit('join room', selected[1], selected[2])
     }
   },
 
@@ -98,7 +102,8 @@ var RoomSelect = React.createClass({
     return (
       <div>
       <select className="browser-default inline" onChange={this.clickHandler}>
-        <option className="dropdown-item" value="" disable selected></option>
+        <option className="dropdown-item" value=""></option>
+        <option className="dropdown-item" value="jService">jService</option>
         {items}
       </select>
       </div>
@@ -407,6 +412,7 @@ var NewQ = React.createClass({
 var Main = React.createClass({
   componentDidMount: function(){
     if(decks !== undefined){
+      decks = JSON.parse(sessionStorage.decks)
       socket.emit('decks', decks);
     }
 
@@ -441,10 +447,10 @@ var Main = React.createClass({
               <a href="#" className="btn" onClick={this.handleClick}>START NEW GAME</a>
             </div>
           </div>
-          <div ClassName="row">
+          <div className="row">
             Existing rooms:
           </div>
-          <div id="Rooms" ClassName="row">
+          <div id="Rooms" className="row">
             <RoomSelect />
           </div>
 

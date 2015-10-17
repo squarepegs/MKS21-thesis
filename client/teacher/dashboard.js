@@ -13,49 +13,32 @@ var sortByTime = function(a,b){
 //
 
 var Tabs = React.createClass({
-  launch:function(){
-    console.log('launch')
-    window.location.assign('/teacher')
-  },
    decks:function(){
-    console.log('decks')
     React.render(
       <MyDecks />, document.getElementById('view'))
   },
-   createDecks:function(){
-    console.log('createDecks')
-    React.render(
-      <CreateDecks />, document.getElementById('view'))
-  },
    classData:function(){
-    console.log('classData')
     window.location.assign('/charts')
-  },
-   studentData:function(){
-    console.log('studentData')
-
   },
    myProfile:function(){
     React.render(
       <Profile />, document.getElementById('view'))
   },
   logout:function(){
-    console.log('logout')
     $.get('/api/logout', function(req, res){
       window.location.assign("/")
     })
   },
   render:function(){
+    var context = this;
     return (
-    <div>
-      <button onClick={this.launch}>Launch Game</button>
-      <button onClick={this.decks}>My Decks</button>
-      <button onClick={this.createDecks}>Create Decks</button> 
-      <button onClick={this.classData}>Class Data</button>
-      <button onClick={this.studentData}>Student Data</button>
-      <button onClick={this.myProfile}>My Profile</button>
-      <button onClick={this.logout}>Logout</button>
-    </div>
+    <ul className={context.props.nav === 'nav-mobile' ? 'side-nav' : 'right hide-on-med-and-down'}>
+      <li><a href="/teacher" target="_blank">Launch Game</a></li>
+      <li><a href="#" onClick={this.decks}>My Decks</a></li>
+      <li><a href="#" onClick={this.myProfile}>My Profile</a></li>
+      <li><a href="/charts" onClick={this.classData}>Data Charts</a></li>
+      <li><a href="#" onClick={this.logout}>Logout</a></li>
+    </ul>
     )
   }
 })
@@ -107,10 +90,12 @@ var Profile = React.createClass({
   updateProfile: function(){
     var context = this;
     var query = context.state
-    $.post('/api/profile', query, function(req, res){})
-    context.setState({'firstName': ''});
-    context.setState({'lastName': ''});
-    context.setState({'email': ''});
+    $.post('/api/profile', query, function(req, res){
+
+
+      Materialize.toast('Profile Saved!', 4000)
+    })
+
   },
   render:function(){
     return(
@@ -119,10 +104,10 @@ var Profile = React.createClass({
           <fieldset>
             <ul>
               <li>Username: { this.state.username }</li>
-              <li>First Name:  <input type="text" value={this.state.firstName} onChange={this.prepFirstName} name="firstName"/>{this.state.firstName}</li>
-              <li>Last Name: <input type="text" value={this.state.lastName} onChange={this.prepLastName} name="lastName"/>{this.state.lastName}</li>
-              <li>E&ndash;mail: <input type="text" value={this.state.email} onChange={this.prepEmail} name="email"/>{this.state.email}</li>
-              <li><p>{this.status}</p><a className="btn" onClick={this.updateProfile}>Update Profile</a></li>
+              <li>First Name:  <input type="text" value={this.state.firstName} onChange={this.prepFirstName} name="firstName"/></li>
+              <li>Last Name: <input type="text" value={this.state.lastName} onChange={this.prepLastName} name="lastName"/></li>
+              <li>E&ndash;mail: <input type="text" value={this.state.email} onChange={this.prepEmail} name="email"/></li>
+              <li><button className="btn waves-effect waves-light" onClick={this.updateProfile}>Update Profile</button></li>
             </ul>
           </fieldset>
         </form>
@@ -157,17 +142,16 @@ var ShowQuestion = React.createClass({
     delete:function(){
       globalActiveDeckQuestions.splice(this.props.index, 1);
       globalActiveDeckEditorComponent.showQs();
-      console.log("globalActiveDeckQuestions -after delete", globalActiveDeckQuestions)
     },
     render:function(){
       return (
         <div>
            <div className="row"> 
               <div className="col s1">
-                <button onClick={this.delete}>Delete</button>
+                <button className="btn waves-effect waves-light" onClick={this.delete}>Delete</button>
               </div>
               <div className="col s1">
-                <button onClick={this.edit}>Edit</button>
+                <button className="btn waves-effect waves-light" onClick={this.edit}>Edit</button>
               </div>
               <div className="col s2 category">
                 {this.props.category}
@@ -233,7 +217,6 @@ var EditQuestion = React.createClass({
       this.setState({'newAns' : ''})
     }
     globalActiveDeckEditorComponent.showQs();
-    console.log("globalActiveDeckQuestions", globalActiveDeckQuestions)
     this.props.save();
     if (this.props.edit){
       React.render(
@@ -256,13 +239,13 @@ var EditQuestion = React.createClass({
       <div ref={this.props.edit ? 'editFields' : 'addFields'} className="addQues row"> 
         <div className="col s1"><label>Category</label><input type="text" className="category" value={this.state.newCat} onChange={this.prepNextCat} />
         </div>
-        <div className="col s2"><label>Value</label><input type="text" className="value" value={this.state.newVal} onChange={this.prepNextVal}  />
+        <div className="col s1"><label>Value</label><input type="text" className="value" value={this.state.newVal} onChange={this.prepNextVal}  />
         </div>
-        <div className="input-field col s6"><label>Question</label><textarea className="question materialize-textarea" value={this.state.newQues} onChange={this.prepNextQues} ></textarea>
+        <div className="col s6"><label>Question</label><input type="text" className="question" value={this.state.newQues} onChange={this.prepNextQues} />
         </div>
         <div className="col s2"><label>Answer</label><input type="text" className="answer" value={this.state.newAns} onChange={this.prepNextAns}  />
         </div>
-        <div className="col s1"><button onClick={this.addQtoDeck}>{this.props.edit ? 'Save This Question' : 'Add A New Question'}</button>
+        <div className="col s2"><button className="btn waves-effect waves-light" onClick={this.addQtoDeck}>{this.props.edit ? 'Save' : 'Add'}</button>
         </div>
      </div>)
   }
@@ -286,11 +269,8 @@ var DeckEditor = React.createClass({
   getInitialQs: function(){
     var context = this;
       $.get('/api/decks/' + context.props.deckID, function(req, res){
-        console.log("req", req)
-        console.log("req.questions", req.questions);
         context.setState({ 'title' : req.title })
         context.setState({ 'notes' : req.notes })
-        console.log("context.state", context.state)
         globalActiveDeckQuestions = req.questions
         context.showQs();
       })
@@ -303,7 +283,6 @@ var DeckEditor = React.createClass({
       'notes'    : context.state.notes,
       'questions': JSON.stringify(globalActiveDeckQuestions)
     }
-    console.log("saving changes", newInfo)
     $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res){
       context.render();
       Materialize.toast('Changes have been saved!', 4000) // 4000 is the duration of the toast
@@ -369,11 +348,11 @@ var DeckEditor = React.createClass({
         <h3>DeckEditor {this.state.title}</h3>
         
         <div className="row">
-          <div className="col s4"><label>Title</label><input type="text" className="title" value={this.state.title} onChange={this.changeTitle}/>
+          <div className="col s4"><label>Title</label><input type="text" className="title" value={this.state.title} onChange={this.changeTitle} />
           </div>
-          <div className="col s6"><label>Notes</label><textarea className="notes materialize-textarea" value={this.state.notes} onChange={this.changeNotes}></textarea>
+          <div className="col s6"><label>Notes</label><input type="text" className="notes" value={this.state.notes} onChange={this.changeNotes} />
           </div>
-          <div className="col s2"><button id="saveButton" onClick={this.saveChanges}>Save Title and Notes</button></div>
+          <div className="col s2"><button className="btn waves-effect waves-light" id="saveButton" onClick={this.saveChanges}>Save Title and Notes</button></div>
         </div>
           <hr/>{this.state.headers}{this.state.quesElements}
           <div id="newQEditor"></div>
@@ -387,15 +366,16 @@ var DeckEditor = React.createClass({
 
 var SingleDeck = React.createClass({
   render: function(){
+    console.log("369: this.props.deck._id", this.props.deck._id);
     return (
         <tr id={'thisRowID:' + this.props.deck._id} key={this.props.deck._id}>
-            <td><button value={this.props.deck._id} onClick={this.props.edit}>Edit Deck</button>
-            <button value={this.props.deck._id} onClick={this.props.kill}>Delete Deck</button></td>
+            <td><button className="btn waves-effect waves-light" value={this.props.deck._id} onClick={this.props.edit}>Edit</button></td>
+            <td><button className="btn waves-effect waves-light" value={this.props.deck._id} onClick={this.props.kill}>Delete</button></td>
             <td>{this.props.deck.title}</td>
             <td>{this.props.deck.notes}</td>
             <td>{this.props.deck.questions.length}</td>
-            <td><button value={this.props.deck._id} onClick={this.props.play}>Play this Deck</button></td>
-            <td><button value={this.props.deck._id} onClick={this.props.share}>Share this Deck</button></td>
+            <td><button className="btn waves-effect waves-light" value={this.props.deck._id} onClick={this.props.play}>Play</button></td>
+            <td><button className="btn waves-effect waves-light" value={this.props.deck._id} id={'share'+this.props.deck._id} onClick={this.props.share}>Share</button></td>
           </tr>
       )
   }
@@ -409,7 +389,6 @@ var MyDecks = React.createClass({
     }
   },
   killDeck: function(event){
-    console.log("killdeck()")
     var context = this;
     var mutatedDecks = [];
     for (var i = 0; i < this.state.decks.length; i++){
@@ -434,7 +413,6 @@ var MyDecks = React.createClass({
 
 
     $.post('/api/killdeck', {'deckID':event.target.value}, function(req, res){
-        console.log("Deck Killed")
       })
   },
   editDeck: function(event, deckID){
@@ -453,7 +431,6 @@ var MyDecks = React.createClass({
   },
   playDeck: function(event){
     sessionStorage.deckID = event.target.value
-    console.log("deckID:", sessionStorage.deckID);
   
     window.location.replace('/teacher')
 
@@ -463,16 +440,12 @@ var MyDecks = React.createClass({
 
     if (recipient != null) {
       $.post('/api/shareDeck', {'recipient':recipient, 'deckID':event.target.value}, function(success){
-        if(success){console.log('shared with ' + recipient)}
-          else {console.log('Oops. Something went wrong')}
-      });
+        })
     } else {
       alert("Username can't be blank. Please try again.")
     }
   },
   buildElements: function(){
-    console.log('buildElements()')
-    console.log(this.state.decks, "after")
      var decksArr = [];
      for(var i = 0; i < this.state.decks.length; i++){
        var decksObj = {};
@@ -480,8 +453,6 @@ var MyDecks = React.createClass({
        decksObj.title = this.state.decks[i].title;
        decksArr.push(decksObj)
      }
-     console.log('this is the decks state', this.state.decks)
-     console.log('this is the decksArray', decksArr)
      sessionStorage.decks = JSON.stringify(decksArr);
 
     var context = this;
@@ -497,7 +468,6 @@ var MyDecks = React.createClass({
   getDecks: function(){
     var context = this;
     $.get('/api/decks', function(req, res){
-      console.log('deck req', req, req.length, 'get called') // req is an array of objects
       context.setState({decks:req})
       context.buildElements();
     });
@@ -513,18 +483,20 @@ var MyDecks = React.createClass({
     return(
       <div>
         <h3>Decks</h3>
-        <table>
+        <table className="responsive-table">
           <tr>
+            <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>Title</th>
             <th>Notes</th>
-            <th># questions</th>
+            <th>#Qs</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
           </tr>    
           {this.state.deckElements}
         </table>
         <div id="deckEditor"></div>
+        <div className="card green lighten-5"><CreateDecks /></div>
       </div>
       )
   }
@@ -542,7 +514,7 @@ var CreateDecks = React.createClass({
     var query = context.state
     $.post('/api/decks', query, function(req, res){
       newDeckID = req; 
-      console.log("create deck callback req", req);
+      Materialize.toast('Deck has been added!', 4000)
       React.unmountComponentAtNode(document.getElementById('view'));
       React.render(
         <MyDecks deckToEdit={newDeckID} />, document.getElementById('view')
@@ -560,23 +532,30 @@ var CreateDecks = React.createClass({
   },
   render:function(){
     return(
-      <div>
-        <div>
-          <label>Deck Name:</label><input type="text" value={this.state.title} onChange={this.prepTitle} name="deckName" />
-          <label>Notes:</label><input type="textarea" value={this.state.notes} onChange={this.prepNotes} name="deckNotes" />
-          <a className="btn" onClick={this.createDeck}>Create New Deck</a>
+      <div className="card-content">
+      <div className="card-title grey-text darken-2">Create a new deck</div>
+        <div className="row">
+          <div className="col s4"><label>Deck Name:</label><input type="text" value={this.state.title} onChange={this.prepTitle} name="deckName" /></div>
+          <div className="col s6"><label>Notes:</label><input type="text" value={this.state.notes} onChange={this.prepNotes} name="deckNotes" /></div>
+          <div className="col s2"><button className="btn waves-effect waves-light" onClick={this.createDeck}>Create</button></div>
         </div>
       </div>
       )
   }
 })
-
-
 // initial page render
+
+React.render(
+  <Tabs nav={"main"} />,document.getElementById('navbar')
+);
+
+React.render(
+  <Tabs nav={"nav-mobile"} />,document.getElementById('nav-mobile')
+);
+
 React.render(
   <div>
-    <Tabs />
-    <hr/><hr/>
+    
     <ViewArea />
 
   </div>,

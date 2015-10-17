@@ -101,6 +101,7 @@ io.on('connection', function (socket) {
   //TEACHER NEW GAME reated by server, only teachers can create new rooms: 
   socket.on('new game', function (user, deckID){
     //a teacher can host several rooms
+    console.log("bug fixing", user);
   
 
     deckID = deckID || 'jService' // if user does not provide a deck, use the jService. 

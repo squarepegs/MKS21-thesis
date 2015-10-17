@@ -89,7 +89,7 @@ module.exports = {
     // For obvious reasons, these words should not be condoned.
     // If the random generator runs into one of thses, it'll just reroll.
     // We apologise.
-    var badWords = ['NGGR', 'NGRR', 'NNGR', 'CVNT', 'FVCK', 'SHJT'];
+    var badWords = ['NGGR', 'NGRR', 'NNGR', 'CVNT', 'FVCK', 'SHJT', 'TWNK'];
 
     var code;
     do {

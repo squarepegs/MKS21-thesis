@@ -1,4 +1,4 @@
-//socket Emit functionality
+sessionStorage.deckID = 'jService'
 
 window.jeopardy = {};
 

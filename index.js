@@ -101,7 +101,7 @@ io.on('connection', function (socket) {
   //TEACHER NEW GAME reated by server, only teachers can create new rooms: 
   socket.on('new game', function (user, deckID){
     //a teacher can host several rooms
-    console.log("bug fixing", user);
+    console.log("bug fixing", user, 'and the deckID sent', deckID);
   
 
     deckID = deckID || 'jService' // if user does not provide a deck, use the jService. 
@@ -194,6 +194,8 @@ io.on('connection', function (socket) {
 
   socket.on('join room', function (oldRoom, deckID){
     //this activates the listener in the client to populate student list
+
+    oldRoom = oldRoom || handler.gameMaker()
 
     deckID = deckID || 'jService' ;
     

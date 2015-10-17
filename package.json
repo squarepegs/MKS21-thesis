@@ -12,7 +12,7 @@
     "url": "git+https://github.com/brianboyko/MKS21-thesis.git"
   },
     "engines": {
-    "node": ">=4.1.1"
+    "node": "latest"
   },
   "author": "Square Pegs",
   "license": "ISC",

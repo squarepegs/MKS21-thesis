@@ -1,6 +1,7 @@
+// dashboard.js
 'use strict';
 // This requires Browserify
-var React = require('react');
+// var React = require( 'react' );
 
 // -----------------------
 // USE OF `sessionStorage`
@@ -13,7 +14,7 @@ var React = require('react');
 // jService.io
 // -----------------------
 sessionStorage.deckID = 'jService'; // Jeopardy Service is Default
-window.jeopardy = {};
+window.jeopardy = { };
 
 // -----------------------
 // REACT COMPONENTS: 
@@ -36,58 +37,72 @@ window.jeopardy = {};
 // -----------------------
 
 // Navigation
-var Tabs = React.createClass({
+var Tabs = React.createClass( {
   displayName: 'Tabs',
   decks: function decks() {
-    React.render(React.createElement(MyDecks, null), document.getElementById('view'));
+    React.render(
+      <MyDecks />, document.getElementById( 'view' )
+    )
   },
   classData: function classData() {
     // Just a simple redirect for right now. 
-    window.location.assign('/charts');
+    window.location.assign( '/charts' );
   },
   myProfile: function myProfile() {
-    React.render(React.createElement(Profile, null), document.getElementById('view'));
+    React.render(
+      <Profile />, document.getElementById( 'view' )
+    )
   },
   logout: function logout() {
-    $.get('/api/logout', function(req, res) {
-      window.location.assign("/");
-    });
+    $.get( '/api/logout', function ( req, res ) {
+      window.location.assign( "/" );
+    } );
   },
   render: function render() {
-    var context = this;
-    return React.createElement('ul', {
-      className: context.props.nav === 'nav-mobile' ? 'side-nav' : 'right hide-on-med-and-down'
-    }, React.createElement('li', null, React.createElement('a', {
-      href: '/teacher',
-      target: '_blank'
-    }, 'Launch Game')), React.createElement('li', null, React.createElement('a', {
-      href: '#',
-      onClick: this.decks
-    }, 'My Decks')), React.createElement('li', null, React.createElement('a', {
-      href: '#',
-      onClick: this.myProfile
-    }, 'My Profile')), React.createElement('li', null, React.createElement('a', {
-      href: '/charts',
-      onClick: this.classData
-    }, 'Data Charts')), React.createElement('li', null, React.createElement('a', {
-      href: '#',
-      onClick: this.logout
-    }, 'Logout')));
+    return (
+    <ul className={ this.props.nav === 'nav-mobile' ? 'side-nav' : 'right hide-on-med-and-down' }>
+      <li>
+        <a
+           href="/teacher"
+           target="_blank">Launch Game</a>
+      </li>
+      <li>
+        <a
+           href="#"
+           onClick={ this.decks }>My Decks</a>
+      </li>
+      <li>
+        <a
+           href="#"
+           onClick={ this.myProfile }>My Profile</a>
+      </li>
+      <li>
+        <a
+           href="/charts"
+           onClick={ this.classData }>Data Charts</a>
+      </li>
+      <li>
+        <a
+           href="#"
+           onClick={ this.logout }>Logout</a>
+      </li>
+    </ul>
+    )
   }
-});
+} );
 
 // Main View Area
-var ViewArea = React.createClass({
+var ViewArea = React.createClass( {
   displayName: 'ViewArea',
   render: function render() {
-    return React.createElement('div', {
-      id: 'view'
-    });
+    return (
+    <div id='view'></div>
+    );
   }
-});
+} );
 
 // Profile Area
-var Profile = React.createClass({
+var Profile = React.createClass( {
   displayName: 'Profile',
   getInitialState: function getInitialState() {
     return {
@@ -99,76 +114,85 @@ var Profile = React.createClass({
   },
   componentDidMount: function componentDidMount() {
     // Here we see Brian's use of "var context = this" vs. Juan's .bind(this) method. 
-    var context = this; 
-    $.get('/api/profile', function(req, res) {
-      if (req.local) {
-        context.setState({
-          'username': req.local.username
-        });
+    var context = this;
+    $.get( '/api/profile', function ( req, res ) {
+      if ( req.local ) {
+        context.setState( { 'username': req.local.username } );
       }
-      if (req.facebook) {
-        context.setState({
-          'username': req.facebook.name
-        });
+      if ( req.facebook ) {
+        context.setState( { 'username': req.facebook.name } );
       }
-      context.setState({
-        'firstName': req.profile.firstName
-      });
-      context.setState({
-        'lastName': req.profile.lastName
-      });
-      context.setState({
-        'email': req.profile.email
-      });
-    });
+      context.setState( { 'firstName': req.profile.firstName } );
+      context.setState( { 'lastName': req.profile.lastName } );
+      context.setState( { 'email': req.profile.email } );
+    } );
   },
-  prepFirstName: function prepFirstName(event) {
-    this.setState({
-      'firstName': event.target.value
-    });
+  prepFirstName: function prepFirstName( event ) {
+    this.setState( { 'firstName': event.target.value } );
   },
-  prepLastName: function prepLastName(event) {
-    this.setState({
-      'lastName': event.target.value
-    });
+  prepLastName: function prepLastName( event ) {
+    this.setState( { 'lastName': event.target.value } );
   },
-  prepEmail: function prepEmail(event) {
-    this.setState({
-      'email': event.target.value
-    });
+  prepEmail: function prepEmail( event ) {
+    this.setState( { 'email': event.target.value } );
   },
   updateProfile: function updateProfile() {
-    var context = this;
-    var query = context.state;
-    $.post('/api/profile', query, function(req, res) {
-      Materialize.toast('Profile Saved!', 4000);
-    });
+    var query = this.state;
+    $.post( '/api/profile', query, function ( req, res ) {
+      Materialize.toast( 'Profile Saved!', 4000 );
+    } );
   },
   render: function render() {
-    return React.createElement('div', null, React.createElement('form', null, React.createElement('fieldset', null, React.createElement('ul', null, React.createElement('li', null, 'Username: ', this.state.username), React.createElement('li', null, 'First Name:  ', React.createElement('input', {
-      type: 'text',
-      value: this.state.firstName,
-      onChange: this.prepFirstName,
-      name: 'firstName'
-    })), React.createElement('li', null, 'Last Name: ', React.createElement('input', {
-      type: 'text',
-      value: this.state.lastName,
-      onChange: this.prepLastName,
-      name: 'lastName'
-    })), React.createElement('li', null, 'E–mail: ', React.createElement('input', {
-      type: 'text',
-      value: this.state.email,
-      onChange: this.prepEmail,
-      name: 'email'
-    })), React.createElement('li', null, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      onClick: this.updateProfile
-    }, 'Update Profile'))))));
+    return (
+    <div>
+      <form>
+        <fieldset>
+          <ul>
+            <li>
+              Username:
+              { this.state.username }
+            </li>
+            <li>
+              First Name:
+              <input
+                     type="text"
+                     value={ this.state.firstName }
+                     onChange={ this.prepFirstName }
+                     name="firstName" />
+            </li>
+            <li>
+              Last Name:
+              <input
+                     type="text"
+                     value={ this.state.lastName }
+                     onChange={ this.prepLastName }
+                     name="lastName" />
+            </li>
+            <li>
+              E&ndash;mail:
+              <input
+                     type="text"
+                     value={ this.state.email }
+                     onChange={ this.prepEmail }
+                     name="email" />
+            </li>
+            <li>
+              <button
+                      className="btn waves-effect waves-light"
+                      onClick={ this.updateProfile }>
+                Update Profile
+              </button>
+            </li>
+          </ul>
+        </fieldset>
+      </form>
+    </div>
+    )
   }
-});
+} );
 
 // List of All Decks
-var MyDecks = React.createClass({
+var MyDecks = React.createClass( {
   displayName: 'MyDecks',
   getInitialState: function getInitialState() {
     return {
@@ -176,18 +200,18 @@ var MyDecks = React.createClass({
       deckElements: []
     };
   },
-  killDeck: function killDeck(event) {
+  killDeck: function killDeck( event ) {
     var context = this;
-    var mutatedDecks = [];
+    var mutatedDecks = [ ];
     for (var i = 0; i < this.state.decks.length; i++) {
-      if (this.state.decks[i]._id !== event.target.value) {
-        mutatedDecks.push(this.state.decks[i]);
+      if ( this.state.decks[ i ]._id !== event.target.value ) {
+        mutatedDecks.push( this.state.decks[ i ] );
       }
     }
     // ANTIPATTERN!
+    this.state.decks = mutatedDecks;
     // You're supposed to use:
     // this.setState({decks: mutatedDecks})
-    this.state.decks = mutatedDecks;
     // but for some reason the page will not rerender unless the
     // state is muated directly. In short, setState merely prepares
     // the state for a change, it doesn't actually change it.
@@ -197,183 +221,235 @@ var MyDecks = React.createClass({
     // that the two-way data binding of Angular wouldn't have been
     // extremely useful here.  C'est la vie.
     this.buildElements();
-    $.post('/api/killdeck', {
-      'deckID': event.target.value
-    }, function(req, res) {});
+    $.post( '/api/killdeck', { 'deckID': event.target.value }, function ( req, res ) {} );
   },
-  editDeck: function editDeck(event, deckID) {
-    if (event) {
+  editDeck: function editDeck( event, deckID ) {
+    if ( event ) {
       deckID = event.target.value;
       // .unmountComponentAtNode will no longer work in React 0.15 - in 0.14 (which we are using)
       // it works with a warning.  For that reason, our react version needs to be frozen at 0.14.
-      React.unmountComponentAtNode(document.getElementById('deckEditor'));
+      React.unmountComponentAtNode( document.getElementById( 'deckEditor' ) );
     }
-    React.render(React.createElement('div', null, React.createElement(DeckEditor, {
-      deckID: deckID
-    })), document.getElementById('deckEditor'));
+    React.render(
+      <div>
+        <DeckEditor deckID={ deckID } />
+      </div>, document.getElementById( 'deckEditor' )
+    )
   },
-  playDeck: function playDeck(event) {
+  playDeck: function playDeck( event ) {
     sessionStorage.deckID = event.target.value;
-    window.location.replace('/teacher');
+    window.location.replace( '/teacher' );
   },
-  shareDeck: function shareDeck(event) {
-    var recipient = prompt('Who would you like to share this deck with?');
-    if (recipient != null) {
-      $.post('/api/shareDeck', {
+  shareDeck: function shareDeck( event ) {
+    var recipient = prompt( 'Who would you like to share this deck with?' );
+    if ( recipient != null ) {
+      $.post( '/api/shareDeck', {
         'recipient': recipient,
         'deckID': event.target.value
-      }, function(success) {});
+      }, function ( success ) {} );
     } else {
-      alert("Username can't be blank. Please try again.");
+      alert( "Username can't be blank. Please try again." );
     }
   },
   buildElements: function buildElements() {
-    var decksArr = [];
+    var decksArr = [ ];
     for (var i = 0; i < this.state.decks.length; i++) {
-      var decksObj = {};
-      decksObj.deckID = this.state.decks[i]._id;
-      decksObj.title = this.state.decks[i].title;
-      decksArr.push(decksObj);
+      var decksObj = { };
+      decksObj.deckID = this.state.decks[ i ]._id;
+      decksObj.title = this.state.decks[ i ].title;
+      decksArr.push( decksObj );
     }
-    sessionStorage.decks = JSON.stringify(decksArr);
+    sessionStorage.decks = JSON.stringify( decksArr );
     var context = this;
-    var elements = [];
+    var elements = [ ];
     for (var i = 0; i < this.state.decks.length; i++) {
-      elements.push(React.createElement(SingleDeck, {
-        deck: this.state.decks[i],
+      elements.push( React.createElement( SingleDeck, {
+        deck: this.state.decks[ i ],
         kill: this.killDeck,
         play: this.playDeck,
         edit: this.editDeck,
         share: this.shareDeck
-      }));
+      } ) );
     }
-    context.setState({
-      deckElements: elements
-    });
+    context.setState( { deckElements: elements } );
     this.render();
   },
   getDecks: function getDecks() {
     var context = this;
-    $.get('/api/decks', function(req, res) {
-      context.setState({
-        decks: req
-      });
+    $.get( '/api/decks', function ( req, res ) {
+      context.setState( { decks: req } );
       context.buildElements();
-    });
+    } );
   },
   componentDidMount: function componentDidMount() {
     this.getDecks();
-    if (this.props.deckToEdit) {
-      this.editDeck(null, this.props.deckToEdit);
+    if ( this.props.deckToEdit ) {
+      this.editDeck( null, this.props.deckToEdit );
     }
   },
   render: function render() {
-    return React.createElement('div', null, React.createElement('h3', null, 'Decks'), React.createElement('table', {
-      className: 'responsive-table'
-    }, React.createElement('tr', null, React.createElement('th', null, ' '), React.createElement('th', null, ' '), React.createElement('th', null, 'Title'), React.createElement('th', null, 'Notes'), React.createElement('th', null, '#Qs'), React.createElement('th', null, ' '), React.createElement('th', null, ' ')), this.state.deckElements), React.createElement('div', {
-      id: 'deckEditor'
-    }), React.createElement('div', {
-      className: 'card green lighten-5'
-    }, React.createElement(CreateDecks, null)));
+    return (
+    <div>
+      <h3>Decks</h3>
+      <table className="responsive-table">
+        <tr>
+          <th>
+            &nbsp;
+          </th>
+          <th>
+            &nbsp;
+          </th>
+          <th>
+            Title
+          </th>
+          <th>
+            Notes
+          </th>
+          <th>
+            #Qs
+          </th>
+          <th>
+            &nbsp;
+          </th>
+          <th>
+            &nbsp;
+          </th>
+        </tr>
+        { this.state.deckElements }
+      </table>
+      <div id="deckEditor"></div>
+      <div className="card green lighten-5">
+        <CreateDecks />
+      </div>
+    </div>
+    )
   }
-});
+} );
 
 // Create a new deck (just initializes it, doesn't add questions, yet). 
-var CreateDecks = React.createClass({
+var CreateDecks = React.createClass( {
   displayName: 'CreateDecks',
   getInitialState: function getInitialState() {
-    return {
-      title: '',
-      notes: ''
-    };
+    return { title: '', notes: '' };
   },
   createDeck: function createDeck() {
     var context = this;
     var query = context.state;
-    $.post('/api/decks', query, function(req, res) {
+    $.post( '/api/decks', query, function ( req, res ) {
       newDeckID = req;
-      Materialize.toast('Deck has been added!', 4000);
-      React.unmountComponentAtNode(document.getElementById('view'));
-      React.render(React.createElement(MyDecks, {
-        deckToEdit: newDeckID
-      }), document.getElementById('view'));
-    });
-    context.setState({
-      'title': ''
-    });
-    context.setState({
-      'notes': ''
-    });
+      // Materialize.toast is a non-obtrusive way to quickly show information to the user. 
+      Materialize.toast( 'Deck has been added!', 4000 );
+      React.unmountComponentAtNode( document.getElementById( 'view' ) );
+      React.render(
+        <MyDecks deckToEdit={ newDeckID } />,
+        document.getElementById( 'view' )
+      )
+    } );
+    context.setState( { 'title': '' } );
+    context.setState( { 'notes': '' } );
   },
-  prepTitle: function prepTitle(event) {
-    this.setState({
-      'title': event.target.value
-    });
+  prepTitle: function prepTitle( event ) {
+    this.setState( { 'title': event.target.value } );
   },
-  prepNotes: function prepNotes(event) {
-    this.setState({
-      'notes': event.target.value
-    });
+  prepNotes: function prepNotes( event ) {
+    this.setState( { 'notes': event.target.value } );
   },
   render: function render() {
-    return React.createElement('div', {
-      className: 'card-content'
-    }, React.createElement('div', {
-      className: 'card-title grey-text darken-2'
-    }, 'Create a new deck'), React.createElement('div', {
-      className: 'row'
-    }, React.createElement('div', {
-      className: 'col s4'
-    }, React.createElement('label', null, 'Deck Name:'), React.createElement('input', {
-      type: 'text',
-      value: this.state.title,
-      onChange: this.prepTitle,
-      name: 'deckName'
-    })), React.createElement('div', {
-      className: 'col s6'
-    }, React.createElement('label', null, 'Notes:'), React.createElement('input', {
-      type: 'text',
-      value: this.state.notes,
-      onChange: this.prepNotes,
-      name: 'deckNotes'
-    })), React.createElement('div', {
-      className: 'col s2'
-    }, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      onClick: this.createDeck
-    }, 'Create'))));
+    return (
+    <div className="card-content">
+      <div className="card-title grey-text darken-2">
+        Create a new deck
+      </div>
+      <div className="row">
+        <div className="col s4">
+          <label>
+            Deck Name:
+          </label>
+          <input
+                 type="text"
+                 value={ this.state.title }
+                 onChange={ this.prepTitle }
+                 name="deckName" />
+        </div>
+        <div className="col s6">
+          <label>
+            Notes:
+          </label>
+          <input
+                 type="text"
+                 value={ this.state.notes }
+                 onChange={ this.prepNotes }
+                 name="deckNotes" />
+        </div>
+        <div className="col s2">
+          <button
+                  className="btn waves-effect waves-light"
+                  onClick={ this.createDeck }>
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+    )
   }
-});
+} );
 
 // The information of a single deck. MyDecks is filled with multiple instances
 // of SingleDeck. 
-var SingleDeck = React.createClass({
+var SingleDeck = React.createClass( {
   displayName: 'SingleDeck',
   render: function render() {
-    console.log("369: this.props.deck._id", this.props.deck._id);
-    return React.createElement('tr', {
-      id: 'thisRowID:' + this.props.deck._id,
-      key: this.props.deck._id
-    }, React.createElement('td', null, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      value: this.props.deck._id,
-      onClick: this.props.edit
-    }, 'Edit')), React.createElement('td', null, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      value: this.props.deck._id,
-      onClick: this.props.kill
-    }, 'Delete')), React.createElement('td', null, this.props.deck.title), React.createElement('td', null, this.props.deck.notes), React.createElement('td', null, this.props.deck.questions.length), React.createElement('td', null, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      value: this.props.deck._id,
-      onClick: this.props.play
-    }, 'Play')), React.createElement('td', null, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      value: this.props.deck._id,
-      id: 'share' + this.props.deck._id,
-      onClick: this.props.share
-    }, 'Share')));
+    console.log( "369: this.props.deck._id", this.props.deck._id );
+    return (
+    <tr
+        id={ 'thisRowID:' + this.props.deck._id }
+        key={ this.props.deck._id }>
+      <td>
+        <button
+                className="btn waves-effect waves-light"
+                value={ this.props.deck._id }
+                onClick={ this.props.edit }>
+          Edit
+        </button>
+      </td>
+      <td>
+        <button
+                className="btn waves-effect waves-light"
+                value={ this.props.deck._id }
+                onClick={ this.props.kill }>
+          Delete
+        </button>
+      </td>
+      <td>
+        { this.props.deck.title }
+      </td>
+      <td>
+        { this.props.deck.notes }
+      </td>
+      <td>
+        { this.props.deck.questions.length }
+      </td>
+      <td>
+        <button
+                className="btn waves-effect waves-light"
+                value={ this.props.deck._id }
+                onClick={ this.props.play }>
+          Play
+        </button>
+      </td>
+      <td>
+        <button
+                className="btn waves-effect waves-light"
+                value={ this.props.deck._id }
+                id={ 'share'+this.props.deck._id }
+                onClick={ this.props.share }>
+          Share
+        </button>
+      </td>
+    </tr>
+    )
   }
-});
+} );
 
 //============================================================================================================
 //  Globals for DeckEditor
@@ -386,10 +462,10 @@ var SingleDeck = React.createClass({
 //  an array of objects inside a state results in losing the values - but not the keys - of the objects in the array.
 //============================================================================================================
 var globalActiveDeckEditorComponent = null;
-var globalActiveDeckQuestions = [];
+var globalActiveDeckQuestions = [ ];
 var globalDecksLister = null;
 
-var DeckEditor = React.createClass({
+var DeckEditor = React.createClass( {
   displayName: 'DeckEditor',
   getInitialState: function getInitialState() {
     return {
@@ -406,97 +482,84 @@ var DeckEditor = React.createClass({
   },
   getInitialQs: function getInitialQs() {
     var context = this;
-    $.get('/api/decks/' + context.props.deckID, function(req, res) {
-      context.setState({
-        'title': req.title
-      });
-      context.setState({
-        'notes': req.notes
-      });
+    $.get( '/api/decks/' + context.props.deckID, function ( req, res ) {
+      context.setState( { 'title': req.title } );
+      context.setState( { 'notes': req.notes } );
       globalActiveDeckQuestions = req.questions;
       context.showQs();
-    });
+    } );
   },
   saveChanges: function saveChanges() {
     var context = this;
     var newInfo = {
       'title': context.state.title,
       'notes': context.state.notes,
-      'questions': JSON.stringify(globalActiveDeckQuestions)
+      'questions': JSON.stringify( globalActiveDeckQuestions )
     };
-    $.post('/api/decks/' + this.props.deckID, newInfo, function(req, res) {
+    $.post( '/api/decks/' + this.props.deckID, newInfo, function ( req, res ) {
       context.render();
-      Materialize.toast('Changes have been saved!', 4000); // 4000 is the duration of the toast
-    });
+      Materialize.toast( 'Changes have been saved!', 4000 ); // 4000 is the duration of the toast
+    } );
   },
   showQs: function showQs() {
-    var quesElements = [];
+    var quesElements = [ ];
     for (var i = 0; i < globalActiveDeckQuestions.length; i++) {
-      quesElements.push(React.createElement(ShowQuestion, {
-        save: this.saveChanges,
-        index: i,
-        key: '' + this.props.deckID + '|index:' + i,
-        value: globalActiveDeckQuestions[i].value,
-        question: globalActiveDeckQuestions[i].question,
-        category: globalActiveDeckQuestions[i].category,
-        answer: globalActiveDeckQuestions[i].answer
-      }));
+      quesElements.push(
+        <ShowQuestion
+                      save={ this.saveChanges }
+                      index={ i }
+                      key={ '' + this.props.deckID + '|index:' + i }
+                      value={ globalActiveDeckQuestions[i].value }
+                      question={ globalActiveDeckQuestions[i].question }
+                      category={ globalActiveDeckQuestions[i].category }
+                      answer={ globalActiveDeckQuestions[i].answer } />
+      );
     }
-    var headers = React.createElement('div', {
-      key: 'headers'
-    }, React.createElement('div', {
-      className: 'row'
-    }, React.createElement('div', {
-      className: 'col s1'
-    }, 'Delete'), React.createElement('div', {
-      className: 'col s1'
-    }, 'Edit'), React.createElement('div', {
-      className: 'col s2'
-    }, 'Category'), React.createElement('div', {
-      className: 'col s1'
-    }, 'Value'), React.createElement('div', {
-      className: 'col s5'
-    }, 'Question'), React.createElement('div', {
-      className: 'col s2'
-    }, 'Answer')), React.createElement('div', {
-      name: 'addQ'
-    }));
-    this.setState({
-      'headers': headers
-    });
-    this.setState({
-      'quesElements': quesElements
-    });
+    var headers = (
+    <div key='headers'>
+      <div className="row">
+        <div className="col s1">
+          Delete
+        </div>
+        <div className="col s1">
+          Edit
+        </div>
+        <div className="col s2">
+          Category
+        </div>
+        <div className="col s1">
+          Value
+        </div>
+        <div className="col s5">
+          Question
+        </div>
+        <div className="col s2">
+          Answer
+        </div>
+      </div>
+      <div name="addQ"></div>
+    </div>
+    );
+    this.setState( { 'headers': headers } );
+    this.setState( { 'quesElements': quesElements } );
   },
   prepNextQues: function prepNextQues() {
-    this.setState({
-      'nextQues': event.target.value
-    });
+    this.setState( { 'nextQues': event.target.value } );
   },
   prepNextAns: function prepNextAns() {
-    this.setState({
-      'nextAns': event.target.value
-    });
+    this.setState( { 'nextAns': event.target.value } );
   },
   prepNextCat: function prepNextCat() {
-    this.setState({
-      'nextCat': event.target.value
-    });
+    this.setState( { 'nextCat': event.target.value } );
   },
   prepNextVal: function prepNextVal() {
-    this.setState({
-      'nextVal': event.target.value
-    });
+    this.setState( { 'nextVal': event.target.value } );
   },
   changeTitle: function changeTitle() {
-    this.setState({
-      'title': event.target.value
-    });
+    this.setState( { 'title': event.target.value } );
   },
   changeNotes: function changeNotes() {
-    this.setState({
-      'notes': event.target.value
-    });
+    this.setState( { 'notes': event.target.value } );
   },
   componentWillMount: function componentWillMount() {
     this.getInitialQs();
@@ -505,89 +568,115 @@ var DeckEditor = React.createClass({
     globalActiveDeckEditorComponent = this;
   },
   render: function render() {
-    return React.createElement('div', null, React.createElement('h3', null, 'DeckEditor ', this.state.title), React.createElement('div', {
-      className: 'row'
-    }, React.createElement('div', {
-      className: 'col s4'
-    }, React.createElement('label', null, 'Title'), React.createElement('input', {
-      type: 'text',
-      className: 'title',
-      value: this.state.title,
-      onChange: this.changeTitle
-    })), React.createElement('div', {
-      className: 'col s6'
-    }, React.createElement('label', null, 'Notes'), React.createElement('input', {
-      type: 'text',
-      className: 'notes',
-      value: this.state.notes,
-      onChange: this.changeNotes
-    })), React.createElement('div', {
-      className: 'col s2'
-    }, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      id: 'saveButton',
-      onClick: this.saveChanges
-    }, 'Save Title and Notes'))), React.createElement('hr', null), this.state.headers, this.state.quesElements, React.createElement('div', {
-      id: 'newQEditor'
-    }), React.createElement('hr', null), React.createElement('div', {
-      id: 'editAddStatus'
-    }), React.createElement(EditQuestion, {
-      save: this.saveChanges,
-      deckID: this.props.deckID
-    }));
+    return (
+    <div>
+      <h3>DeckEditor { this.state.title }</h3>
+      <div className="row">
+        <div className="col s4">
+          <label>
+            Title
+          </label>
+          <input
+                 type="text"
+                 className="title"
+                 value={ this.state.title }
+                 onChange={ this.changeTitle } />
+        </div>
+        <div className="col s6">
+          <label>
+            Notes
+          </label>
+          <input
+                 type="text"
+                 className="notes"
+                 value={ this.state.notes }
+                 onChange={ this.changeNotes } />
+        </div>
+        <div className="col s2">
+          <button
+                  className="btn waves-effect waves-light"
+                  id="saveButton"
+                  onClick={ this.saveChanges }>
+            Save Title and Notes
+          </button>
+        </div>
+      </div>
+      <hr/>
+      { this.state.headers }
+      { this.state.quesElements }
+      <div id="newQEditor"></div>
+      <hr/>
+      <div id="editAddStatus"></div>
+      <EditQuestion
+                    save={ this.saveChanges }
+                    deckID={ this.props.deckID } />
+    </div>
+    )
   }
-});
+} );
 
 // ShowQuestion lists a single question when editing a deck. 
-var ShowQuestion = React.createClass({
+var ShowQuestion = React.createClass( {
   displayName: 'ShowQuestion',
   edit: function edit() {
     isEdit = true;
-    React.render(React.createElement(EditQuestion, {
-      save: this.props.save,
-      edit: isEdit,
-      index: this.props.index,
-      deckID: this.props.deckID,
-      category: this.props.category,
-      value: this.props.value,
-      question: this.props.question,
-      answer: this.props.answer
-    }), document.getElementById('editThisQ' + this.props.index));
+    React.render(
+      <EditQuestion
+                    save={ this.props.save }
+                    edit={ isEdit }
+                    index={ this.props.index }
+                    deckID={ this.props.deckID }
+                    category={ this.props.category }
+                    value={ this.props.value }
+                    question={ this.props.question }
+                    answer={ this.props.answer } />,
+      document.getElementById( 'editThisQ' + this.props.index )
+    )
   },
   'delete': function _delete() {
-    globalActiveDeckQuestions.splice(this.props.index, 1);
+    globalActiveDeckQuestions.splice( this.props.index, 1 );
     globalActiveDeckEditorComponent.showQs();
   },
   render: function render() {
-    return React.createElement('div', null, React.createElement('div', {
-      className: 'row'
-    }, React.createElement('div', {
-      className: 'col s1'
-    }, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      onClick: this['delete']
-    }, 'Delete')), React.createElement('div', {
-      className: 'col s1'
-    }, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      onClick: this.edit
-    }, 'Edit')), React.createElement('div', {
-      className: 'col s2 category'
-    }, this.props.category), React.createElement('div', {
-      className: 'col s1 value'
-    }, this.props.value), React.createElement('div', {
-      className: 'col s5 question'
-    }, this.props.question), React.createElement('div', {
-      className: 'col s2 answer'
-    }, this.props.answer)), React.createElement('div', {
-      id: 'editThisQ' + this.props.index
-    }));
+    return (
+    <div>
+      <div className="row">
+        <div className="col s1">
+          <button
+                  className="btn waves-effect waves-light"
+                  onClick={ this.delete }>
+            Delete
+          </button>
+        </div>
+        <div className="col s1">
+          <button
+                  className="btn waves-effect waves-light"
+                  onClick={ this.edit }>
+            Edit
+          </button>
+        </div>
+        <div className="col s2 category">
+          { this.props.category }
+        </div>
+        <div className="col s1 value">
+          { this.props.value }
+        </div>
+        <div className="col s5 question">
+          { this.props.question }
+        </div>
+        <div className="col s2 answer">
+          { this.props.answer }
+        </div>
+      </div>
+      <div id={ 'editThisQ'+this.props.index }></div>
+    </div>
+    )
   }
-});
+} );
 
 // When it's time to edit the question, the "Show Question" instance spawns
 // this Edit Question area under it for the specific "ShowQuestion"
-var EditQuestion = React.createClass({
+var EditQuestion = React.createClass( {
   displayName: 'EditQuestion',
   getInitialState: function getInitialState() {
     var newCat = this.props.category || '';
@@ -601,118 +690,135 @@ var EditQuestion = React.createClass({
       'newAns': newAns
     };
   },
-  prepNextCat: function prepNextCat(event) {
-    this.setState({
-      'newCat': event.target.value
-    });
+  prepNextCat: function prepNextCat( event ) {
+    this.setState( { 'newCat': event.target.value } );
   },
-  prepNextVal: function prepNextVal(event) {
-    this.setState({
-      'newVal': event.target.value
-    });
+  prepNextVal: function prepNextVal( event ) {
+    this.setState( { 'newVal': event.target.value } );
   },
-  prepNextQues: function prepNextQues(event) {
-    this.setState({
-      'newQues': event.target.value
-    });
+  prepNextQues: function prepNextQues( event ) {
+    this.setState( { 'newQues': event.target.value } );
   },
-  prepNextAns: function prepNextAns(event) {
-    this.setState({
-      'newAns': event.target.value
-    });
+  prepNextAns: function prepNextAns( event ) {
+    this.setState( { 'newAns': event.target.value } );
   },
   addQtoDeck: function addQtoDeck() {
     var context = this;
+    // amendedQ can also be a newly created question.
     var amendedQ = {
       'category': this.state.newCat,
       'value': this.state.newVal,
       'question': this.state.newQues,
       'answer': this.state.newAns
     };
-    if (this.props.edit) {
-      globalActiveDeckQuestions[this.props.index] = amendedQ;
+    // this.props.edit is a boolean which tells you if this is an amendment (true)
+    // or a brand new question (false); 
+    if ( this.props.edit ) {
+      globalActiveDeckQuestions[ this.props.index ] = amendedQ;
     } else {
-      globalActiveDeckQuestions.push(amendedQ);
-      this.setState({
-        'newCat': ''
-      });
-      this.setState({
-        'newVal': ''
-      });
-      this.setState({
-        'newQues': ''
-      });
-      this.setState({
+      globalActiveDeckQuestions.push( amendedQ );
+      this.setState( {
+        'newCat': '',
+        'newVal': '',
+        'newQues': '',
         'newAns': ''
-      });
+      } );
     }
     globalActiveDeckEditorComponent.showQs();
     this.props.save();
-    if (this.props.edit) {
-      React.render(React.createElement('div', {
-        id: 'editThisQ' + this.props.index
-      }, React.createElement('div', {
-        id: "saved" + this.props.index
-      }, 'Question edited. Click "Save Changes" to save changes.')), document.getElementById('editThisQ' + this.props.index));
+    if ( this.props.edit ) {
+      React.render(
+        <div id={ 'editThisQ'+this.props.index }>
+          <div id={ "saved"+this.props.index }>
+            Question edited.
+          </div>
+        </div>,
+        document.getElementById( 'editThisQ' + this.props.index )
+      )
     } else {
-      React.render(React.createElement('div', {
-        id: 'addThisQ' + this.props.index
-      }, React.createElement('div', {
-        id: "saved" + this.props.index
-      }, 'Question added. Click "Save Changes" to save changes.')), document.getElementById('editAddStatus'));
+      React.render(
+        <div id={ 'addThisQ'+this.props.index }>
+          <div id={ "saved"+this.props.index }>
+            Question added.
+          </div>
+        </div>,
+        document.getElementById( 'editAddStatus' )
+      )
+      setTimeout( function () {
+        $( '#saved' + context.props.index ).fadeOut();
+      },
+        3000 );
     }
-    setTimeout(function() {
-      $('#saved' + context.props.index).fadeOut();
-    }, 3000);
   },
   render: function render() {
-    return React.createElement('div', {
-      ref: this.props.edit ? 'editFields' : 'addFields',
-      className: 'addQues row'
-    }, React.createElement('div', {
-      className: 'col s1'
-    }, React.createElement('label', null, 'Category'), React.createElement('input', {
-      type: 'text',
-      className: 'category',
-      value: this.state.newCat,
-      onChange: this.prepNextCat
-    })), React.createElement('div', {
-      className: 'col s1'
-    }, React.createElement('label', null, 'Value'), React.createElement('input', {
-      type: 'text',
-      className: 'value',
-      value: this.state.newVal,
-      onChange: this.prepNextVal
-    })), React.createElement('div', {
-      className: 'col s6'
-    }, React.createElement('label', null, 'Question'), React.createElement('input', {
-      type: 'text',
-      className: 'question',
-      value: this.state.newQues,
-      onChange: this.prepNextQues
-    })), React.createElement('div', {
-      className: 'col s2'
-    }, React.createElement('label', null, 'Answer'), React.createElement('input', {
-      type: 'text',
-      className: 'answer',
-      value: this.state.newAns,
-      onChange: this.prepNextAns
-    })), React.createElement('div', {
-      className: 'col s2'
-    }, React.createElement('button', {
-      className: 'btn waves-effect waves-light',
-      onClick: this.addQtoDeck
-    }, this.props.edit ? 'Save' : 'Add')));
+    return (
+    <div
+         ref={ this.props.edit ? 'editFields' : 'addFields' }
+         className="addQues row">
+      <div className="col s1">
+        <label>
+          Category
+        </label>
+        <input
+               type="text"
+               className="category"
+               value={ this.state.newCat }
+               onChange={ this.prepNextCat } />
+      </div>
+      <div className="col s1">
+        <label>
+          Value
+        </label>
+        <input
+               type="text"
+               className="value"
+               value={ this.state.newVal }
+               onChange={ this.prepNextVal } />
+      </div>
+      <div className="col s6">
+        <label>
+          Question
+        </label>
+        <input
+               type="text"
+               className="question"
+               value={ this.state.newQues }
+               onChange={ this.prepNextQues } />
+      </div>
+      <div className="col s2">
+        <label>
+          Answer
+        </label>
+        <input
+               type="text"
+               className="answer"
+               value={ this.state.newAns }
+               onChange={ this.prepNextAns } />
+      </div>
+      <div className="col s2">
+        <button
+                className="btn waves-effect waves-light"
+                onClick={ this.addQtoDeck }>
+          { this.props.edit ? 'Save' : 'Add' }
+        </button>
+      </div>
+    </div>
+    )
   }
-});
-
-
+} );
 
 // initial page render
-React.render(React.createElement(Tabs, {
-  nav: "main"
-}), document.getElementById('navbar'));
-React.render(React.createElement(Tabs, {
-  nav: "nav-mobile"
-}), document.getElementById('nav-mobile'));
-React.render(React.createElement('div', null, React.createElement(ViewArea, null)), document.getElementById('main'));
+React.render(
+  <Tabs nav={ "main" } />, document.getElementById( 'navbar' )
+);
+
+React.render(
+  <Tabs nav={ "nav-mobile" } />, document.getElementById( 'nav-mobile' )
+);
+
+React.render(
+  <div>
+    <ViewArea />
+  </div>,
+  document.getElementById( 'main' )
+);

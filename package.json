@@ -65,6 +65,9 @@
     "gulp": "~3.9.0",
     "eslint-plugin-react": "~3.6.3",
     "globby": "~3.0.1",
-    "eslint": "~1.7.3"
+    "eslint": "~1.7.3",
+    "esformatter-jsx": "~2.3.8",
+    "esformatter": "~0.7.3",
+    "js-beautify": "~1.5.10"
   }
 }

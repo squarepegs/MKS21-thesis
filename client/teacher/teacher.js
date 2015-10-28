@@ -1,3 +1,4 @@
+// teacher.js
 // -----------------------
 // NOTES
 // -----------------------
@@ -110,9 +111,10 @@ var Main = React.createClass({
     socket.on('room code', function(code, deckID) {
       window.jeopardy.code = code;
       sessionStorage.deckID = deckID;
-      React.render(React.createElement(GameDashboard, {
-        deckID: deckID
-      }), document.getElementById('main'));
+      React.render(
+        <GameDashboard deckID={deckID} />
+        ,document.getElementById('main')
+      )
     });
   },
   handleClick: function handleClick() {
@@ -122,30 +124,25 @@ var Main = React.createClass({
     }, sessionStorage.deckID);
   },
   render: function render() {
-    return React.createElement('div', {
-      className: 'container'
-    }, React.createElement('div', {
-      className: 'row'
-    }, React.createElement('div', {
-      className: 'col s3 flow-text'
-    }, React.createElement('span', {
-      className: 'brand-logo'
-    }, 'Digi', React.createElement('span', {
-      className: 'orange-text'
-    }, 'Quiz'))), React.createElement('div', {
-      className: 'col s9 align-center'
-    }, React.createElement('a', {
-      href: '#',
-      className: 'btn',
-      onClick: this.handleClick
-    }, 'START NEW GAME'))), React.createElement('div', {
-      className: 'row'
-    }, 'Existing rooms:'), React.createElement('div', {
-      id: 'Rooms',
-      className: 'row'
-    }, React.createElement(RoomSelect, null)));
-  }
-});
+    return (
+      <div className='container'>
+        <div className="row">
+          <div className="col s3 flow-text">
+            <span className="brand-logo">
+              Digi
+              <span className="orange-text">Quiz</span>
+            </span>
+          </div>
+          <div className="col s9 align-center">
+            <a href="#" className="btn" onClick={this.handleClick}>START NEW GAME</a>
+          </div>
+        </div>
+        <div className="row">Existing rooms:</div>
+        <div id="Rooms" className="row">
+          <RoomSelect />
+        </div>
+      </div>
+    );
 
 var RoomSelect = React.createClass({
   displayName: 'RoomSelect',
@@ -197,58 +194,55 @@ var RoomSelect = React.createClass({
   },
   render: function render() {
     var items = this.state.items.map((function(element, i) {
-      return React.createElement(Room, {
-        name: element[0],
-        code: element[1],
-        deckID: element[2],
-        key: i
-      });
+      return (<Room name={element[0]} code={element[1]} deckID={element[2]} key={i} />);
     }).bind(this));
-    return React.createElement('div', null, React.createElement('select', {
-      className: 'browser-default inline',
-      onChange: this.clickHandler
-    }, React.createElement('option', {
-      className: 'dropdown-item',
-      value: ''
-    }), React.createElement('option', {
-      className: 'dropdown-item',
-      value: 'jService'
-    }, 'jService'), items));
+    return (
+      <div>
+        <select className="browser-default inline" onChange={this.clickHandler}>
+          <option className="dropdown-item" value=""></option>
+          <option className="dropdown-item" value="jService">jService</option>
+          {items}
+        </select>
+      </div>
+    );
   }
 });
 
 var Room = React.createClass({
   displayName: 'Room',
   render: function render() {
-    return React.createElement('option', {
-      className: 'dropdown-item'
-    }, this.props.name);
+    return (
+      <option className="dropdown-item">{this.props.name}</option>
+    );
   }
 });
 
 var GameDashboard = React.createClass({
   displayName: 'GameDashboard',
   render: function render() {
-    return React.createElement('div', {
-      id: 'gameDashboard'
-    }, React.createElement('div', {
-      className: 'row headroom-whitespace'
-    }, React.createElement('div', {
-      className: 'col s6 flow-text center',
-      id: 'roomcode'
-    }, React.createElement('span', {
-      className: 'brand-logo'
-    }, 'Digi', React.createElement('span', {
-      className: 'orange-text'
-    }, 'Quiz')), 'Your code is: ', window.jeopardy.code), React.createElement('div', {
-      className: 'col s4'
-    }, React.createElement(NewQ, {
-      deckID: this.props.deckID
-    }))), React.createElement('div', {
-      className: 'row'
-    }, React.createElement('div', {
-      className: 'col s4'
-    }, React.createElement(ActiveList, null), React.createElement(BuzzedInList, null), React.createElement(Feedback, null), React.createElement(EndGame, null)), React.createElement(QA, null)));
+    return (
+    <div id='gameDashboard'>
+      <div className="row headroom-whitespace">
+        <div className="col s6 flow-text center" id="roomcode">
+        <span className="brand-logo">Digi<span className="orange-text">Quiz</span></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          Your code is: {window.jeopardy.code}
+        </div>
+        <div className="col s4">
+          <NewQ deckID={this.props.deckID} />
+          </div>
+      </div>
+      <div className="row">
+        <div className="col s4">
+          <ActiveList />  
+          <BuzzedInList />
+          <Feedback />
+          <EndGame />
+        </div>
+        <QA />
+      </div>
+    </div>
+    )
   }
 });
 
@@ -261,11 +255,11 @@ var NewQ = React.createClass({
     socket.emit('newQ', window.jeopardy.code, this.props.deckID);
   },
   render: function render() {
-    return React.createElement('div', null, React.createElement('a', {
-      href: '#',
-      className: 'btn wide-btn',
-      onClick: this.clickHandler
-    }, 'Next Question'));
+    return (
+    <div>
+      <a href="#" className="btn wide-btn" onClick={this.clickHandler}>Next Question</a>
+    </div>
+    );
   }
 });
 
@@ -306,21 +300,18 @@ var ActiveList = React.createClass({
     }).bind(this));
   },
   render: function render() {
-    var items = this.state.items.map((function(item, i) {
-      return React.createElement(Student, {
-        name: item,
-        key: i
-      });
-    }).bind(this));
-    return React.createElement('div', {
-      className: 'row card teal'
-    }, React.createElement('div', {
-      className: 'card-content flow-text white-text'
-    }, React.createElement('div', {
-      className: 'card-title'
-    }, 'Active Players:'), React.createElement('ul', {
-      id: 'activeList'
-    }, items)));
+    var items = this.state.items.map(function(item, i) {
+      return (
+        <Student name={item} key={i} />
+      )}.bind(this))
+    return (    
+      <div className="row card teal">
+        <div className="card-content flow-text white-text">
+          <div className="card-title">Active Players:</div>
+          <ul id="activeList">{items}</ul>
+        </div>
+      </div>  
+    )
   }
 });
 
@@ -330,9 +321,9 @@ var ActiveList = React.createClass({
 var Student = React.createClass({
   displayName: 'Student',
   render: function render() {
-    return React.createElement('li', {
-      className: 'student'
-    }, this.props.name);
+    return (
+      <li className="student">{this.props.name}</li>
+    );
   }
 });
 
@@ -341,7 +332,11 @@ var BuzzedInList = React.createClass({
   componentDidMount: function componentDidMount() {
     socket.on('teacher question', function(data) {
       buzzedIn = [];
-      React.render(React.createElement('div', null, 'Waiting for buzz...'), document.getElementById('buzzedIn'));
+      React.render(
+        <div>
+          Waiting for buzz...
+        </div>,document.getElementById('buzzedIn')
+      )
     });
     socket.on('buzzed in', function(data) {
       if (!weAlreadyHaveOneOfThese(questionData.buzzes, 'id', data.id)) {
@@ -351,22 +346,24 @@ var BuzzedInList = React.createClass({
       }
       var elements = [];
       for (var i = 0; i < buzzedIn.length; i++) {
-        elements.push(React.createElement('li', null, buzzedIn[i].id));
+        elements.push(<li key={'ol'+i} >{buzzedIn[i].id}</li>);
       }
-      // WARNING: Each child in an array or iterator should have a unique "key" prop. Check the top-level render call using <ol>. See https://fb.me/react-warning-keys for more information.
-      React.render(React.createElement('div', null, React.createElement('ol', null, elements)), document.getElementById('buzzedIn'));
+      React.render(
+        <div>
+          <ol>{elements}</ol>
+        </div>,document.getElementById('buzzedIn')
+      )
     });
   },
-  render: function render() {
-    return React.createElement('div', {
-      className: 'row card teal darken-1'
-    }, React.createElement('div', {
-      className: 'card-content flow-text white-text'
-    }, React.createElement('div', {
-      className: 'card-title'
-    }, 'Buzzed in:'), React.createElement('div', {
-      id: 'buzzedIn'
-    })));
+  render: function render(){
+    return (
+      <div className="row card teal darken-1">
+        <div className="card-content flow-text white-text">
+          <div className="card-title">Buzzed in:</div>
+          <div id="buzzedIn"></div>
+        </div>
+      </div>  
+    )
   }
 });
 
@@ -374,7 +371,11 @@ var Feedback = React.createClass({
   displayName: 'Feedback',
   componentDidMount: function componentDidMount() {
     socket.on('teacher question', function(data) {
-      React.render(React.createElement('div', null, 'Waiting for feedback'), document.getElementById('feedback'));
+      React.render(
+        <div>
+          Waiting for feedback
+        </div>,document.getElementById('feedback')
+        )
     });
     socket.on('feedback incoming', function(data, deckID) {
       if (questionData.feedbacks === undefined) {
@@ -383,21 +384,24 @@ var Feedback = React.createClass({
       questionData.feedbacks[data.id] = data.feedback;
       var elements = [];
       for (var key in questionData.feedbacks) {
-        elements.push(React.createElement('li', null, key, ' : ', questionData.feedbacks[key]));
+        elements.push(<li>{key} : {questionData.feedbacks[key]}</li>);
       }
-      React.render(React.createElement('div', null, React.createElement('ol', null, elements)), document.getElementById('feedback'));
+      React.render(
+        <div>
+          <ol>{elements}</ol>
+        </div>,document.getElementById('feedback')
+      )
     });
   },
-  render: function render() {
-    return React.createElement('div', {
-      className: 'row card teal darken-2'
-    }, React.createElement('div', {
-      className: 'card-content flow-text white-text'
-    }, React.createElement('div', {
-      className: 'card-title'
-    }, 'Live Feedback:'), React.createElement('div', {
-      id: 'feedback'
-    })));
+  render:function render(){
+    return (
+      <div className="row card teal darken-2">
+        <div className="card-content flow-text white-text">
+          <div className="card-title">Live Feedback:</div>
+          <div id="feedback"></div>
+        </div>
+      </div>    
+    )
   }
 });
 
@@ -406,14 +410,19 @@ var EndGame = React.createClass({
   clickHandler: function clickHandler() {
     socket.emit('end game', window.jeopardy.code);
     socket.disconnect();
-    React.render(React.createElement('div', null, React.createElement(Main, null)), document.getElementById('main'));
+    React.render(
+      <div>
+        <Main />
+      </div>,
+      document.getElementById('main')
+    )
   },
   render: function render() {
-    return React.createElement('div', null, React.createElement('a', {
-      href: '#',
-      className: 'btn red darken-2 wide-btn',
-      onClick: this.clickHandler
-    }, 'End Game'));
+    return (
+    <div>
+      <a href="#" className="btn red darken-2 wide-btn" onClick={this.clickHandler}>End Game</a>
+    </div>
+    )
   }
 });
 
@@ -435,33 +444,31 @@ var QA = React.createClass({
       questionData.answer = data.answer;
       questionData.feedbacks = {};
       questionData.rootTime = Date.now();
-      React.render(React.createElement('div', {
-        className: 'col s8'
-      }, React.createElement('div', {
-        className: 'card blue-grey flow-text lighten-1'
-      }, React.createElement('div', {
-        className: 'card-content white-text'
-      }, React.createElement('div', {
-        className: 'card-title'
-      }, 'Category:'), data.category.toUpperCase(), ' - $', data.value)), React.createElement('div', {
-        className: 'card blue-grey flow-text darken-1'
-      }, React.createElement('div', {
-        className: 'card-content white-text'
-      }, React.createElement('div', {
-        className: 'card-title'
-      }, 'Question:'), data.question.toUpperCase())), React.createElement('div', {
-        className: 'card blue-grey flow-text darken-2'
-      }, React.createElement('div', {
-        className: 'card-content white-text'
-      }, React.createElement('div', {
-        className: 'card-title'
-      }, 'Answer:'), data.answer.toUpperCase()))), document.getElementById('question'));
+      React.render(
+        <div className="col s8">
+          <div className="card blue-grey flow-text lighten-1">
+          <div className="card-content white-text">
+          <div className="card-title">Category:</div>{data.category.toUpperCase()} - ${data.value}</div></div>
+          <div className="card blue-grey flow-text darken-1">  
+            <div className="card-content white-text">
+              <div className="card-title">Question:</div>{data.question.toUpperCase()}
+            </div>
+          </div>
+          <div className="card blue-grey flow-text darken-2">  
+            <div className="card-content white-text">
+               <div className="card-title">Answer:</div>{data.answer.toUpperCase()}
+            </div>
+          </div>
+        </div>, document.getElementById('question')
+      )
     });
   },
   render: function render() {
-    return React.createElement('div', null, React.createElement('h2', {
-      id: 'question'
-    }));
+    return (
+      <div>
+        <h2 id="question"></h2>
+      </div>
+    );
   }
 });
 
@@ -470,6 +477,9 @@ var QA = React.createClass({
 // ReactDOM requires Browserify (or Webpack) and we have not had luck
 // with getting Browserify working properly. 
 
-React.render(React.createElement('div', {
-  className: 'headroom-whitespace'
-}, React.createElement(Main, null)), document.getElementById('main'));
+React.render(
+  <div className="headroom-whitespace">
+    <Main />
+  </div>,
+  document.getElementById('main')
+);

@@ -7,7 +7,7 @@
 //   what .bind was designed for. 
 //   Brian prefers using var context = this; just in case you have
 //   to refer to two different "this"es in code. 
-//   But y'know. We're flexible, and whatever works.
+//   This may cause inconsistent style.  
 //
 // -----------------------
 
